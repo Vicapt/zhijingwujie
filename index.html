@@ -1992,14 +1992,14 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             <div class="login-demo-accounts">
                 <div class="login-demo-title">— 演示账号（点击自动填入）—</div>
                 <div class="login-demo-grid">
-                    <button class="login-demo-btn" data-user="admin" data-pass="admin123" data-role="teacher">
-                        管理员老师<small>admin / admin123</small>
+                    <button class="login-demo-btn" data-user="admin" data-pass="admin123" data-role="admin">
+                        管理员<small>admin / admin123</small>
                     </button>
                     <button class="login-demo-btn" data-user="teacher1" data-pass="teach123" data-role="teacher">
                         张老师<small>teacher1 / teach123</small>
                     </button>
                     <button class="login-demo-btn" data-user="student1" data-pass="stu123" data-role="student">
-                        小明同学<small>student1 / stu123</small>
+                        三年2班<small>student1 / stu123</small>
                     </button>
                 </div>
             </div>
@@ -2071,7 +2071,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 <i class="fas fa-brain"></i>
                 <span>智境无界</span>
             </a>
-            <div class="mode-switch header-mode-switch" id="headerModeSwitch">
+            <div class="mode-switch header-mode-switch" id="headerModeSwitch" style="display:none">
                 <button class="mode-btn active" data-mode="teacher"><i class="fas fa-chalkboard-teacher"></i><span class="menu-text"> 教师端</span></button>
                 <button class="mode-btn" data-mode="student"><i class="fas fa-user-graduate"></i><span class="menu-text"> 学生端</span></button>
             </div>
@@ -2112,17 +2112,17 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 <i class="fas fa-moon" id="darkModeIcon"></i>
             </button>
             <div class="user-menu" id="userMenu" style="position:relative">
-                <div class="user-avatar" id="userAvatar">张</div>
+                <div class="user-avatar" id="userAvatar"></div>
                 <div class="user-info">
-                    <div class="user-name" id="userName">张老师</div>
-                    <div class="user-role" id="userRole">教师账号</div>
+                    <div class="user-name" id="userName"></div>
+                    <div class="user-role" id="userRole"></div>
                 </div>
                 <i class="fas fa-chevron-down" id="userMenuChevron" style="font-size:.72rem;color:var(--gray-400);transition:transform .2s"></i>
                 <!-- User dropdown -->
                 <div id="userDropdown" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(15,23,42,.14);border:1px solid var(--gray-200);min-width:200px;z-index:500;overflow:hidden;animation:fadeDown .18s ease">
                     <div style="padding:14px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px">
-                        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#14b8a6);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem">张</div>
-                        <div><div style="font-weight:700;font-size:.875rem;color:var(--gray-800)">张老师</div><div style="font-size:.75rem;color:var(--gray-500)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="12667773717a77605261717a7d7d7e3c7776673c717c">[email&#160;protected]</a></div></div>
+                        <div id="dropdownAvatar" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#14b8a6);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem"></div>
+                        <div><div id="dropdownName" style="font-weight:700;font-size:.875rem;color:var(--gray-800)"></div><div id="dropdownRole" style="font-size:.75rem;color:var(--gray-500)"></div></div>
                     </div>
                     <div style="padding:6px 0">
                         <button class="ud-item" onclick="showGlobalToast('个人资料功能即将上线','info');closeUserDropdown()"><i class="fas fa-user-circle"></i>个人资料</button>
@@ -2423,112 +2423,121 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         // 全局状态
 
         // ══════════════════════════════════════════════════════════════
-        // 登录系统
+        // ══════════════════════════════════════════════════════════════
+        // 登录系统 — 所有函数在外层作用域，无闭包依赖，退出重登无状态残留
         // ══════════════════════════════════════════════════════════════
         var ACCOUNTS = [
-            { username:'admin',    password:'admin123', name:'管理员老师', role:'teacher', avatar:'管' },
-            { username:'teacher1', password:'teach123', name:'张老师',    role:'teacher', avatar:'张' },
-            { username:'student1', password:'stu123',   name:'小明同学',  role:'student',  avatar:'明' },
+            { username:'admin',    password:'admin123', name:'管理员', role:'admin',    avatar:'管' },
+            { username:'teacher1', password:'teach123', name:'张老师',  role:'teacher', avatar:'张' },
+            { username:'student1', password:'stu123',   name:'三年2班', role:'student', avatar:'班' },
         ];
         var currentUser = null;
 
-        function initLogin() {
-            var overlay  = document.getElementById('loginOverlay');
-            var loginBtn = document.getElementById('loginBtn');
-            var errBox   = document.getElementById('loginError');
-            var tabT     = document.getElementById('loginTabTeacher');
-            var tabS     = document.getElementById('loginTabStudent');
-            var loginRole= 'teacher';
+        function roleLabel(role) {
+            return role === 'admin' ? '管理员' : role === 'teacher' ? '教师账号' : '学生账号';
+        }
 
+        function resetLoginForm() {
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('loginTabTeacher').classList.add('active');
+            document.getElementById('loginTabStudent').classList.remove('active');
+        }
+
+        function tryLogin() {
+            var uname  = document.getElementById('loginUsername').value.trim();
+            var upass  = document.getElementById('loginPassword').value;
+            var errBox = document.getElementById('loginError');
+            var acct   = ACCOUNTS.find(function(a){
+                return a.username === uname && a.password === upass;
+            });
+            if (!acct) {
+                errBox.style.display = 'block';
+                errBox.textContent   = '账号或密码错误，请重试';
+                document.getElementById('loginPassword').value = '';
+                return;
+            }
+            errBox.style.display = 'none';
+            doLogin(acct, document.getElementById('loginRemember').checked);
+        }
+
+        function initLogin() {
             // 检查记住的登录
             try {
                 var saved = JSON.parse(localStorage.getItem('zjwj_session') || 'null');
                 if (saved && saved.expiry > Date.now()) {
-                    var acct = ACCOUNTS.find(function(a){ return a.username===saved.username && a.role===saved.role; });
+                    var acct = ACCOUNTS.find(function(a){ return a.username === saved.username; });
                     if (acct) { doLogin(acct, false); return; }
                 }
             } catch(e){}
 
-            if (overlay) overlay.style.display = 'flex';
+            document.getElementById('loginOverlay').style.display = 'flex';
 
-            tabT && tabT.addEventListener('click', function(){
-                loginRole='teacher';
-                tabT.classList.add('active'); tabS.classList.remove('active');
-                document.getElementById('loginUsername').value='';
-                document.getElementById('loginPassword').value='';
+            document.getElementById('loginTabTeacher').addEventListener('click', function(){
+                this.classList.add('active');
+                document.getElementById('loginTabStudent').classList.remove('active');
             });
-            tabS && tabS.addEventListener('click', function(){
-                loginRole='student';
-                tabS.classList.add('active'); tabT.classList.remove('active');
-                document.getElementById('loginUsername').value='';
-                document.getElementById('loginPassword').value='';
+            document.getElementById('loginTabStudent').addEventListener('click', function(){
+                this.classList.add('active');
+                document.getElementById('loginTabTeacher').classList.remove('active');
             });
 
-            // 演示账号一键填入
             document.querySelectorAll('.login-demo-btn').forEach(function(btn){
                 btn.addEventListener('click', function(){
-                    var role = btn.dataset.role;
                     document.getElementById('loginUsername').value = btn.dataset.user;
                     document.getElementById('loginPassword').value = btn.dataset.pass;
-                    loginRole = role;
-                    if (role==='teacher'){ tabT.classList.add('active'); tabS.classList.remove('active'); }
-                    else { tabS.classList.add('active'); tabT.classList.remove('active'); }
-                    if (errBox) errBox.style.display = 'none';
+                    document.getElementById('loginError').style.display = 'none';
+                    var isStudent = btn.dataset.role === 'student';
+                    document.getElementById('loginTabTeacher').classList.toggle('active', !isStudent);
+                    document.getElementById('loginTabStudent').classList.toggle('active', isStudent);
                 });
             });
 
-            function tryLogin() {
-                var uname = document.getElementById('loginUsername').value.trim();
-                var upass = document.getElementById('loginPassword').value;
-                var acct  = ACCOUNTS.find(function(a){
-                    return a.username===uname && a.password===upass && a.role===loginRole;
-                });
-                if (!acct) {
-                    if (errBox) { errBox.style.display='block'; errBox.textContent='账号或密码错误，请重试'; }
-                    document.getElementById('loginPassword').value='';
-                    return;
-                }
-                var remember = document.getElementById('loginRemember').checked;
-                doLogin(acct, remember);
-            }
-
-            loginBtn && loginBtn.addEventListener('click', tryLogin);
+            document.getElementById('loginBtn').addEventListener('click', tryLogin);
             document.getElementById('loginPassword').addEventListener('keydown', function(e){
-                if(e.key==='Enter') tryLogin();
+                if (e.key === 'Enter') tryLogin();
             });
             document.getElementById('loginUsername').addEventListener('keydown', function(e){
-                if(e.key==='Enter') document.getElementById('loginPassword').focus();
+                if (e.key === 'Enter') document.getElementById('loginPassword').focus();
             });
         }
 
         function doLogin(acct, remember) {
             currentUser = acct;
-            var overlay = document.getElementById('loginOverlay');
-            if (overlay) overlay.style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'none';
 
-            // 更新顶栏用户信息
-            var av = document.getElementById('userAvatar');
-            var nm = document.getElementById('userName');
-            var rl = document.getElementById('userRole');
-            if (av) av.textContent = acct.avatar;
-            if (nm) nm.textContent = acct.name;
-            if (rl) rl.textContent = acct.role==='teacher' ? '教师账号' : '学生账号';
+            document.getElementById('userAvatar').textContent = acct.avatar;
+            document.getElementById('userName').textContent   = acct.name;
+            document.getElementById('userRole').textContent   = roleLabel(acct.role);
+            document.getElementById('dropdownAvatar').textContent = acct.avatar;
+            document.getElementById('dropdownName').textContent   = acct.name;
+            document.getElementById('dropdownRole').textContent   = roleLabel(acct.role);
 
-            // 自动切换到对应端
-            var isTeacher = acct.role === 'teacher';
-            currentMode = isTeacher ? 'teacher' : 'student';
-            updateMode(currentMode);
-            // 同步切换开关按钮高亮
+            document.querySelectorAll('.admin-only').forEach(function(el){
+                el.style.display = acct.role === 'admin' ? '' : 'none';
+            });
+
+            document.getElementById('headerModeSwitch').style.display =
+                acct.role === 'teacher' ? '' : 'none';
+
+            if (acct.role === 'admin') {
+                currentMode = 'teacher';
+                updateMode('teacher');
+                loadModule('classmanage');
+            } else {
+                currentMode = acct.role === 'student' ? 'student' : 'teacher';
+                updateMode(currentMode);
+            }
             document.querySelectorAll('.mode-btn').forEach(function(b){
                 b.classList.toggle('active', b.dataset.mode === currentMode);
             });
 
-            // 记住登录
             if (remember) {
                 try {
                     localStorage.setItem('zjwj_session', JSON.stringify({
-                        username: acct.username, role: acct.role,
-                        expiry: Date.now() + 7*24*60*60*1000
+                        username: acct.username,
+                        expiry: Date.now() + 7 * 24 * 60 * 60 * 1000
                     }));
                 } catch(e){}
             }
@@ -2538,18 +2547,13 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         function doLogout() {
             currentUser = null;
             try { localStorage.removeItem('zjwj_session'); } catch(e){}
-            var overlay = document.getElementById('loginOverlay');
-            if (overlay) overlay.style.display = 'flex';
-            // Reset login form
-            var u = document.getElementById('loginUsername');
-            var p = document.getElementById('loginPassword');
-            var e = document.getElementById('loginError');
-            if (u) u.value=''; if (p) p.value=''; if (e) e.style.display='none';
-            var tabT=document.getElementById('loginTabTeacher');
-            var tabS=document.getElementById('loginTabStudent');
-            if (tabT) tabT.classList.add('active');
-            if (tabS) tabS.classList.remove('active');
+            document.getElementById('headerModeSwitch').style.display = 'none';
+            document.querySelectorAll('.admin-only').forEach(function(el){ el.style.display = 'none'; });
+            resetLoginForm();
+            document.getElementById('loginOverlay').style.display = 'flex';
         }
+
+
 
         // ══════════════════════════════════════════════════════════════
         // 批量导入题目解析引擎
@@ -2814,7 +2818,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 }
 
                 if (isJudge) {
-                    q.type   = 'judge';
+                    q.type   = 'truefalse';
                     q.stem   = fullText;
                     q.answer = judgeAns;
                 } else {
@@ -4168,7 +4172,42 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             document.getElementById('charCount').textContent = this.value.length;
         });
 
-        document.getElementById('generatePptBtn')?.addEventListener('click', function() {
+        // ── DeepSeek API 配置 ─────────────────────────────────────
+        const DEEPSEEK_API_KEY = 'sk-ac481fe817df49b19865494c10febd0d';
+        const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top';
+
+        async function callDeepSeek(userPrompt) {
+            const response = await fetch(DEEPSEEK_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + DEEPSEEK_API_KEY
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    max_tokens: 2000,
+                    temperature: 0.7,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: '你是一位专业的中学语文教师，擅长将课文内容拆解为结构清晰的PPT课件。请严格按照JSON格式输出，不要有任何多余的文字或markdown代码块标记。'
+                        },
+                        {
+                            role: 'user',
+                            content: userPrompt
+                        }
+                    ]
+                })
+            });
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err.error?.message || 'API请求失败，状态码：' + response.status);
+            }
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+
+        document.getElementById('generatePptBtn')?.addEventListener('click', async function() {
             const text = document.getElementById('textInput').value.trim();
             if (!text) { showGlobalToast('请输入课文内容', 'error'); return; }
 
@@ -4179,47 +4218,105 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 
             if (progressContainer) progressContainer.style.display = 'block';
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI生成中...';
 
+            // 进度条动画（模拟，直到API返回）
             let progress = 0;
             const interval = setInterval(() => {
-                progress += Math.random() * 8 + 3;
-                if (progress > 100) progress = 100;
+                progress += Math.random() * 4 + 1;
+                if (progress > 90) progress = 90; // 最多到90%，等API完成再到100%
                 if (progressFill) progressFill.style.width = progress + '%';
                 if (progressPercent) progressPercent.textContent = Math.round(progress) + '%';
+            }, 200);
 
-                if (progress >= 100) {
-                    clearInterval(interval);
+            // 更新 apiStatus 状态点为连接中
+            const apiStatusDot = document.getElementById('apiStatus');
+            if (apiStatusDot) apiStatusDot.className = 'status-dot connecting';
+
+            try {
+                const prompt = `请将以下课文内容拆解为PPT课件结构，生成6到10页幻灯片。
+
+课文内容：
+${text}
+
+请严格按照以下JSON数组格式输出，不要有任何其他文字：
+[
+  {"type":"title","title":"课件标题（从课文提取）","subtitle":"副标题或作者简介","content":""},
+  {"type":"content","title":"第一部分标题","content":"该部分核心内容，2到3句话"},
+  {"type":"content","title":"第二部分标题","content":"该部分核心内容，2到3句话"},
+  {"type":"discussion","title":"思考讨论","content":"结合课文提出1到2个讨论问题"},
+  {"type":"summary","title":"课文小结","content":"总结课文主旨、情感与写作特色"}
+]`;
+
+                const rawJson = await callDeepSeek(prompt);
+
+                // 解析AI返回的JSON
+                const cleanJson = rawJson.replace(/```json|```/g, '').trim();
+                const slides = JSON.parse(cleanJson);
+
+                // 完成进度条
+                clearInterval(interval);
+                if (progressFill) progressFill.style.width = '100%';
+                if (progressPercent) progressPercent.textContent = '100%';
+                if (apiStatusDot) apiStatusDot.className = 'status-dot connected';
+
+                setTimeout(() => {
+                    if (progressContainer) progressContainer.style.display = 'none';
+                    if (progressFill) progressFill.style.width = '0%';
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-magic"></i> 一键生成课件';
-                    setTimeout(() => {
-                        if (progressContainer) progressContainer.style.display = 'none';
-                        if (progressFill) progressFill.style.width = '0%';
-                        buildPptSlides(text);
-                        showGlobalToast('课件生成成功！共 ' + pptSlides.length + ' 页', 'success');
-                        saveToLocalStorage('ppt_draft', text);
-                        updateStorageUsage();
-                    }, 300);
-                }
-            }, 180);
+
+                    buildPptSlidesFromAI(slides);
+                    showGlobalToast('AI课件生成成功！共 ' + pptSlides.length + ' 页', 'success');
+                    saveToLocalStorage('ppt_draft', text);
+                    updateStorageUsage();
+                }, 400);
+
+            } catch (err) {
+                clearInterval(interval);
+                if (progressContainer) progressContainer.style.display = 'none';
+                if (progressFill) progressFill.style.width = '0%';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic"></i> 一键生成课件';
+                if (apiStatusDot) apiStatusDot.className = 'status-dot offline';
+                console.error('DeepSeek API Error:', err);
+                showGlobalToast('AI生成失败：' + err.message + '，已切换为本地生成', 'error');
+                // 降级：使用本地算法生成
+                buildPptSlides(text);
+                showGlobalToast('课件已生成（本地模式），共 ' + pptSlides.length + ' 页', 'info');
+            }
         });
 
+        // AI返回JSON直接构建幻灯片
+        function buildPptSlidesFromAI(slides) {
+            const theme = styleThemes[pptStyle] || styleThemes.fresh;
+            pptSlides = slides.map(s => ({
+                type: s.type || 'content',
+                title: s.title || '',
+                subtitle: s.subtitle || new Date().toLocaleDateString('zh-CN'),
+                content: s.content || ''
+            }));
+            pptCurrentIdx = 0;
+            renderThumbnails(theme);
+            renderCurrentSlide();
+            document.getElementById('slideCount').textContent = '共 ' + pptSlides.length + ' 页';
+            document.getElementById('prevSlideBtn').disabled = true;
+            document.getElementById('nextSlideBtn').disabled = pptSlides.length <= 1;
+        }
+
+        // 本地降级版本（API失败时使用）
         function buildPptSlides(text) {
             const theme = styleThemes[pptStyle] || styleThemes.fresh;
             const rawSentences = text.split(/[。！？\n]/).map(s => s.trim()).filter(s => s.length > 2);
             pptSlides = [];
-            // Title slide
             const title = rawSentences[0] ? rawSentences[0].slice(0, 20) : '课文标题';
             pptSlides.push({ type: 'title', title, subtitle: new Date().toLocaleDateString('zh-CN'), content: '' });
-            // Content slides (group every 2 sentences)
             for (let i = 0; i < rawSentences.length; i += 2) {
                 const heading = rawSentences[i].slice(0, 18);
                 const body = rawSentences[i + 1] ? rawSentences[i + 1] : '';
                 pptSlides.push({ type: 'content', title: heading, content: body });
             }
-            // Summary slide
             pptSlides.push({ type: 'summary', title: '课文小结', content: '请同学们回顾今天所学的内容，思考文章的主题与情感。' });
-
             pptCurrentIdx = 0;
             renderThumbnails(theme);
             renderCurrentSlide();
@@ -6847,8 +6944,16 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         // ══════════════════════════════════════════════════════════════
         function _getAccountsDB() {
             var stored = localStorage.getItem('zjwj_accounts');
-            if (stored) return JSON.parse(stored);
-            // Seed from hardcoded ACCOUNTS
+            if (stored) {
+                var parsed = JSON.parse(stored);
+                // 用当前 ACCOUNTS 修正 username 匹配的核心字段，防止旧缓存污染
+                parsed = parsed.map(function(a) {
+                    var fresh = ACCOUNTS.find(function(b){ return b.username === a.username; });
+                    return fresh ? JSON.parse(JSON.stringify(fresh)) : a;
+                });
+                localStorage.setItem('zjwj_accounts', JSON.stringify(parsed));
+                return parsed;
+            }
             var seed = JSON.parse(JSON.stringify(ACCOUNTS));
             localStorage.setItem('zjwj_accounts', JSON.stringify(seed));
             return seed;
@@ -8166,7 +8271,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                         q.options.map(function(o,i){
                             return '<button class="gp-opt" data-idx="'+i+'"><span class="gp-opt-label">'+String.fromCharCode(65+i)+'</span>' + o + '</button>';
                         }).join('') + '</div>';
-                } else if (q.type === 'truefalse') {
+                } else if (q.type === 'truefalse' || q.type === 'judge') {
                     optHtml = '<div class="gp-options gp-tf">' +
                         '<button class="gp-opt" data-val="true"><span class="gp-opt-label">✓</span>正确</button>' +
                         '<button class="gp-opt" data-val="false"><span class="gp-opt-label">✗</span>错误</button>' +
@@ -8305,7 +8410,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                             handleAnswer(correct, q);
                         });
                     });
-                } else if (q.type === 'truefalse') {
+                } else if (q.type === 'truefalse' || q.type === 'judge') {
                     playArea.querySelectorAll('.gp-opt').forEach(function(btn) {
                         btn.addEventListener('click', function() {
                             if (answered) return;
@@ -8343,7 +8448,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                     if (correct) {
                         // 答对：浮层弹窗，1.4秒后自动跳下一题
                         var overlay = document.createElement('div');
-                        overlay.style.cssText = 'position:fixed;left:0;right:0;bottom:80px;z-index:6000;display:flex;align-items:center;justify-content:center;padding:0 20px;pointer-events:none';
+                        overlay.style.cssText = 'position:absolute;inset:0;z-index:6000;display:flex;align-items:center;justify-content:center;padding:0 20px;pointer-events:none';
                         overlay.innerHTML =
                             '<div class="gp-reward-popup">' +
                             '<div class="gp-reward-emoji">🎉</div>' +
@@ -8353,7 +8458,8 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                             '</div>' +
                             '<div class="gp-reward-score">+' + (currentLevelIdx+1)*10 + '分</div>' +
                             '</div>';
-                        document.body.appendChild(overlay);
+                        playArea.style.position = 'relative';
+                        playArea.appendChild(overlay);
                         // 动画进入后自动消失并跳题（用 overlay 是否仍在 DOM 里做保护）
                         setTimeout(function() {
                             var popup = overlay.firstElementChild;
