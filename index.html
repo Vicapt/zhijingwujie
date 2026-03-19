@@ -72,7 +72,7 @@
   --danger-light: var(--red-50);
 
   /* Layout */
-  --sidebar-width: 220px;
+  --sidebar-width: 240px;
   --sidebar-collapsed: 56px;
   --header-h: 58px;
   --footer-h: 36px;
@@ -845,7 +845,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .study-msg-user .study-msg-text { background: linear-gradient(135deg, var(--primary), var(--blue-700)); color: white; border-bottom-right-radius: 4px; }
 .study-msg-time { font-size: 0.68rem; color: var(--gray-400); padding: 0 4px; }
 .study-msg-user .study-msg-time { text-align: right; }
-.study-dots { display: flex; gap: 4px; align-items: center; padding: 4px 0 !important; background: white !important; }
+.study-dots { display: flex; gap: 5px; align-items: center; padding: 2px 0; background: transparent !important; min-height: 0; }
 .study-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-400); animation: study-bounce .9s ease infinite; }
 .study-dots span:nth-child(2) { animation-delay: .2s; }
 .study-dots span:nth-child(3) { animation-delay: .4s; }
@@ -855,7 +855,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .study-textarea:focus { border-color: var(--primary); }
 .study-send-btn { width: 40px; height: 40px; flex-shrink: 0; background: linear-gradient(135deg, var(--primary), var(--blue-700)); border: none; border-radius: var(--r-md); cursor: pointer; color: white; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; transition: var(--tr); }
 .study-send-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,.35); }
-.study-tools { width: 210px; flex-shrink: 0; padding: 14px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; background: var(--gray-50); border-radius: 0 0 var(--r-lg) 0; }
+.study-tools { width: 260px; flex-shrink: 0; padding: 14px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; background: var(--gray-50); border-radius: 0 0 var(--r-lg) 0; }
 .study-tool-card { background: white; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); padding: 13px; }
 .study-tool-title { font-size: 0.8rem; font-weight: 700; color: var(--gray-700); display: flex; align-items: center; gap: 6px; margin-bottom: 9px; }
 .study-tool-title i { color: var(--primary); }
@@ -863,7 +863,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .study-timer-display.countdown-warn  { color: #f59e0b; }
 .study-timer-display.countdown-alert { color: #ef4444; animation: timer-pulse .6s ease infinite; }
 @keyframes timer-pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
-.timer-mode-btn { padding: 3px 8px; border: none; border-radius: 4px; font-size: .72rem; font-weight: 700; cursor: pointer; background: transparent; color: var(--gray-500); transition: all .15s; }
+.timer-mode-btn { padding: 2px 6px; border: none; border-radius: 4px; font-size: .68rem; font-weight: 700; cursor: pointer; background: transparent; color: var(--gray-500); transition: all .15s; white-space: nowrap; }
 .timer-mode-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
 .study-timer-btns { display: flex; gap: 7px; }
 .study-tool-btn { flex: 1; padding: 7px; background: var(--primary); color: white; border: none; border-radius: var(--r-sm); cursor: pointer; font-size: 0.78rem; font-weight: 600; transition: var(--tr); }
@@ -2141,9 +2141,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-title" id="sidebarTitle">教师工作台</div>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="fas fa-chevron-left"></i>
-            </button>
         </div>
         
         <div class="sidebar-menu" id="teacherMenu">
@@ -2170,7 +2167,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="oral">
                 <i class="fas fa-microphone"></i>
-                <span class="menu-text">AI口语纠错训练</span>
+                <span class="menu-text">AI口语题库</span>
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="classmanage">
                 <i class="fas fa-users-cog"></i>
@@ -2190,11 +2187,11 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="game-play">
                 <i class="fas fa-gamepad"></i>
-                <span class="menu-text">游戏化闯关练习 <span class="menu-badge">SmartPath™</span></span>
+                <span class="menu-text">游戏化闯关 <span class="menu-badge">SmartPath™</span></span>
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="oral-practice">
                 <i class="fas fa-microphone"></i>
-                <span class="menu-text">AI口语纠错训练</span>
+                <span class="menu-text">AI口语练习</span>
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="report">
                 <i class="fas fa-chart-line"></i>
@@ -2434,7 +2431,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         var currentUser = null;
 
         function roleLabel(role) {
-            return role === 'admin' ? '管理员' : role === 'teacher' ? '教师账号' : '学生账号';
+            return role === 'admin' ? '管理账号' : role === 'teacher' ? '教师账号' : '学生账号';
         }
 
         function resetLoginForm() {
@@ -2473,35 +2470,49 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             } catch(e){}
 
             document.getElementById('loginOverlay').style.display = 'flex';
-
-            document.getElementById('loginTabTeacher').addEventListener('click', function(){
-                this.classList.add('active');
-                document.getElementById('loginTabStudent').classList.remove('active');
-            });
-            document.getElementById('loginTabStudent').addEventListener('click', function(){
-                this.classList.add('active');
-                document.getElementById('loginTabTeacher').classList.remove('active');
-            });
-
-            document.querySelectorAll('.login-demo-btn').forEach(function(btn){
-                btn.addEventListener('click', function(){
-                    document.getElementById('loginUsername').value = btn.dataset.user;
-                    document.getElementById('loginPassword').value = btn.dataset.pass;
-                    document.getElementById('loginError').style.display = 'none';
-                    var isStudent = btn.dataset.role === 'student';
-                    document.getElementById('loginTabTeacher').classList.toggle('active', !isStudent);
-                    document.getElementById('loginTabStudent').classList.toggle('active', isStudent);
-                });
-            });
-
-            document.getElementById('loginBtn').addEventListener('click', tryLogin);
-            document.getElementById('loginPassword').addEventListener('keydown', function(e){
-                if (e.key === 'Enter') tryLogin();
-            });
-            document.getElementById('loginUsername').addEventListener('keydown', function(e){
-                if (e.key === 'Enter') document.getElementById('loginPassword').focus();
-            });
         }
+
+        // 事件委托绑在 document 上，退出重登永远有效
+        document.addEventListener('click', function(e) {
+            // 登录按钮
+            if (e.target.id === 'loginBtn' || e.target.closest('#loginBtn')) {
+                tryLogin();
+                return;
+            }
+            // 演示账号
+            var demoBtn = e.target.closest('.login-demo-btn');
+            if (demoBtn) {
+                document.getElementById('loginUsername').value = demoBtn.dataset.user;
+                document.getElementById('loginPassword').value = demoBtn.dataset.pass;
+                document.getElementById('loginError').style.display = 'none';
+                var isStudent = demoBtn.dataset.role === 'student';
+                document.getElementById('loginTabTeacher').classList.toggle('active', !isStudent);
+                document.getElementById('loginTabStudent').classList.toggle('active', isStudent);
+                return;
+            }
+            // Tab 切换
+            if (e.target.id === 'loginTabTeacher') {
+                e.target.classList.add('active');
+                document.getElementById('loginTabStudent').classList.remove('active');
+                return;
+            }
+            if (e.target.id === 'loginTabStudent') {
+                e.target.classList.add('active');
+                document.getElementById('loginTabTeacher').classList.remove('active');
+                return;
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key !== 'Enter') return;
+            var overlay = document.getElementById('loginOverlay');
+            if (!overlay || overlay.style.display === 'none') return;
+            if (document.activeElement.id === 'loginUsername') {
+                document.getElementById('loginPassword').focus();
+            } else if (document.activeElement.id === 'loginPassword') {
+                tryLogin();
+            }
+        });
 
         function doLogin(acct, remember) {
             currentUser = acct;
@@ -2519,7 +2530,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             });
 
             document.getElementById('headerModeSwitch').style.display =
-                acct.role === 'teacher' ? '' : 'none';
+                acct.role === 'student' ? 'none' : '';
 
             if (acct.role === 'admin') {
                 currentMode = 'teacher';
@@ -3116,19 +3127,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         
         // 侧边栏控制
         function initSidebar() {
-            // 桌面端折叠/展开
-            sidebarToggle.addEventListener('click', function() {
-                sidebarCollapsed = !sidebarCollapsed;
-                sidebar.classList.toggle('collapsed');
-                this.querySelector('i').className = sidebarCollapsed ? 
-                    'fas fa-chevron-right' : 'fas fa-chevron-left';
-                // 同步PPT持久化容器的left偏移
-                const pw = document.getElementById('ppt-persistent-wrapper');
-                if (pw && pw.style.display !== 'none') {
-                    pw.style.left = sidebarCollapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar-width)';
-                }
-            });
-            
             // 移动端菜单
             mobileMenuBtn.addEventListener('click', function() {
                 sidebar.classList.toggle('active');
@@ -3543,7 +3541,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 
                                     <!-- ① 增强计时器卡片 -->
                                     <div class="study-tool-card" id="timerCard">
-                                        <div class="study-tool-title" style="display:flex;align-items:center;justify-content:space-between">
+                                        <div class="study-tool-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:6px">
                                             <span><i class="fas fa-clock"></i> 学习计时</span>
                                             <!-- 正计时/倒计时 切换 -->
                                             <div style="display:flex;background:var(--gray-100);border-radius:6px;padding:2px;gap:2px">
@@ -3593,14 +3591,14 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 
                                     <!-- ② 快捷提问 -->
                                     <div class="study-tool-card">
-                                        <div class="study-tool-title"><i class="fas fa-lightbulb"></i> 快捷提问</div>
+                                        <div class="study-tool-title"><i class="fas fa-lightbulb"></i> 怎么提问？</div>
                                         <div class="study-quick-btns">
-                                            <button class="study-quick-btn" data-q="帮我解释这个词语的意思">词语解释</button>
-                                            <button class="study-quick-btn" data-q="这道题怎么解？">题目解析</button>
-                                            <button class="study-quick-btn" data-q="帮我总结一下这篇课文的中心思想">课文总结</button>
-                                            <button class="study-quick-btn" data-q="给我出几道相关练习题">出练习题</button>
-                                            <button class="study-quick-btn" data-q="帮我分析这段话的写作手法">写作手法</button>
-                                            <button class="study-quick-btn" data-q="这个知识点有哪些常见考点？">常见考点</button>
+                                            <button class="study-quick-btn" data-placeholder="我在学习《   》这篇课文，我想问……">📖 阅读理解</button>
+                                            <button class="study-quick-btn" data-placeholder="我想知道"    "这个词是什么意思？">🔤 词语解释</button>
+                                            <button class="study-quick-btn" data-placeholder="这道题我不会做：……请帮我解释一下">✏️ 题目解析</button>
+                                            <button class="study-quick-btn" data-placeholder="请帮我用简单的话总结《   》这篇课文讲了什么">📝 课文总结</button>
+                                            <button class="study-quick-btn" data-placeholder="请给我出3道关于"    "的练习题，要简单一点">🎯 出练习题</button>
+                                            <button class="study-quick-btn" data-placeholder="我不理解这句话是什么意思：……">💬 句子理解</button>
                                         </div>
                                     </div>
 
@@ -6477,6 +6475,11 @@ ${text}
                 topbar.querySelector('.sp3-tb-left').innerHTML =
                     '<span class="sp3-title"><i class="fas fa-history"></i> AI自习记录</span>';
                 topbar.querySelector('.sp3-tb-right').innerHTML =
+                    '<label style="font-size:.8rem;color:var(--gray-500);margin-right:4px">学生年级</label>' +
+                    '<select id="air-grade-select" style="padding:4px 8px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.82rem;background:white;color:var(--gray-700)">' +
+                    '<option value="">未设置</option>' +
+                    [1,2,3,4,5,6].map(g => '<option value="'+g+'"'+(localStorage.getItem('zjwj_student_grade')===String(g)?' selected':'')+'>小学'+g+'年级</option>').join('') +
+                    '</select>' +
                     '<input type="date" id="air-date-picker" class="air-date-input" title="按日期筛选">' +
                     '<button class="sp3-btn sp3-btn-ghost" id="air-date-clear" title="显示全部">全部</button>' +
                     '<button class="sp3-btn sp3-btn-primary" id="ai-refresh-btn"><i class="fas fa-sync-alt"></i> 刷新</button>';
@@ -6605,6 +6608,11 @@ ${text}
                         renderRecords();
                     });
                     document.getElementById('ai-refresh-btn')?.addEventListener('click', renderRecords);
+                    // 年级选择保存
+                    document.getElementById('air-grade-select')?.addEventListener('change', function() {
+                        localStorage.setItem('zjwj_student_grade', this.value);
+                        showGlobalToast('已设置：' + (this.value ? '小学'+this.value+'年级' : '未设置年级'), 'success');
+                    });
                 }, 0);
 
             } else {
@@ -6959,10 +6967,14 @@ ${text}
             return seed;
         }
         function _saveAccountsDB(accounts) {
-            localStorage.setItem('zjwj_accounts', JSON.stringify(accounts));
-            // Keep ACCOUNTS in sync so login still works
+            // 写回前，内置账号的 name/avatar/role 强制跟代码走
+            var merged = accounts.map(function(a) {
+                var seed = ACCOUNTS.find(function(b){ return b.username === a.username; });
+                return seed ? Object.assign({}, a, { name: seed.name, avatar: seed.avatar, role: seed.role }) : a;
+            });
+            localStorage.setItem('zjwj_accounts', JSON.stringify(merged));
             ACCOUNTS.length = 0;
-            accounts.forEach(function(a){ ACCOUNTS.push(a); });
+            merged.forEach(function(a){ ACCOUNTS.push(a); });
         }
 
         function initClassManage() {
@@ -6991,8 +7003,8 @@ ${text}
                         +   '<div class="cm-avatar-sm">' + initials + '</div>'
                         +   '<div><div style="font-weight:600;font-size:.875rem">' + a.name + '</div>'
                         +   '<div style="font-size:.75rem;color:var(--gray-400)">' + a.username + '</div></div></div></td>'
-                        + '<td><span class="cm-role-badge ' + (a.role==='teacher'?'cm-role-teacher':'cm-role-student') + '">'
-                        +   (a.role==='teacher'?'教师':'学生') + '</span></td>'
+                        + '<td><span class="cm-role-badge ' + (a.role==='teacher'?'cm-role-teacher':a.role==='admin'?'cm-role-teacher':'cm-role-student') + '">'
+                        +   (a.role==='teacher'?'教师':a.role==='admin'?'管理员':'学生') + '</span></td>'
                         + '<td><span style="font-size:.82rem;color:var(--gray-600);font-family:monospace">••••••</span></td>'
                         + '<td><div style="display:flex;gap:6px">'
                         +   '<button class="cm-action-btn cm-reset-btn" data-idx="' + i + '" title="重置密码">重置密码</button>'
@@ -7612,21 +7624,52 @@ ${text}
                 syncFocusContext && syncFocusContext();
             });
 
-            function send() {
+            async function send() {
                 var text = input && input.value.trim();
                 if (!text) return;
                 input.value = '';
                 addMsg('user', text);
                 var thinking = addThinking();
-                setTimeout(function() {
+
+                try {
+                    // 构建对话历史作为上下文
+                    var grade = localStorage.getItem('zjwj_student_grade');
+                    var gradeDesc = grade ? '小学' + grade + '年级' : '小学中年级';
+                    var messages = [
+                        {
+                            role: 'system',
+                            content: '你是智境无界AI自习室的学习助手，正在帮助' + gradeDesc + '的小朋友学习。用词简单易懂，句子要短，多用比喻和例子，像一个耐心的老师哥哥/姐姐一样。不要说套话，直接针对问题回答。'
+                        }
+                    ];
+                    // 带入最近5轮对话历史
+                    dialogHistory.slice(-5).forEach(function(d) {
+                        messages.push({ role: 'user',      content: d.q });
+                        messages.push({ role: 'assistant', content: d.a });
+                    });
+                    messages.push({ role: 'user', content: text });
+
+                    const response = await fetch(DEEPSEEK_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + DEEPSEEK_API_KEY
+                        },
+                        body: JSON.stringify({
+                            model: 'deepseek-chat',
+                            max_tokens: 1000,
+                            temperature: 0.7,
+                            messages: messages
+                        })
+                    });
+                    const data = await response.json();
+                    var resp = data.choices[0].message.content;
+
                     thinking.remove();
-                    var resp = generateAIResponse(text);
                     addMsg('ai', resp);
-                    // 记录对话历史
                     dialogHistory.push({ q: text, a: resp });
                     if (dialogHistory.length > 30) dialogHistory.shift();
                     updateContextSummary();
-                    // 保存到 study_chat_records
+
                     var recs = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
                     recs.push({ user: text, ai: resp,
                         t: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
@@ -7634,7 +7677,11 @@ ${text}
                     if (recs.length > 200) recs.shift();
                     localStorage.setItem('study_chat_records', JSON.stringify(recs));
                     checkAndGrantBadge('chat');
-                }, 900 + Math.random() * 600);
+                } catch(err) {
+                    thinking.remove();
+                    addMsg('ai', '抱歉，AI连接失败，请检查网络后重试。');
+                    console.error('Study AI error:', err);
+                }
             }
 
             sendBtn2 && sendBtn2.addEventListener('click', send);
@@ -7642,10 +7689,14 @@ ${text}
                 if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
             });
 
-            // 快捷提问
+            // 快捷提问：点击设置 placeholder 引导语，不填充内容
             document.querySelectorAll('.study-quick-btn').forEach(function(btn) {
                 btn.addEventListener('click', function() {
-                    if (input) { input.value = btn.dataset.q; input.focus(); }
+                    if (input) {
+                        input.placeholder = btn.dataset.placeholder || btn.dataset.q || '';
+                        input.value = '';
+                        input.focus();
+                    }
                 });
             });
 
