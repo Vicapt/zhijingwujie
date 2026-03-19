@@ -791,6 +791,25 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .op-score-val { font-size: 2.8rem; font-weight: 900; margin-bottom: 7px; }
 .op-score-fb  { font-size: 0.875rem; color: var(--gray-600); }
 .op-nav { display: flex; gap: 11px; justify-content: center; }
+.op-result { max-width: 580px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; padding-bottom: 36px; }
+.op-result-avg { background: white; border-radius: 20px; padding: 32px; text-align: center; box-shadow: var(--shadow-md); border: 1.5px solid var(--gray-200); }
+.op-avg-score { font-size: 4rem; font-weight: 900; line-height: 1; }
+.op-avg-label { font-size: 1rem; font-weight: 700; color: var(--gray-600); margin-top: 6px; }
+.op-avg-sub { font-size: .82rem; color: var(--gray-400); margin-top: 4px; }
+.op-review-box { background: #fffbeb; border: 1.5px solid #fef3c7; border-radius: var(--r-lg); padding: 14px 18px; }
+.op-review-title { font-size: .85rem; font-weight: 700; color: #92400e; margin-bottom: 10px; }
+.op-review-words { display: flex; flex-wrap: wrap; gap: 8px; }
+.op-review-tag { background: #fef3c7; color: #92400e; border: 1.5px solid #fde68a; border-radius: 20px; padding: 5px 12px; font-size: .82rem; font-weight: 700; cursor: pointer; transition: var(--tr); }
+.op-review-tag:hover { background: #fde68a; }
+.op-word-list { background: white; border-radius: var(--r-lg); border: 1.5px solid var(--gray-200); overflow: hidden; }
+.op-word-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; border-bottom: 1px solid var(--gray-100); }
+.op-word-row:last-child { border-bottom: none; }
+.op-wr-word { display: flex; align-items: center; gap: 8px; }
+.op-wr-en { font-weight: 700; color: var(--gray-800); }
+.op-wr-zh { font-size: .78rem; color: var(--gray-400); }
+.op-wr-right { display: flex; align-items: center; gap: 8px; }
+.op-wr-score { font-size: 1.1rem; font-weight: 800; }
+.op-wr-tag { font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 
 /* Book card (op) */
 .op-book-card h4 { font-size: 0.875rem; font-weight: 700; color: var(--gray-800); }
@@ -1173,6 +1192,11 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
     border-radius: 12px;
 }
 .air-list-empty i { font-size: 1.2rem; }
+.air-ai-comment { background: linear-gradient(135deg,#eff6ff,#f0fdf4); border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 12px 16px; margin-top: 4px; }
+.air-comment-header { font-size: .82rem; font-weight: 700; color: #1d4ed8; margin-bottom: 8px; display:flex; align-items:center; gap:8px; }
+.air-comment-body { font-size: .875rem; color: var(--gray-700); line-height: 1.7; }
+.air-comment-loading { font-size:.75rem; font-weight:400; color:var(--gray-400); }
+.air-grade-tag { background:#dbeafe; color:#1d4ed8; border-radius:10px; padding:1px 8px; font-size:.72rem; font-weight:700; }
 
 /* 顶栏统一小按钮 */
 .header-btn-sm {
@@ -6538,47 +6562,61 @@ ${text}
                     const analysis = analyzeDay(filtered);
                     const labelDate = dateVal ? new Date(dateVal).toLocaleDateString('zh-CN',{month:'long',day:'numeric'}) : '全部时间';
                     const noData = filtered.length === 0;
+                    const grade = localStorage.getItem('zjwj_student_grade');
+                    const gradeLabel = grade ? '小学'+grade+'年级' : '';
 
-                    // 学习分析卡片（始终显示，无数据时用占位符）
+                    // ── 数据统计卡片 ──
                     const statsHtml = noData
-                        ? '<div class="air-stat air-stat-empty"><div class="air-stat-val air-empty-val">—</div><div class="air-stat-label">对话条数</div></div>' +
-                          '<div class="air-stat air-stat-empty"><div class="air-stat-val air-empty-val">—</div><div class="air-stat-label">平均提问字数</div></div>' +
-                          '<div class="air-stat air-stat-empty"><div class="air-stat-val air-empty-val">—</div><div class="air-stat-label">主要学习方向</div></div>'
-                        : '<div class="air-stat"><div class="air-stat-val">' + analysis.total + '</div><div class="air-stat-label">对话条数</div></div>' +
-                          '<div class="air-stat"><div class="air-stat-val">' + analysis.avgLen + '</div><div class="air-stat-label">平均提问字数</div></div>' +
-                          '<div class="air-stat"><div class="air-stat-val">' + (analysis&&analysis.top[0]?analysis.top[0][0]:'—') + '</div><div class="air-stat-label">主要学习方向</div></div>';
+                        ? ['对话条数','平均提问字数','主要方向','活跃时段'].map(l=>
+                            '<div class="air-stat air-stat-empty"><div class="air-stat-val air-empty-val">—</div><div class="air-stat-label">'+l+'</div></div>').join('')
+                        : (() => {
+                              // 活跃时段：统计小时分布
+                              const hours = {};
+                              filtered.forEach(r => {
+                                  const t = r.t || '';
+                                  const hm = t.split(' ')[1] || '';
+                                  const h = parseInt(hm.split(':')[0]);
+                                  if (!isNaN(h)) hours[h] = (hours[h]||0)+1;
+                              });
+                              const peakH = Object.entries(hours).sort((a,b)=>b[1]-a[1])[0];
+                              const peakLabel = peakH ? peakH[0]+':00' : '—';
+                              return '<div class="air-stat"><div class="air-stat-val">'+analysis.total+'</div><div class="air-stat-label">对话条数</div></div>' +
+                                '<div class="air-stat"><div class="air-stat-val">'+analysis.avgLen+'</div><div class="air-stat-label">平均提问字数</div></div>' +
+                                '<div class="air-stat"><div class="air-stat-val">'+(analysis.top[0]?analysis.top[0][0]:'—')+'</div><div class="air-stat-label">主要方向</div></div>' +
+                                '<div class="air-stat"><div class="air-stat-val">'+peakLabel+'</div><div class="air-stat-label">活跃时段</div></div>';
+                          })();
 
-                    const catsHtml = noData
-                        ? ['课文理解','词语语法','解题辅助','口语练习','其他'].map(k =>
-                            '<div class="air-cat-row">' +
-                            '<span class="air-cat-label">' + k + '</span>' +
-                            '<div class="air-cat-bar"><div class="air-cat-fill" style="width:0%"></div></div>' +
-                            '<span class="air-cat-pct air-empty-val">—</span></div>').join('')
-                        : analysis.top.map(([k,v]) => {
-                              const pct = Math.round(v/analysis.total*100);
-                              return '<div class="air-cat-row">' +
-                                '<span class="air-cat-label">' + k + '</span>' +
-                                '<div class="air-cat-bar"><div class="air-cat-fill" style="width:' + pct + '%"></div></div>' +
-                                '<span class="air-cat-pct">' + v + '条</span></div>';
-                          }).join('');
+                    // ── 分类条形图 ──
+                    const allCats = ['课文理解','词语语法','解题辅助','口语练习','其他'];
+                    const catsHtml = allCats.map(k => {
+                        const v = analysis ? (analysis.counts[k]||0) : 0;
+                        const pct = (analysis && analysis.total) ? Math.round(v/analysis.total*100) : 0;
+                        return '<div class="air-cat-row">' +
+                            '<span class="air-cat-label">'+k+'</span>' +
+                            '<div class="air-cat-bar"><div class="air-cat-fill" style="width:'+pct+'%"></div></div>' +
+                            '<span class="air-cat-pct">'+(v>0?v+'条':'—')+'</span></div>';
+                    }).join('');
 
-                    const suggestionHtml = noData
-                        ? '<span class="air-empty-val">暂无' + labelDate + '对话记录，学生使用 AI 自习空间后数据将自动更新。</span>'
-                        : (analysis.total >= 10 ? '✅ 今日学习积极，互动次数充足。'
-                            : analysis.total >= 5 ? '📌 今日有一定使用，可继续鼓励主动提问。'
-                            : '💡 今日使用较少，建议引导学生多利用 AI 自习功能。') +
-                          (analysis&&analysis.top[0] ? ' 主要问题集中在「' + analysis.top[0][0] + '」方向。' : '');
-
-                    const analysisHtml = '<div class="air-analysis">' +
-                        '<div class="air-analysis-title"><i class="fas fa-chart-line"></i> ' + labelDate + '学习效果分析</div>' +
-                        '<div class="air-analysis-stats">' + statsHtml + '</div>' +
-                        '<div class="air-analysis-cats">' + catsHtml + '</div>' +
-                        '<div class="air-suggestion">' + suggestionHtml + '</div>' +
+                    // ── AI评语区（异步生成） ──
+                    const commentId = 'air-ai-comment-' + Date.now();
+                    const commentHtml = '<div class="air-ai-comment" id="'+commentId+'">' +
+                        '<div class="air-comment-header"><i class="fas fa-robot"></i> AI学习评语 ' +
+                        (gradeLabel?'<span class="air-grade-tag">'+gradeLabel+'</span>':'') +
+                        '<span class="air-comment-loading" id="'+commentId+'-loading"><i class="fas fa-spinner fa-spin"></i> 生成中…</span></div>' +
+                        '<div class="air-comment-body" id="'+commentId+'-body" style="color:var(--gray-400);font-style:italic">正在分析学习数据…</div>' +
                         '</div>';
 
-                    // 记录列表
+                    const analysisHtml = '<div class="air-analysis">' +
+                        '<div class="air-analysis-title"><i class="fas fa-chart-line"></i> '+labelDate+'学习效果分析</div>' +
+                        '<div class="air-analysis-stats">'+statsHtml+'</div>' +
+                        '<div class="air-analysis-cats">'+catsHtml+'</div>' +
+                        (noData ? '<div class="air-suggestion"><span class="air-empty-val">暂无'+labelDate+'对话记录，学生使用 AI 自习空间后数据将自动更新。</span></div>'
+                                : commentHtml) +
+                        '</div>';
+
+                    // ── 对话记录列表 ──
                     const listHtml = noData
-                        ? '<div class="air-list-empty"><i class="fas fa-inbox"></i><span>' + labelDate + '暂无对话记录</span></div>'
+                        ? '<div class="air-list-empty"><i class="fas fa-inbox"></i><span>'+labelDate+'暂无对话记录</span></div>'
                         : '<div class="air-list">' +
                           filtered.map(r => {
                               const user = r.user || r.question || '';
@@ -6586,16 +6624,56 @@ ${text}
                               const time = r.t    || r.timestamp || '';
                               return '<div class="air-item">' +
                                 '<div class="air-item-header">' +
-                                '<span class="air-src">' + r.src + '</span>' +
-                                '<span class="air-time">' + time + '</span>' +
+                                '<span class="air-src">'+r.src+'</span>' +
+                                '<span class="air-time">'+time+'</span>' +
                                 '</div>' +
-                                '<div class="air-q"><i class="fas fa-user-graduate"></i> ' + (user.length>80?user.slice(0,80)+'…':user) + '</div>' +
-                                '<div class="air-a"><i class="fas fa-robot"></i> ' + (ai.length>120?ai.slice(0,120)+'…':ai) + '</div>' +
+                                '<div class="air-q"><i class="fas fa-user-graduate"></i> '+(user.length>100?user.slice(0,100)+'…':user)+'</div>' +
+                                '<div class="air-a"><i class="fas fa-robot"></i> '+(ai.length>150?ai.slice(0,150)+'…':ai)+'</div>' +
                                 '</div>';
                           }).join('') + '</div>';
 
                     body.innerHTML = '<div class="air-page">' + analysisHtml + listHtml + '</div>';
+
+                    // ── 异步生成AI评语 ──
+                    if (!noData && analysis) {
+                        const topCats = analysis.top.slice(0,3).map(([k,v])=>k+'('+v+'条)').join('、');
+                        const sampleQs = filtered.slice(0,5).map(r=>(r.user||'').slice(0,40)).filter(Boolean).join('；');
+                        const prompt = '你是一位小学教师，正在查看'+gradeLabel+'学生的AI自习记录。'+
+                            '数据摘要：共'+analysis.total+'条对话，平均提问'+analysis.avgLen+'字，'+
+                            '主要涉及：'+topCats+'。'+
+                            '部分提问样本：'+sampleQs+'。'+
+                            '请用温和鼓励的语气，写2-3句简短的教师评语（不超过80字），指出学习亮点和一个改进建议。直接输出评语，不需要标题。';
+                        fetch(DEEPSEEK_API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+DEEPSEEK_API_KEY },
+                            body: JSON.stringify({
+                                model: 'deepseek-chat', max_tokens: 200, temperature: 0.8,
+                                messages: [{ role:'user', content: prompt }]
+                            })
+                        }).then(r=>r.json()).then(data=>{
+                            const commentBody = document.getElementById(commentId+'-body');
+                            const loading = document.getElementById(commentId+'-loading');
+                            if (commentBody) commentBody.textContent = data.choices[0].message.content;
+                            if (commentBody) commentBody.style.cssText = 'color:var(--gray-700);font-style:normal;line-height:1.7';
+                            if (loading) loading.style.display = 'none';
+                        }).catch(()=>{
+                            const commentBody = document.getElementById(commentId+'-body');
+                            const loading = document.getElementById(commentId+'-loading');
+                            if (commentBody) commentBody.textContent = analysis.total>=10?'✅ 学习积极，互动频繁，主要关注'+analysis.top[0][0]+'，表现优秀！':
+                                analysis.total>=5?'📌 学习有一定投入，建议继续鼓励主动提问，拓展学习广度。':
+                                '💡 使用次数较少，建议引导学生多利用AI自习功能巩固知识。';
+                            if (commentBody) commentBody.style.cssText = 'color:var(--gray-700);font-style:normal';
+                            if (loading) loading.style.display = 'none';
+                        });
+                    }
                 }
+
+                // 监听 localStorage 变化（其他标签页/学生端写入时自动刷新）
+                window.addEventListener('storage', function(e) {
+                    if (e.key === 'study_chat_records' || e.key === 'ai_chat_records' || e.key === 'student_study_records') {
+                        renderRecords();
+                    }
+                });
 
                 // 默认显示今天
                 setTimeout(() => {
@@ -6608,10 +6686,10 @@ ${text}
                         renderRecords();
                     });
                     document.getElementById('ai-refresh-btn')?.addEventListener('click', renderRecords);
-                    // 年级选择保存
                     document.getElementById('air-grade-select')?.addEventListener('change', function() {
                         localStorage.setItem('zjwj_student_grade', this.value);
                         showGlobalToast('已设置：' + (this.value ? '小学'+this.value+'年级' : '未设置年级'), 'success');
+                        renderRecords();
                     });
                 }, 0);
 
@@ -7671,11 +7749,17 @@ ${text}
                     updateContextSummary();
 
                     var recs = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
-                    recs.push({ user: text, ai: resp,
+                    var entry = { user: text, ai: resp,
                         t: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
-                        src:'AI自习室', topic: ctxSummary });
+                        src:'AI自习室', topic: ctxSummary };
+                    recs.push(entry);
                     if (recs.length > 200) recs.shift();
                     localStorage.setItem('study_chat_records', JSON.stringify(recs));
+                    // 同步写入 student_study_records 供教师/管理员端查看
+                    var studentRecs = JSON.parse(localStorage.getItem('student_study_records') || '[]');
+                    studentRecs.push(entry);
+                    if (studentRecs.length > 500) studentRecs.shift();
+                    localStorage.setItem('student_study_records', JSON.stringify(studentRecs));
                     checkAndGrantBadge('chat');
                 } catch(err) {
                     thinking.remove();
@@ -8056,33 +8140,80 @@ ${text}
                 }).filter(w=>w.en);
             }
 
+            function speakWord(word, lang) {
+                if (!('speechSynthesis' in window)) return;
+                speechSynthesis.cancel();
+                var u = new SpeechSynthesisUtterance(word);
+                u.lang = lang || 'en-US'; u.rate = 0.8;
+                speechSynthesis.speak(u);
+            }
+
+            // 模糊评分：考虑相似度，忽略噪音
+            function fuzzyScore(spoken, target) {
+                spoken = spoken.toLowerCase().trim();
+                target = target.toLowerCase().trim();
+                if (!spoken) return 30;
+                if (spoken === target) return 95 + Math.floor(Math.random()*5);
+                // 计算字符重叠
+                function overlap(a, b) {
+                    var count = 0;
+                    var used = Array(b.length).fill(false);
+                    for (var i=0; i<a.length; i++) {
+                        for (var j=0; j<b.length; j++) {
+                            if (!used[j] && a[i]===b[j]) { count++; used[j]=true; break; }
+                        }
+                    }
+                    return count;
+                }
+                var ov = overlap(spoken, target);
+                var sim = ov / Math.max(spoken.length, target.length);
+                // 如果识别内容包含目标词（噪音情况）
+                if (spoken.includes(target)) return 85 + Math.floor(Math.random()*10);
+                if (target.includes(spoken) && spoken.length >= target.length*0.7) return 78 + Math.floor(Math.random()*10);
+                if (sim > 0.8) return 80 + Math.floor(Math.random()*10);
+                if (sim > 0.6) return 65 + Math.floor(Math.random()*10);
+                if (sim > 0.4) return 50 + Math.floor(Math.random()*10);
+                return 35 + Math.floor(Math.random()*15);
+            }
+
             const topbar = document.getElementById('op-topbar');
             const body   = document.getElementById('op-body');
             if (!body) return;
 
             const allData = JSON.parse(localStorage.getItem('oral_data') || '[]');
-            // 铺平所有单词本
             const allBooks = [];
             allData.forEach(f => f.books.forEach(b => allBooks.push({ ...b, folderName: f.name })));
 
             let state = 'select';
             let curBook = null, curIdx = 0;
+            let scores = []; // {word, spoken, score} for each word
+            let spaceRecActive = false;
+
+            // 空格键控录音（只在练习状态下）
+            function onKeyDown(e) {
+                if (state !== 'practice') return;
+                if (e.code === 'Space' && !e.repeat && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    document.getElementById('op-record')?.click();
+                }
+            }
+            document.addEventListener('keydown', onKeyDown);
 
             function render() {
                 if (state === 'select') renderSelect();
                 else if (state === 'practice') renderPractice();
+                else if (state === 'result') renderResult();
             }
 
             // ── 选择单词本 ────────────────────────────────────────────────
             function renderSelect() {
-                topbar.querySelector('.sp3-tb-left').innerHTML = '<span class="sp3-title"><i class="fas fa-microphone"></i> AI口语训练</span>';
+                topbar.querySelector('.sp3-tb-left').innerHTML = '<span class="sp3-title"><i class="fas fa-microphone"></i> AI口语朗读</span>';
                 topbar.querySelector('.sp3-tb-right').innerHTML = '';
-
                 if (allBooks.length === 0) {
                     body.innerHTML = '<div class="sp3-empty"><i class="fas fa-book-open"></i><p>暂无单词本</p><p class="sp3-empty-hint">请教师端先创建单词本</p></div>';
                     return;
                 }
-                body.innerHTML = '<div class="gp-select"><div class="gp-select-header"><i class="fas fa-microphone"></i><h2>选择单词本</h2><p>选择一组单词开始跟读练习</p></div>' +
+                body.innerHTML = '<div class="gp-select"><div class="gp-select-header"><i class="fas fa-microphone"></i><h2>选择单词本</h2><p>选择一组单词开始朗读练习</p></div>' +
                     '<div class="gp-challenge-cards">' +
                     allBooks.map(bk => {
                         const words = parseWords(bk.raw);
@@ -8095,19 +8226,19 @@ ${text}
                             '<div class="gp-card-meta"><span><i class="fas fa-spell-check"></i> ' + words.length + ' 个词</span>' +
                             (prog.lastTime ? '<span><i class="fas fa-clock"></i> ' + prog.lastTime + '</span>' : '') + '</div>' +
                             '<div class="gp-q-progress-wrap"><div class="gp-q-progress-track"><div class="gp-q-progress-fill" style="width:' + pct + '%"></div></div>' +
-                            '<span class="gp-q-progress-label">' + (done > 0 ? done + '/' + words.length + ' 已练' : '尚未练习') + '</span></div>' +
+                            '<span class="gp-q-progress-label">' + (done>0?done+'/'+words.length+' 已练':'尚未练习') + '</span></div>' +
                             '<button class="gp-start-btn op-start" data-id="' + bk.id + '">' + (done>0?'继续练习':'开始练习') + ' <i class="fas fa-arrow-right"></i></button>' +
                             '</div>';
                     }).join('') + '</div></div>';
-
                 body.querySelectorAll('.op-start').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const id = btn.dataset.id;
                         curBook = allBooks.find(b => b.id === id);
                         if (!curBook) return;
-                        const prog = JSON.parse(localStorage.getItem('op_progress_' + id) || '{}');
+                        const prog = JSON.parse(localStorage.getItem('op_progress_' + curBook.id) || '{}');
                         const words = parseWords(curBook.raw);
                         curIdx = (prog.done && prog.done < words.length) ? prog.done : 0;
+                        scores = [];
                         state = 'practice'; render();
                     });
                 });
@@ -8121,79 +8252,120 @@ ${text}
                 const w = words[curIdx];
                 const total = words.length;
                 const pct = Math.round(curIdx / total * 100);
+                const existScore = scores[curIdx];
 
                 topbar.querySelector('.sp3-tb-left').innerHTML =
                     '<button class="sp3-btn sp3-btn-ghost" id="op-back"><i class="fas fa-chevron-left"></i> 返回</button>' +
                     '<span class="sp3-breadcrumb"><i class="fas fa-book sp3-bc-icon"></i>' + curBook.name + '</span>';
-                topbar.querySelector('.sp3-tb-right').innerHTML = '';
+                topbar.querySelector('.sp3-tb-right').innerHTML =
+                    '<span style="font-size:.8rem;color:var(--gray-400)">按 <kbd style="background:var(--gray-100);border:1px solid var(--gray-300);border-radius:4px;padding:1px 6px;font-size:.78rem">空格</kbd> 开始录音</span>';
 
                 body.innerHTML = '<div class="op-practice">' +
                     '<div class="op-prog-wrap">' +
                     '<div class="op-prog-track"><div class="op-prog-fill" style="width:' + pct + '%"></div></div>' +
-                    '<span class="op-prog-label">' + curIdx + '/' + total + '</span></div>' +
+                    '<span class="op-prog-label">' + (curIdx+1) + '/' + total + '</span></div>' +
 
                     '<div class="op-word-display">' +
                     '<div class="op-word-en">' + w.en + '</div>' +
-                    '<div class="op-word-ph">/' + (w.ph || '') + '/</div>' +
+                    (w.ph ? '<div class="op-word-ph">/' + w.ph + '/</div>' : '') +
                     (w.zh ? '<div class="op-word-zh">' + w.zh + '</div>' : '') +
                     '</div>' +
 
                     '<div class="op-controls">' +
-                    '<button class="op-btn op-btn-outline" id="op-listen"><i class="fas fa-volume-up"></i> 朗读示范</button>' +
-                    '<button class="op-btn op-btn-primary" id="op-record"><i class="fas fa-microphone"></i> 开始跟读</button>' +
+                    '<button class="op-btn op-btn-outline" id="op-listen"><i class="fas fa-volume-up"></i> 听标准音</button>' +
+                    '<button class="op-btn op-btn-primary" id="op-record" style="min-width:140px"><i class="fas fa-microphone"></i> 按住录音 / 空格</button>' +
                     '</div>' +
 
-                    '<div class="op-score-area" id="op-score-area" style="display:none">' +
-                    '<div class="op-score-val" id="op-score-val">--</div>' +
-                    '<div class="op-score-fb" id="op-score-fb">--</div>' +
+                    '<div class="op-score-area" id="op-score-area" style="' + (existScore ? 'display:block' : 'display:none') + '">' +
+                    '<div class="op-score-val" id="op-score-val" style="color:' + (existScore ? scoreColor(existScore.score) : '#888') + '">' + (existScore ? existScore.score : '--') + '</div>' +
+                    '<div class="op-score-fb" id="op-score-fb">' + (existScore ? scoreFeedback(existScore.score, w.en, existScore.spoken) : '') + '</div>' +
                     '</div>' +
 
                     '<div class="op-nav">' +
                     '<button class="op-btn op-btn-ghost" id="op-prev" ' + (curIdx===0?'disabled':'') + '><i class="fas fa-chevron-left"></i> 上一词</button>' +
-                    '<button class="op-btn ' + (curIdx===total-1?'op-btn-primary':'op-btn-ghost') + '" id="op-next">' + (curIdx===total-1?'完成练习 <i class="fas fa-check"></i>':'下一词 <i class="fas fa-chevron-right"></i>') + '</button>' +
+                    '<button class="op-btn ' + (curIdx===total-1?'op-btn-primary':'op-btn-ghost') + '" id="op-next">' +
+                    (curIdx===total-1 ? '查看成绩 <i class="fas fa-chart-bar"></i>' : '下一词 <i class="fas fa-chevron-right"></i>') + '</button>' +
                     '</div></div>';
 
-                document.getElementById('op-back')?.addEventListener('click', () => { state='select'; render(); });
+                // 听标准音
+                document.getElementById('op-listen')?.addEventListener('click', () => speakWord(w.en, 'en-US'));
+                // 点单词也可以听
+                document.querySelector('.op-word-en')?.addEventListener('click', () => speakWord(w.en, 'en-US'));
+                document.querySelector('.op-word-en').style.cursor = 'pointer';
+                document.querySelector('.op-word-en').title = '点击朗读';
 
-                document.getElementById('op-listen')?.addEventListener('click', () => {
-                    if ('speechSynthesis' in window) {
-                        var u = new SpeechSynthesisUtterance(w.en); u.lang='en-US'; u.rate=0.8;
-                        speechSynthesis.speak(u);
-                    } else { showGlobalToast('浏览器不支持语音合成','warning'); }
-                });
+                // 录音按钮
+                let recInstance = null;
+                let recording = false;
+                const recBtn = document.getElementById('op-record');
 
-                document.getElementById('op-record')?.addEventListener('click', function() {
-                    const btn = this;
-                    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-                        // 无录音能力时模拟评分
-                        const score = Math.floor(Math.random()*30)+70;
-                        showScore(score, w.en, '（模拟评分，实际需麦克风权限）');
+                function startRec() {
+                    if (recording) return;
+                    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SR) {
+                        // 降级：模拟评分
+                        const s = Math.floor(Math.random()*25)+70;
+                        scores[curIdx] = { word: w.en, spoken: '（模拟）', score: s };
+                        showScore(s, w.en, '（浏览器不支持录音，使用模拟评分）');
                         return;
                     }
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="fas fa-circle" style="color:#ef4444;animation:blink 1s infinite"></i> 录音中...';
-                    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    const rec = new SR(); rec.lang='en-US'; rec.maxAlternatives=1;
-                    rec.onresult = e => {
-                        const spoken = e.results[0][0].transcript.toLowerCase().trim();
-                        const target = w.en.toLowerCase();
-                        const score = spoken===target?100:spoken.includes(target)||target.includes(spoken)?80:55;
-                        showScore(score, w.en, '你说的是「' + spoken + '」');
+                    recording = true;
+                    recBtn.innerHTML = '<i class="fas fa-circle" style="color:#ef4444;animation:blink 1s infinite"></i> 录音中...';
+                    recBtn.style.background = '#fee2e2';
+                    recInstance = new SR();
+                    recInstance.lang = 'en-US';
+                    recInstance.maxAlternatives = 3;
+                    recInstance.continuous = false;
+                    recInstance.onresult = e => {
+                        // 取所有候选结果里和目标词最接近的
+                        let bestSpoken = '', bestScore = 0;
+                        for (var i=0; i<e.results[0].length; i++) {
+                            const sp = e.results[0][i].transcript;
+                            const sc = fuzzyScore(sp, w.en);
+                            if (sc > bestScore) { bestScore = sc; bestSpoken = sp; }
+                        }
+                        scores[curIdx] = { word: w.en, spoken: bestSpoken, score: bestScore };
+                        showScore(bestScore, w.en, bestSpoken);
                     };
-                    rec.onerror = () => showGlobalToast('录音失败，请检查麦克风权限','error');
-                    rec.onend = () => { btn.disabled=false; btn.innerHTML='<i class="fas fa-microphone"></i> 开始跟读'; };
-                    rec.start();
+                    recInstance.onerror = e => {
+                        if (e.error === 'no-speech') {
+                            showGlobalToast('没有检测到声音，请大声朗读', 'warning');
+                        } else {
+                            showGlobalToast('录音失败：' + e.error, 'error');
+                        }
+                        stopRec();
+                    };
+                    recInstance.onend = () => stopRec();
+                    recInstance.start();
+                }
+
+                function stopRec() {
+                    recording = false;
+                    if (recInstance) { try { recInstance.stop(); } catch(e){} recInstance = null; }
+                    recBtn.innerHTML = '<i class="fas fa-microphone"></i> 按住录音 / 空格';
+                    recBtn.style.background = '';
+                }
+
+                recBtn.addEventListener('mousedown', startRec);
+                recBtn.addEventListener('mouseup',   stopRec);
+                recBtn.addEventListener('mouseleave', stopRec);
+                recBtn.addEventListener('touchstart', e => { e.preventDefault(); startRec(); });
+                recBtn.addEventListener('touchend',   stopRec);
+                recBtn.addEventListener('click', e => {
+                    // 单击也可触发（适配空格键）
+                    if (!recording) startRec();
+                    else stopRec();
                 });
 
-                function showScore(score, target, hint) {
+                function showScore(score, target, spoken) {
                     const area = document.getElementById('op-score-area');
                     const val  = document.getElementById('op-score-val');
                     const fb   = document.getElementById('op-score-fb');
                     if (!area) return;
                     area.style.display = 'block';
                     val.textContent = score;
-                    val.style.color = score>=90?'#10b981':score>=70?'#f59e0b':'#ef4444';
-                    fb.textContent = (score>=90?'🌟 太棒了！':score>=70?'👍 不错！':('💪 再试试 — 正确：' + target)) + ' ' + hint;
+                    val.style.color = scoreColor(score);
+                    fb.innerHTML = scoreFeedback(score, target, spoken);
                 }
 
                 document.getElementById('op-prev')?.addEventListener('click', () => {
@@ -8201,14 +8373,84 @@ ${text}
                 });
                 document.getElementById('op-next')?.addEventListener('click', () => {
                     if (curIdx < total-1) { curIdx++; saveProg(); render(); }
-                    else { saveProg(true); showGlobalToast('🎉 本组单词已全部练习完成！', 'success'); state='select'; render(); }
+                    else { saveProg(true); state='result'; render(); }
                 });
 
                 function saveProg(finished) {
-                    const prog = { done: finished ? total : curIdx+1, lastTime: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) };
+                    const prog = { done: finished?total:curIdx+1, lastTime: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) };
                     localStorage.setItem('op_progress_' + curBook.id, JSON.stringify(prog));
                     checkAndGrantBadge('oral', { done: prog.done });
                 }
+            }
+
+            function scoreColor(s) { return s>=85?'#10b981':s>=65?'#f59e0b':'#ef4444'; }
+            function scoreFeedback(s, target, spoken) {
+                var emoji = s>=85?'🌟':s>=65?'👍':'💪';
+                var msg   = s>=85?'发音很棒！':s>=65?'不错，继续加油！':'需要多练习';
+                var detail = spoken && spoken!=='（模拟）' ? '你说的是：「' + spoken + '」' : '';
+                return emoji + ' ' + msg + (detail ? '<br><span style="font-size:.8rem;color:var(--gray-500)">' + detail + '</span>' : '');
+            }
+
+            // ── 结算页 ────────────────────────────────────────────────────
+            function renderResult() {
+                const words = parseWords(curBook.raw);
+                topbar.querySelector('.sp3-tb-left').innerHTML = '<span class="sp3-title"><i class="fas fa-chart-bar"></i> 练习结果</span>';
+                topbar.querySelector('.sp3-tb-right').innerHTML = '<button class="sp3-btn sp3-btn-primary" id="op-retry"><i class="fas fa-redo"></i> 再练一次</button>';
+
+                // 计算平均分
+                const scoredWords = words.map((w, i) => ({ ...w, ...( scores[i] || { score: null, spoken: '' }) }));
+                const validScores = scoredWords.filter(w => w.score !== null);
+                const avg = validScores.length ? Math.round(validScores.reduce((s,w)=>s+w.score,0)/validScores.length) : 0;
+                const needReview = scoredWords.filter(w => w.score !== null && w.score < 70);
+
+                body.innerHTML = '<div class="op-result">' +
+                    // 总分卡
+                    '<div class="op-result-avg">' +
+                    '<div class="op-avg-score" style="color:' + scoreColor(avg) + '">' + avg + '</div>' +
+                    '<div class="op-avg-label">平均得分</div>' +
+                    '<div class="op-avg-sub">' + validScores.length + '/' + words.length + ' 个词已朗读</div>' +
+                    '</div>' +
+
+                    // 需要复习
+                    (needReview.length > 0 ?
+                    '<div class="op-review-box">' +
+                    '<div class="op-review-title"><i class="fas fa-exclamation-triangle" style="color:#f59e0b"></i> 重点复习词语</div>' +
+                    '<div class="op-review-words">' +
+                    needReview.map(w =>
+                        '<span class="op-review-tag" data-word="' + w.en + '">' +
+                        w.en + ' <i class="fas fa-volume-up" style="font-size:.65rem;opacity:.6"></i></span>'
+                    ).join('') +
+                    '</div></div>' : '') +
+
+                    // 每词详情
+                    '<div class="op-word-list">' +
+                    scoredWords.map((w, i) => {
+                        const s = w.score;
+                        const hasScore = s !== null;
+                        return '<div class="op-word-row">' +
+                            '<div class="op-wr-word" data-word="' + w.en + '" style="cursor:pointer" title="点击朗读">' +
+                            '<span class="op-wr-en">' + w.en + '</span>' +
+                            (w.zh ? '<span class="op-wr-zh">' + w.zh + '</span>' : '') +
+                            ' <i class="fas fa-volume-up" style="font-size:.7rem;color:var(--primary);opacity:.7"></i>' +
+                            '</div>' +
+                            '<div class="op-wr-right">' +
+                            (hasScore ?
+                                '<span class="op-wr-score" style="color:' + scoreColor(s) + '">' + s + '分</span>' +
+                                '<span class="op-wr-tag" style="background:' + (s>=85?'#dcfce7':s>=65?'#fef3c7':'#fee2e2') + ';color:' + scoreColor(s) + '">' +
+                                (s>=85?'优秀':s>=65?'良好':'需复习') + '</span>'
+                            : '<span style="color:var(--gray-400);font-size:.8rem">未朗读</span>') +
+                            '</div></div>';
+                    }).join('') +
+                    '</div></div>';
+
+                // 点击词语朗读
+                body.querySelectorAll('[data-word]').forEach(el => {
+                    el.addEventListener('click', () => speakWord(el.dataset.word, 'en-US'));
+                });
+
+                document.getElementById('op-retry')?.addEventListener('click', () => {
+                    curIdx = 0; scores = []; state = 'practice'; render();
+                });
             }
 
             render();
