@@ -6499,9 +6499,8 @@ ${text}
                 topbar.querySelector('.sp3-tb-left').innerHTML =
                     '<span class="sp3-title"><i class="fas fa-history"></i> AI自习记录</span>';
                 topbar.querySelector('.sp3-tb-right').innerHTML =
-                    '<label style="font-size:.8rem;color:var(--gray-500);margin-right:4px">学生年级</label>' +
                     '<select id="air-grade-select" style="padding:4px 8px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.82rem;background:white;color:var(--gray-700)">' +
-                    '<option value="">未设置</option>' +
+                    '<option value="">学生年级</option>' +
                     [1,2,3,4,5,6].map(g => '<option value="'+g+'"'+(localStorage.getItem('zjwj_student_grade')===String(g)?' selected':'')+'>小学'+g+'年级</option>').join('') +
                     '</select>' +
                     '<input type="date" id="air-date-picker" class="air-date-input" title="按日期筛选">' +
@@ -6638,11 +6637,10 @@ ${text}
                     if (!noData && analysis) {
                         const topCats = analysis.top.slice(0,3).map(([k,v])=>k+'('+v+'条)').join('、');
                         const sampleQs = filtered.slice(0,5).map(r=>(r.user||'').slice(0,40)).filter(Boolean).join('；');
-                        const prompt = '你是一位小学教师，正在查看'+gradeLabel+'学生的AI自习记录。'+
-                            '数据摘要：共'+analysis.total+'条对话，平均提问'+analysis.avgLen+'字，'+
-                            '主要涉及：'+topCats+'。'+
-                            '部分提问样本：'+sampleQs+'。'+
-                            '请用温和鼓励的语气，写2-3句简短的教师评语（不超过80字），指出学习亮点和一个改进建议。直接输出评语，不需要标题。';
+                        const prompt = '你是一位教学督导，正在帮助教师分析'+gradeLabel+'学生的AI自习使用数据。'+
+                            '数据：共'+analysis.total+'条对话，平均提问'+analysis.avgLen+'字，'+
+                            '主要涉及：'+topCats+'。部分提问样本：'+sampleQs+'。'+
+                            '请给教师写2-3句专业的教学建议（不超过80字），指出学生学习规律和具体可操作的教学改进方向。直接输出建议，不需要标题和称呼。';
                         fetch(DEEPSEEK_API_URL, {
                             method: 'POST',
                             headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+DEEPSEEK_API_KEY },
@@ -6691,6 +6689,18 @@ ${text}
                         showGlobalToast('已设置：' + (this.value ? '小学'+this.value+'年级' : '未设置年级'), 'success');
                         renderRecords();
                     });
+                    // 零点自动切换到新的一天并刷新
+                    function scheduleMidnightRefresh() {
+                        const now = new Date();
+                        const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1) - now;
+                        setTimeout(function() {
+                            const p = picker();
+                            if (p) p.value = new Date().toISOString().split('T')[0];
+                            renderRecords();
+                            scheduleMidnightRefresh(); // 递归，每天零点触发
+                        }, msUntilMidnight);
+                    }
+                    scheduleMidnightRefresh();
                 }, 0);
 
             } else {
