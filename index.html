@@ -673,7 +673,12 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
   color: white; border: none; border-radius: var(--r-md); font-size: 0.875rem;
   font-weight: 700; cursor: pointer; transition: var(--tr);
 }
-.gp-submit-fill:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(124,58,237,.3); }
+.study-mic-btn { width:38px; height:38px; border-radius:50%; border:none; background:var(--gray-100); color:var(--gray-500); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--tr); flex-shrink:0; }
+.study-mic-btn:hover { background:var(--blue-50); color:var(--primary); }
+.study-mic-btn.recording { background:#fee2e2; color:#ef4444; animation:blink 1s infinite; }
+.gp-fill-mic { padding:0 12px; border:none; border-radius:var(--r-md); background:var(--gray-100); color:var(--gray-500); cursor:pointer; font-size:.9rem; transition:var(--tr); }
+.gp-fill-mic:hover { background:var(--blue-50); color:var(--primary); }
+.gp-fill-mic.recording { background:#fee2e2; color:#ef4444; animation:blink 1s infinite; }
 
 .gp-inline-fb { display: flex; align-items: flex-start; gap: 9px; padding: 11px 14px; border-radius: var(--r-md); font-size: 0.86rem; line-height: 1.6; margin-top: 3px; }
 .gp-fb-wrong { background: var(--red-50); border: 1.5px solid #fca5a5; color: #7f1d1d; }
@@ -3557,6 +3562,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                                     </div>
                                     <div class="study-input-row">
                                         <textarea id="studyInput" class="study-textarea" placeholder="输入学习问题，Enter 发送（Shift+Enter 换行）..." rows="2"></textarea>
+                                        <button class="study-mic-btn" id="studyMicBtn" title="按住说话"><i class="fas fa-microphone"></i></button>
                                         <button class="study-send-btn" id="studySendBtn"><i class="fas fa-paper-plane"></i></button>
                                     </div>
                                 </div>
@@ -7357,6 +7363,54 @@ ${text}
 
 
 
+        // ── 公共语音识别绑定函数 ──────────────────────────────────────────
+        function bindMicBtn(btn, targetInput, lang, appendMode) {
+            if (!btn || !targetInput) return;
+            var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) { btn.style.display = 'none'; return; }
+            var rec = null, recording = false;
+
+            function start() {
+                if (recording) return;
+                recording = true;
+                btn.classList.add('recording');
+                btn.innerHTML = '<i class="fas fa-circle"></i>';
+                rec = new SR();
+                rec.lang = lang || 'zh-CN';
+                rec.continuous = false;
+                rec.interimResults = false;
+                rec.maxAlternatives = 1;
+                rec.onresult = function(e) {
+                    var text = e.results[0][0].transcript;
+                    if (appendMode) {
+                        targetInput.value = (targetInput.value ? targetInput.value + text : text);
+                    } else {
+                        targetInput.value = (targetInput.value ? targetInput.value + ' ' + text : text);
+                    }
+                    targetInput.focus();
+                };
+                rec.onerror = function(e) {
+                    if (e.error !== 'no-speech') showGlobalToast('语音识别失败：' + e.error, 'error');
+                    stop();
+                };
+                rec.onend = stop;
+                rec.start();
+            }
+
+            function stop() {
+                recording = false;
+                btn.classList.remove('recording');
+                btn.innerHTML = '<i class="fas fa-microphone"></i>';
+                if (rec) { try { rec.stop(); } catch(e){} rec = null; }
+            }
+
+            btn.addEventListener('mousedown',  function(e){ e.preventDefault(); start(); });
+            btn.addEventListener('mouseup',    stop);
+            btn.addEventListener('mouseleave', stop);
+            btn.addEventListener('touchstart', function(e){ e.preventDefault(); start(); }, { passive:false });
+            btn.addEventListener('touchend',   stop);
+        }
+
         function initStudyRoom() {
             // ── 时钟 ──────────────────────────────────────────────────────
             function fmtTime(d) {
@@ -7661,9 +7715,16 @@ ${text}
                 return div;
             }
 
-            // 对话历史（用于生成上下文摘要）
-            var dialogHistory = [];
-            var ctxSummary = '';
+            // 对话历史（从 localStorage 还原）
+            var dialogHistory = JSON.parse(localStorage.getItem('study_dialog_history') || '[]');
+            var ctxSummary = localStorage.getItem('study_ctx_summary') || '';
+
+            // 还原聊天记录到 DOM
+            dialogHistory.forEach(function(d) {
+                addMsg('user', d.q);
+                addMsg('ai', d.a);
+            });
+            if (messages) messages.scrollTop = messages.scrollHeight;
 
             function updateContextSummary() {
                 if (dialogHistory.length < 5) return; // 满5轮触发
@@ -7756,7 +7817,9 @@ ${text}
                     addMsg('ai', resp);
                     dialogHistory.push({ q: text, a: resp });
                     if (dialogHistory.length > 30) dialogHistory.shift();
+                    localStorage.setItem('study_dialog_history', JSON.stringify(dialogHistory));
                     updateContextSummary();
+                    localStorage.setItem('study_ctx_summary', ctxSummary);
 
                     var recs = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
                     var entry = { user: text, ai: resp,
@@ -7783,6 +7846,9 @@ ${text}
                 if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
             });
 
+            // 麦克风按钮（中文语音识别）
+            bindMicBtn(document.getElementById('studyMicBtn'), input, 'zh-CN', false);
+
             // 快捷提问：点击设置 placeholder 引导语，不填充内容
             document.querySelectorAll('.study-quick-btn').forEach(function(btn) {
                 btn.addEventListener('click', function() {
@@ -7799,6 +7865,10 @@ ${text}
                 if (!messages) return;
                 messages.innerHTML = '';
                 msgCount = 0;
+                dialogHistory = [];
+                ctxSummary = '';
+                localStorage.removeItem('study_dialog_history');
+                localStorage.removeItem('study_ctx_summary');
                 if (countEl) countEl.textContent = '0 条消息';
                 addMsg('ai', '对话已清空，有什么可以帮你的？');
             });
@@ -8582,6 +8652,7 @@ ${text}
                 } else {
                     optHtml = '<div class="gp-fill-wrap">' +
                         '<input type="text" id="gp-fill-input" placeholder="输入你的答案..." autocomplete="off">' +
+                        '<button class="gp-fill-mic" id="gp-fill-mic" title="按住说话"><i class="fas fa-microphone"></i></button>' +
                         '<button class="gp-submit-fill">提交</button></div>';
                 }
 
@@ -8728,6 +8799,8 @@ ${text}
                 } else {
                     var submitFill = playArea.querySelector('.gp-submit-fill');
                     var fillInput  = playArea.querySelector('#gp-fill-input');
+                    var fillMic    = playArea.querySelector('#gp-fill-mic');
+                    bindMicBtn(fillMic, fillInput, 'zh-CN', true);
                     function checkFill() {
                         var answer = fillInput.value.trim();
                         if (!answer) { showGlobalToast('请输入答案', 'error'); return; }
