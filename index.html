@@ -3286,175 +3286,356 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 moduleContent.style.display = 'none';
                 return;
             } else if (module === '3d') {
-                // 3D情景生成模块
+                // 3D情景生成模块 —— 左侧原图标注 / 右侧全景预览
                 moduleContent.innerHTML = `
-                    <div class="content-card mod-fullscreen" id="3d-scene">
-                        <div class="sp3-topbar"><div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-cube"></i> 3D情景生成 ScriptScene™</span></div><div class="sp3-tb-right"></div></div>
-                        <div class="mod-body">
-                            <div class="scene-container">
-                                <!-- 左侧：配置区 -->
-                                <div class="scene-left">
-                                    <!-- 场景基本信息 -->
-                                    <div class="scene-source" style="margin-bottom:14px">
-                                        <h3 style="font-size:.9rem;font-weight:700;color:var(--gray-700);margin-bottom:10px">场景基本信息</h3>
-                                        <div style="display:flex;flex-direction:column;gap:8px">
-                                            <div class="form-group">
-                                                <label>场景名称 <span style="color:var(--red-500)">*</span></label>
-                                                <input type="text" id="sceneName" placeholder="如：荷塘月色 · 夏夜意境">
-                                            </div>
-                                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                                                <div class="form-group">
-                                                    <label>学科</label>
-                                                    <select id="sceneSubject">
-                                                        <option value="语文">语文</option>
-                                                        <option value="英语">英语</option>
-                                                        <option value="历史">历史</option>
-                                                        <option value="科学">科学</option>
-                                                        <option value="地理">地理</option>
-                                                        <option value="其他">其他</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>年级</label>
-                                                    <select id="sceneGrade">
-                                                        <option value="小学">小学</option>
-                                                        <option value="初中" selected>初中</option>
-                                                        <option value="高中">高中</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="source-options" style="margin-top:10px">
-                                            <label class="source-option">
-                                                <input type="radio" name="sceneSource" value="ppt" checked>
-                                                <span>从当前课件读取</span>
-                                            </label>
-                                            <label class="source-option">
-                                                <input type="radio" name="sceneSource" value="manual">
-                                                <span>手动输入场景描述</span>
-                                            </label>
-                                        </div>
-                                        <div class="scene-description" id="sceneDescriptionSection" style="margin-top:10px">
-                                            <div class="form-group">
-                                                <label>场景描述</label>
-                                                <textarea id="sceneDescription" placeholder="输入3D场景描述，如：一个阳光明媚的荷塘，荷叶上有露珠..." rows="4" style="resize:none"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
+<style>
+/* ── 3D 编辑器双栏布局 ───────────────────────── */
+#s3d-editor-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  height: 100%;
+  overflow: hidden;
+}
+/* 左栏：原图 + 标注 */
+#s3d-left-col {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--gray-200);
+  overflow: hidden;
+  background: var(--gray-50);
+}
+#s3d-left-top {
+  padding: 12px 14px 10px;
+  background: white;
+  border-bottom: 1px solid var(--gray-100);
+  flex-shrink: 0;
+}
+#s3d-img-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f172a;
+  cursor: crosshair;
+}
+#s3d-img-area.no-image {
+  cursor: default;
+  background: var(--gray-100);
+}
+#s3d-src-img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+#s3d-marker-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.s3d-pin {
+  cursor: pointer;
+  pointer-events: all;
+}
+.s3d-pin circle.ring {
+  animation: pin-ring 2s ease-out infinite;
+  transform-origin: center;
+}
+@keyframes pin-ring {
+  0%   { r: 14; opacity: .7; }
+  100% { r: 22; opacity: 0;  }
+}
+#s3d-pin-mode-hint {
+  position: absolute;
+  bottom: 10px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(37,99,235,.88);
+  color: white; padding: 5px 16px;
+  border-radius: 20px; font-size: .78rem;
+  font-weight: 600; pointer-events: none;
+  white-space: nowrap;
+}
+#s3d-upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 24px;
+  color: var(--gray-400);
+  cursor: pointer;
+  width: 100%; height: 100%;
+}
+#s3d-upload-zone:hover { color: var(--primary); }
+#s3d-upload-zone i { font-size: 2.4rem; }
+#s3d-upload-zone p { font-size: .85rem; margin: 0; }
+#s3d-upload-zone small { font-size: .72rem; color: var(--gray-300); }
 
-                                    <!-- 场景风格 -->
-                                    <div class="scene-controls" style="margin-bottom:14px">
-                                        <h3 style="font-size:.9rem;font-weight:700;color:var(--gray-700);margin-bottom:10px">场景风格调整</h3>
-                                        <div class="control-group">
-                                            <label>场景亮度</label>
-                                            <input type="range" id="sceneBrightness" min="0" max="100" value="70">
-                                            <span id="brightnessValue">70%</span>
-                                        </div>
-                                        <div class="control-group">
-                                            <label>微动效果</label>
-                                            <input type="range" id="sceneMotion" min="0" max="100" value="50">
-                                            <span id="motionValue">50%</span>
-                                        </div>
-                                        <div class="control-group">
-                                            <label>场景视角</label>
-                                            <select id="scenePerspective">
-                                                <option value="top">俯视</option>
-                                                <option value="front" selected>平视</option>
-                                                <option value="side">侧视</option>
-                                            </select>
-                                        </div>
-                                    </div>
+/* 右栏：全景 + 信息 */
+#s3d-right-col {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0f172a;
+}
+#s3d-pano-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+#s3d-pano-canvas { width: 100%; height: 100%; display: block; }
+#s3d-pano-marker-layer {
+  position: absolute; inset: 0;
+  pointer-events: none; overflow: visible;
+}
+#s3d-pano-empty {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: rgba(255,255,255,.2); gap: 10px;
+  font-size: .88rem;
+}
+#s3d-pano-empty i { font-size: 3rem; opacity: .3; }
+#s3d-bottom-bar {
+  padding: 10px 14px;
+  background: rgba(255,255,255,.04);
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
+/* KP list under left image */
+#s3d-kp-scroll {
+  max-height: 176px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 14px 10px;
+  background: white;
+  border-top: 1px solid var(--gray-100);
+  flex-shrink: 0;
+}
+.s3d-kp-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px; border-radius: 8px;
+  border: 1.5px solid var(--gray-100);
+  background: var(--gray-50);
+  font-size: .8rem;
+  transition: border-color .15s;
+}
+.s3d-kp-row.active { border-color: var(--primary); background: var(--blue-50); }
+.s3d-kp-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--primary); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .65rem; font-weight: 800; flex-shrink: 0;
+}
+.s3d-kp-label { flex: 1; font-weight: 600; color: var(--gray-700); }
+.s3d-kp-pos { font-size: .7rem; color: var(--gray-400); }
+.s3d-kp-del {
+  width: 18px; height: 18px; border-radius: 4px;
+  background: transparent; color: var(--gray-400);
+  border: none; cursor: pointer; font-size: .7rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: .12s;
+}
+.s3d-kp-del:hover { background: var(--red-50); color: var(--red-500); }
 
-                                    <!-- 知识点管理 -->
-                                    <div class="knowledge-points">
-                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                                            <h3 style="font-size:.9rem;font-weight:700;color:var(--gray-700)">知识点标注</h3>
-                                            <span style="font-size:.75rem;color:var(--gray-400)">生成场景后点击画布拖拽定位</span>
-                                        </div>
-                                        <button class="btn btn-secondary" id="addKnowledgePointBtn" style="width:100%;margin-bottom:8px">
-                                            <i class="fas fa-plus"></i> 添加知识点标注
-                                        </button>
-                                        <div class="points-list" id="pointsList">
-                                            <div class="empty-points">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                <p>暂无知识点标注</p>
-                                            </div>
-                                        </div>
-                                    </div>
+/* pano markers */
+.pano-mwrap {
+  position: absolute; transform: translate(-50%,-50%);
+  pointer-events: none;
+}
+@keyframes pano-pulse {
+  0%,100% { box-shadow: 0 0 0 4px rgba(99,179,237,.3), 0 0 16px rgba(99,179,237,.45); }
+  50%      { box-shadow: 0 0 0 9px rgba(99,179,237,.1), 0 0 28px rgba(99,179,237,.65); }
+}
+@keyframes pano-ring-out {
+  0%   { transform: translate(-50%,-50%) scale(1); opacity: .65; }
+  100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0;  }
+}
+.pano-ring {
+  position: absolute; top: 50%; left: 50%;
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid rgba(99,179,237,.45);
+  animation: pano-ring-out 2.2s ease-out infinite;
+}
+.pano-ring-2 { animation-delay: .8s; }
+.pano-mbtn {
+  position: relative; pointer-events: all;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg,#3b82f6,#06b6d4);
+  border: 2.5px solid rgba(255,255,255,.9);
+  color: white; font-size: .7rem; font-weight: 800;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  animation: pano-pulse 2.5s ease infinite;
+  box-shadow: 0 2px 10px rgba(59,130,246,.5);
+  transition: transform .15s;
+}
+.pano-mbtn:hover { transform: scale(1.18); }
 
-                                    <button class="btn btn-primary" id="generateSceneBtn" style="width:100%;padding:13px;font-size:.95rem;margin-top:14px">
-                                        <i class="fas fa-magic"></i> 生成3D情景
-                                    </button>
-                                </div>
+/* pano hint overlay */
+#s3d-pano-hint {
+  position: absolute; bottom: 14px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15,23,42,.75);
+  color: rgba(255,255,255,.7);
+  padding: 5px 14px; border-radius: 20px;
+  font-size: .75rem; pointer-events: none;
+  white-space: nowrap;
+}
+@media (max-width: 900px) {
+  #s3d-editor-wrap { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+  #s3d-left-col { border-right: none; border-bottom: 1px solid var(--gray-200); }
+}
+</style>
 
-                                <!-- 右侧：预览区 -->
-                                <div class="scene-right">
-                                    <div class="scene-preview">
-                                        <div class="preview-header">
-                                            <h3>3D场景预览</h3>
-                                            <div style="display:flex;align-items:center;gap:8px">
-                                                <span id="scene-drag-hint" style="font-size:.75rem;color:var(--gray-400);display:none"><i class="fas fa-hand-pointer" style="margin-right:3px"></i>点击画布放置标注点</span>
-                                                <button class="btn btn-secondary" id="windowPreviewBtn" style="padding:6px 12px;font-size:.82rem">
-                                                    <i class="fas fa-external-link-alt"></i> 小窗
-                                                </button>
-                                                <button class="btn btn-secondary" id="fullscreenBtn" style="padding:6px 12px;font-size:.82rem">
-                                                    <i class="fas fa-expand"></i> 全屏
-                                                </button>
-                                            </div>
-                                        </div>
+<div class="content-card mod-fullscreen" id="3d-scene">
+  <!-- 顶栏 -->
+  <div class="sp3-topbar">
+    <div class="sp3-tb-left">
+      <span class="sp3-title"><i class="fas fa-cube"></i> 3D情景生成 ScriptScene™</span>
+    </div>
+    <div class="sp3-tb-right" style="display:flex;align-items:center;gap:8px">
+      <button class="btn btn-secondary" id="resetSceneBtn" style="padding:5px 12px;font-size:.78rem;color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.08)">
+        <i class="fas fa-redo"></i> 重置
+      </button>
+      <button class="btn btn-secondary" id="saveSceneBtn" style="padding:5px 12px;font-size:.78rem;color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.08)">
+        <i class="fas fa-save"></i> 草稿
+      </button>
+      <button class="btn btn-primary" id="publishSceneBtn" style="padding:5px 14px;font-size:.78rem">
+        <i class="fas fa-paper-plane"></i> 发布给学生
+      </button>
+    </div>
+  </div>
 
-                                        <!-- 可交互场景画布 -->
-                                        <div class="scene-view" id="sceneView" style="position:relative;cursor:default">
-                                            <div class="scene-placeholder">
-                                                <i class="fas fa-cube"></i>
-                                                <p>生成3D场景后，将在此显示预览</p>
-                                                <p class="hint">支持静态场景+微动效果</p>
-                                            </div>
-                                        </div>
+  <!-- 双栏主体 -->
+  <div class="mod-body" style="padding:0;overflow:hidden">
+    <div id="s3d-editor-wrap">
 
-                                        <!-- 知识点标注列表（画布下方） -->
-                                        <div id="sceneInteractions" style="margin-top:10px">
-                                            <div style="font-size:.82rem;font-weight:700;color:var(--gray-600);margin-bottom:6px">场景内知识点标注</div>
-                                            <div class="interaction-list" id="interactionList">
-                                                <div class="empty-interactions">
-                                                    <p>添加知识点后点击场景画布定位</p>
-                                                </div>
-                                            </div>
-                                        </div>
+      <!-- ══ 左栏：场景信息 + 原图标注 ══ -->
+      <div id="s3d-left-col">
 
-                                        <!-- 操作按钮 -->
-                                        <div class="scene-actions" style="margin-top:12px;display:flex;gap:8px">
-                                            <button class="btn btn-secondary" id="resetSceneBtn" style="flex:1">
-                                                <i class="fas fa-redo"></i> 重置
-                                            </button>
-                                            <button class="btn btn-secondary" id="saveSceneBtn" style="flex:1">
-                                                <i class="fas fa-save"></i> 保存草稿
-                                            </button>
-                                            <button class="btn btn-primary" id="publishSceneBtn" style="flex:1.5">
-                                                <i class="fas fa-paper-plane"></i> 发布给学生
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- 基本信息表单 -->
+        <div id="s3d-left-top">
+          <div style="display:grid;grid-template-columns:1fr 80px 80px;gap:8px;margin-bottom:8px">
+            <div class="form-group" style="margin:0">
+              <label style="font-size:.75rem">场景名称 <span style="color:var(--red-500)">*</span></label>
+              <input type="text" id="sceneName" placeholder="如：荷塘月色 · 夏夜意境" style="height:32px;font-size:.82rem">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label style="font-size:.75rem">学科</label>
+              <select id="sceneSubject" style="height:32px;font-size:.82rem">
+                <option value="语文">语文</option><option value="英语">英语</option>
+                <option value="历史">历史</option><option value="科学">科学</option>
+                <option value="地理">地理</option><option value="其他">其他</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label style="font-size:.75rem">年级</label>
+              <select id="sceneGrade" style="height:32px;font-size:.82rem">
+                <option value="小学">小学</option>
+                <option value="初中" selected>初中</option>
+                <option value="高中">高中</option>
+              </select>
+            </div>
+          </div>
+          <!-- 操作行：上传 + 添加标注 + 提示 -->
+          <div style="display:flex;align-items:center;gap:7px">
+            <button id="s3d-upload-btn" class="btn btn-secondary" style="padding:5px 11px;font-size:.78rem;white-space:nowrap">
+              <i class="fas fa-image"></i> 上传全景图
+            </button>
+            <input type="file" id="s3d-img-input" accept="image/jpeg,image/png,image/webp" style="display:none">
+            <button id="addKnowledgePointBtn" class="btn btn-secondary" style="padding:5px 11px;font-size:.78rem;white-space:nowrap">
+              <i class="fas fa-map-marker-alt"></i> 添加标注点
+            </button>
+            <span id="s3d-click-hint" style="font-size:.72rem;color:var(--gray-400);flex:1;text-align:right">
+              上传图片后，点击图片放置标注
+            </span>
+          </div>
+        </div>
+
+        <!-- 原图区 （可点击放置标注）-->
+        <div id="s3d-img-area" class="no-image">
+          <!-- 未上传时的占位 -->
+          <div id="s3d-upload-zone">
+            <i class="fas fa-panorama"></i>
+            <p>点击上传全景图 (2:1 等距圆柱投影)</p>
+            <small>JPG / PNG / WebP，建议 4096×2048</small>
+          </div>
+          <!-- 图片本体 -->
+          <img id="s3d-src-img" src="" alt="" style="display:none">
+              <!-- SVG 标注层 -->
+          <svg id="s3d-marker-svg" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="pin-grad" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#60a5fa"/>
+                <stop offset="100%" stop-color="#2563eb"/>
+              </radialGradient>
+            </defs>
+          </svg>
+          <!-- 放置提示 -->
+          <div id="s3d-pin-mode-hint" style="display:none">点击图片放置「<span id="s3d-hint-label"></span>」</div>
+        </div>
+
+        <!-- 知识点列表 -->
+        <div id="s3d-kp-scroll">
+          <div id="pointsList">
+            <div class="empty-points" style="text-align:center;padding:12px;color:var(--gray-400);font-size:.8rem">
+              <i class="fas fa-map-marker-alt" style="display:block;margin-bottom:4px;opacity:.4"></i>
+              暂无标注点
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /s3d-left-col -->
+
+      <!-- ══ 右栏：全景 3D 预览 ══ -->
+      <div id="s3d-right-col">
+        <div id="s3d-pano-wrap">
+          <canvas id="s3d-pano-canvas"></canvas>
+          <div id="s3d-pano-marker-layer"></div>
+          <!-- 未加载时占位 -->
+          <div id="s3d-pano-empty">
+            <i class="fas fa-vr-cardboard"></i>
+            <span>上传全景图后即可预览 3D 场景</span>
+            <span style="font-size:.75rem;opacity:.6">拖拽旋转 · 滚轮缩放</span>
+          </div>
+          <!-- 操作提示 -->
+          <div id="s3d-pano-hint" style="display:none">
+            <i class="fas fa-arrows-alt" style="margin-right:5px"></i>拖拽旋转视角
+          </div>
+        </div>
+        <!-- 底部状态栏 -->
+        <div id="s3d-bottom-bar">
+          <span id="s3d-pano-badge" style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;font-size:.7rem;font-weight:700;background:rgba(255,255,255,.08);color:rgba(255,255,255,.45)">
+            <i class="fas fa-circle"></i> 等待图片
+          </span>
+          <span style="flex:1"></span>
+          <button id="s3d-fullscreen-btn" style="width:28px;height:28px;border:1px solid rgba(255,255,255,.15);border-radius:6px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+      </div><!-- /s3d-right-col -->
+
+    </div><!-- /s3d-editor-wrap -->
+  </div>
+</div>
                 `;
-                
+
                 // 初始化3D场景功能
                 init3DScene();
-                setTimeout(injectSceneImageUpload, 200);
                 // Auto-fill from PPT if available
                 setTimeout(() => {
-                    const ta = document.getElementById('sceneDescription');
-                    if (ta && window._pptTextForScene) {
-                        ta.value = window._pptTextForScene.slice(0, 200);
-                        // Switch to manual mode
-                        const manualRadio = document.querySelector('input[name="sceneSource"][value="manual"]');
-                        if (manualRadio) { manualRadio.checked = true; }
-                        showGlobalToast('已从课件内容自动填充场景描述', 'success');
-                        window._pptTextForScene = null;
-                    }
+                    if (window._pptTextForScene) window._pptTextForScene = null;
                 }, 100);
             } else if (module === 'ai') {
                 // 教师端：AI自习记录 | 学生端：AI学伴对话
@@ -3829,135 +4010,398 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         // ── 教师端 3D 情景生成（含结构化存储 + 拖拽定位 + 发布）────────────
         // 内存中的知识点数组，每项: { id, label, detail, x, y }
         var _3d_kps = [];
-        var _3d_generated = false;   // 场景是否已生成
+        var _3d_generated = false;   // 全景图是否已加载
         var _3d_placing = null;      // 正在等待定位的 kp id
 
         function init3DScene() {
-            var brightnessSlider = document.getElementById('sceneBrightness');
-            var motionSlider     = document.getElementById('sceneMotion');
-            var brightnessValue  = document.getElementById('brightnessValue');
-            var motionValue      = document.getElementById('motionValue');
-            var generateBtn      = document.getElementById('generateSceneBtn');
-            var addPointBtn      = document.getElementById('addKnowledgePointBtn');
-            var sceneView        = document.getElementById('sceneView');
-
             // 重置状态
             _3d_kps = [];
             _3d_generated = false;
             _3d_placing = null;
 
-            // 滑块
-            brightnessSlider.addEventListener('input', function() { brightnessValue.textContent = this.value + '%'; });
-            motionSlider.addEventListener('input', function()     { motionValue.textContent     = this.value + '%'; });
+            // ── DOM refs ─────────────────────────────────────────────────────
+            var uploadBtn   = document.getElementById('s3d-upload-btn');
+            var imgInput    = document.getElementById('s3d-img-input');
+            var imgArea     = document.getElementById('s3d-img-area');
+            var srcImg      = document.getElementById('s3d-src-img');
+            var markerSvg   = document.getElementById('s3d-marker-svg');
+            var uploadZone  = document.getElementById('s3d-upload-zone');
+            var pinHint     = document.getElementById('s3d-pin-mode-hint');
+            var hintLabel   = document.getElementById('s3d-hint-label');
+            var pointsList  = document.getElementById('pointsList');
+            var addPointBtn = document.getElementById('addKnowledgePointBtn');
+            var panoWrap    = document.getElementById('s3d-pano-wrap');
+            var panoCanvas  = document.getElementById('s3d-pano-canvas');
+            var markerLayer = document.getElementById('s3d-pano-marker-layer');
+            var panoEmpty   = document.getElementById('s3d-pano-empty');
+            var panoBadge   = document.getElementById('s3d-pano-badge');
+            var panoHint    = document.getElementById('s3d-pano-hint');
 
-            // ── 生成场景 ──────────────────────────────────────────────────
-            generateBtn.addEventListener('click', function() {
-                var desc = document.getElementById('sceneDescription').value.trim();
-                if (!desc) { showGlobalToast('请先输入场景描述', 'error'); return; }
-                this.disabled = true;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+            var _threeAlive = false;
+            var _threeRenderer = null, _threeCamera = null, _threeScene = null;
+            var _lon = 180, _lat = 10, _isDrag = false, _prevMx = 0, _prevMy = 0;
+            var _panoW = 0, _panoH = 0; // canvas display size
 
-                var bright = brightnessSlider.value;
-                var motion = motionSlider.value;
+            // ── 图片上传 ─────────────────────────────────────────────────────
+            uploadBtn.addEventListener('click', function(){ imgInput.click(); });
+            uploadZone.addEventListener('click', function(){ imgInput.click(); });
 
-                setTimeout(function() {
-                    generateBtn.disabled = false;
-                    generateBtn.innerHTML = '<i class="fas fa-magic"></i> 重新生成';
-                    _3d_generated = true;
-
-                    // 根据亮度/微动参数生成场景画布
-                    var bgOpacity = (bright / 100).toFixed(2);
-                    var swayDur   = (3 - motion / 50).toFixed(1);
-                    var floatDur  = (4 - motion / 50).toFixed(1);
-                    var flyDur    = (5 - motion / 50).toFixed(1);
-
-                    sceneView.style.cursor = 'crosshair';
-                    sceneView.innerHTML = ''
-                        + '<style>'
-                        + '@keyframes sc-sway{0%{transform:rotate(-5deg)}100%{transform:rotate(5deg)}}'
-                        + '@keyframes sc-float{0%{transform:translateY(0)}100%{transform:translateY(-10px)}}'
-                        + '@keyframes sc-fly{0%{transform:translate(0,0)}25%{transform:translate(10px,-5px)}50%{transform:translate(0,-10px)}75%{transform:translate(-10px,-5px)}100%{transform:translate(0,0)}}'
-                        + '.sc-gen{position:relative;width:100%;min-height:320px;border-radius:12px;overflow:hidden}'
-                        + '.sc-bg{position:absolute;inset:0}'
-                        + '.sc-elems{position:absolute;inset:0;display:flex;justify-content:space-around;align-items:center}'
-                        + '.sc-elem{background:rgba(255,255,255,.88);padding:16px;border-radius:50%;width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.18)}'
-                        + '.sc-elem i{font-size:1.6rem;margin-bottom:5px;color:#3b82f6}'
-                        + '.sc-elem span{font-size:.78rem;font-weight:600}'
-                        + '.sc-title{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:white;font-size:1.1rem;font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,.55)}'
-                        + '.sc-kp-marker{position:absolute;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;background:rgba(37,99,235,.9);border:2px solid rgba(255,255,255,.85);color:white;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;cursor:pointer;box-shadow:0 0 0 5px rgba(37,99,235,.22),0 3px 10px rgba(37,99,235,.4);transition:transform .15s}'
-                        + '.sc-kp-marker:hover{transform:translate(-50%,-50%) scale(1.15)}'
-                        + '.sc-place-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(37,99,235,.85);color:white;padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;pointer-events:none;animation:sc-float 1.2s ease infinite}'
-                        + '</style>'
-                        + '<div class="sc-gen" id="sc-canvas">'
-                        + '<div class="sc-bg" style="background:linear-gradient(135deg,#4ade80,#22d3ee);opacity:' + bgOpacity + '"></div>'
-                        + '<div class="sc-elems">'
-                        + '<div class="sc-elem" style="animation:sc-sway ' + swayDur + 's ease infinite alternate"><i class="fas fa-leaf"></i><span>荷叶</span></div>'
-                        + '<div class="sc-elem" style="animation:sc-float ' + floatDur + 's ease infinite alternate"><i class="fas fa-tint"></i><span>露珠</span></div>'
-                        + '<div class="sc-elem" style="animation:sc-fly ' + flyDur + 's ease infinite"><i class="fas fa-feather-alt"></i><span>微风</span></div>'
-                        + '</div>'
-                        + '<div class="sc-title">' + desc.substring(0, 28) + (desc.length > 28 ? '...' : '') + '</div>'
-                        + '</div>';
-
-                    // 重新绘制已有标注点
-                    _3d_kps.forEach(function(kp) { if (kp.x != null) _renderKpMarker(kp); });
-
-                    // 画布点击：放置正在等待定位的标注点
-                    var canvas = document.getElementById('sc-canvas');
-                    if (canvas) {
-                        canvas.addEventListener('click', function(e) {
-                            if (!_3d_placing) return;
-                            var rect = canvas.getBoundingClientRect();
-                            var x = Math.round((e.clientX - rect.left) / rect.width * 100);
-                            var y = Math.round((e.clientY - rect.top)  / rect.height * 100);
-                            var kp = _3d_kps.find(function(k){ return k.id === _3d_placing; });
-                            if (!kp) return;
-                            kp.x = x; kp.y = y;
-                            _3d_placing = null;
-                            canvas.style.cursor = 'crosshair';
-                            // Remove hint
-                            var hint = canvas.querySelector('.sc-place-hint');
-                            if (hint) hint.remove();
-                            _renderKpMarker(kp);
-                            _refreshKpList();
-                            showGlobalToast('标注点已定位', 'success');
-                        });
-                    }
-
-                    var hint = document.getElementById('scene-drag-hint');
-                    if (hint) hint.style.display = 'flex';
-                    showGlobalToast('3D场景生成成功！可点击画布为知识点定位', 'success');
-                }, 1800);
+            // drag-over on imgArea
+            imgArea.addEventListener('dragover',  function(e){ e.preventDefault(); imgArea.style.outline='2px dashed var(--primary)'; });
+            imgArea.addEventListener('dragleave', function(){ imgArea.style.outline=''; });
+            imgArea.addEventListener('drop', function(e){
+                e.preventDefault(); imgArea.style.outline='';
+                if (e.dataTransfer.files[0]) loadImageFile(e.dataTransfer.files[0]);
+            });
+            imgInput.addEventListener('change', function(){
+                if (this.files[0]) loadImageFile(this.files[0]);
             });
 
-            // ── 添加知识点 ────────────────────────────────────────────────
+            function loadImageFile(file) {
+                if (file.size > 8*1024*1024) { showGlobalToast('图片不能超过 8MB', 'error'); return; }
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    window._sceneImageData = e.target.result;
+                    // 左侧显示原图
+                    srcImg.src = e.target.result;
+                    srcImg.style.display = 'block';
+                    uploadZone.style.display = 'none';
+                    imgArea.classList.remove('no-image');
+                    showGlobalToast('全景图已加载，点击图片可放置标注', 'success');
+                    // 右侧启动全景渲染
+                    _startPanorama(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // ── 左侧图片点击：放置标注点 ────────────────────────────────────
+            imgArea.addEventListener('click', function(e) {
+                if (!_3d_placing) return;
+                if (e.target === uploadZone || uploadZone.contains(e.target)) return;
+
+                // 计算相对于图片显示区域的比例坐标
+                var imgRect = srcImg.getBoundingClientRect();
+                // 若点击在图片外（黑边区域），则忽略
+                if (e.clientX < imgRect.left || e.clientX > imgRect.right ||
+                    e.clientY < imgRect.top  || e.clientY > imgRect.bottom) return;
+
+                var x = Math.round((e.clientX - imgRect.left) / imgRect.width  * 100);
+                var y = Math.round((e.clientY - imgRect.top)  / imgRect.height * 100);
+
+                var kp = _3d_kps.find(function(k){ return k.id === _3d_placing; });
+                if (!kp) return;
+                kp.x = x; kp.y = y;
+                _3d_placing = null;
+
+                pinHint.style.display = 'none';
+                _renderPinOnImage(kp);
+                _renderPanoMarker(kp);
+                _refreshKpList();
+                showGlobalToast('标注点已定位 ✓', 'success');
+            });
+
+            // ── 添加知识点 ───────────────────────────────────────────────────
             addPointBtn.addEventListener('click', async function() {
                 var pointData = await showPointInputDialog();
                 if (!pointData) return;
                 var kp = { id: 'kp_' + Date.now(), label: pointData.name, detail: pointData.desc, x: null, y: null };
                 _3d_kps.push(kp);
                 _refreshKpList();
-                // 如果场景已生成，进入定位模式
-                if (_3d_generated) {
-                    _enterPlacingMode(kp.id);
-                } else {
-                    showGlobalToast('知识点已添加，生成场景后可定位', 'info');
-                }
+                _enterPinMode(kp.id);
             });
 
-            // ── 保存草稿 ──────────────────────────────────────────────────
+            // ── 进入放置模式 ─────────────────────────────────────────────────
+            function _enterPinMode(kpId) {
+                _3d_placing = kpId;
+                var kp = _3d_kps.find(function(k){ return k.id === kpId; });
+                hintLabel.textContent = kp ? kp.label : '标注点';
+                pinHint.style.display = 'block';
+                if (srcImg.style.display !== 'none') {
+                    showGlobalToast('请在左侧图片上点击放置「' + (kp ? kp.label : '标注点') + '」', 'info');
+                } else {
+                    showGlobalToast('请先上传全景图，再放置标注点', 'warning');
+                }
+            }
+
+            // ── 在原图 SVG 层绘制图钉 ───────────────────────────────────────
+            function _renderPinOnImage(kp) {
+                // 移除旧的
+                var old = markerSvg.querySelector('[data-kpid="' + kp.id + '"]');
+                if (old) old.remove();
+
+                var idx = _3d_kps.indexOf(kp) + 1;
+
+                // SVG 坐标系跟随 img 的 object-fit:contain 显示区域
+                // 用 viewBox 100×(100/2) 对应图片的归一化坐标空间
+                // 但 SVG 是绝对定位覆盖整个 imgArea，需要把 kp.x/y（相对于图片显示区）
+                // 转回 SVG 百分比。因为 SVG 覆盖 imgArea 而图片居中显示，
+                // 计算时需偏移黑边。这里直接用 foreignObject + absolute 更可靠：
+                // 改用 g 元素 + 动态 style 定位
+
+                var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('data-kpid', kp.id);
+                g.setAttribute('class', 's3d-pin');
+                // 脉冲环（动画）
+                var ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                ring.setAttribute('class', 'ring');
+                ring.setAttribute('r', '14');
+                ring.setAttribute('fill', 'rgba(99,179,237,.18)');
+                ring.setAttribute('stroke', 'rgba(99,179,237,.5)');
+                ring.setAttribute('stroke-width', '1.5');
+                // 主圆
+                var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                dot.setAttribute('r', '13');
+                dot.setAttribute('fill', 'url(#pin-grad)');
+                dot.setAttribute('stroke', 'white');
+                dot.setAttribute('stroke-width', '2');
+                // 数字
+                var txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                txt.setAttribute('text-anchor', 'middle');
+                txt.setAttribute('dominant-baseline', 'central');
+                txt.setAttribute('fill', 'white');
+                txt.setAttribute('font-size', '9');
+                txt.setAttribute('font-weight', '800');
+                txt.setAttribute('font-family', 'inherit');
+                txt.textContent = idx;
+
+                g.appendChild(ring); g.appendChild(dot); g.appendChild(txt);
+
+                // 点击重新定位
+                g.addEventListener('click', function(e){
+                    e.stopPropagation();
+                    _enterPinMode(kp.id);
+                });
+
+                markerSvg.appendChild(g);
+                _updatePinPosition(kp);
+            }
+
+            // ── 更新 SVG 图钉的屏幕坐标 ─────────────────────────────────────
+            // kp.x / kp.y 是相对于图片显示区域的百分比
+            // SVG 覆盖整个 imgArea，需要换算黑边偏移
+            function _updatePinPosition(kp) {
+                if (kp.x == null) return;
+                var g = markerSvg.querySelector('[data-kpid="' + kp.id + '"]');
+                if (!g) return;
+
+                var areaRect = imgArea.getBoundingClientRect();
+                var imgRect  = srcImg.getBoundingClientRect();
+
+                // 图片在 imgArea 内的偏移（object-fit:contain 居中黑边）
+                var offX = imgRect.left - areaRect.left;
+                var offY = imgRect.top  - areaRect.top;
+
+                // 像素坐标
+                var px = offX + (kp.x / 100) * imgRect.width;
+                var py = offY + (kp.y / 100) * imgRect.height;
+
+                // SVG viewBox 设为 area 尺寸，直接用像素
+                var svgW = areaRect.width;
+                var svgH = areaRect.height;
+                markerSvg.setAttribute('viewBox', '0 0 ' + svgW + ' ' + svgH);
+
+                g.setAttribute('transform', 'translate(' + px + ',' + py + ')');
+            }
+
+            function _refreshAllPins() {
+                _3d_kps.forEach(function(kp){ _updatePinPosition(kp); });
+            }
+
+            // 窗口 resize 时刷新
+            window.addEventListener('resize', _refreshAllPins);
+
+            // ── 刷新知识点列表 ───────────────────────────────────────────────
+            function _refreshKpList() {
+                var list = document.getElementById('pointsList');
+                if (!list) return;
+                if (_3d_kps.length === 0) {
+                    list.innerHTML = '<div style="text-align:center;padding:12px;color:var(--gray-400);font-size:.8rem"><i class="fas fa-map-marker-alt" style="display:block;margin-bottom:4px;opacity:.4"></i>暂无标注点</div>';
+                    return;
+                }
+                list.innerHTML = _3d_kps.map(function(kp, i) {
+                    var positioned = kp.x != null;
+                    return '<div class="s3d-kp-row' + (_3d_placing===kp.id?' active':'') + '" data-id="' + kp.id + '">'
+                        + '<div class="s3d-kp-num">' + (i+1) + '</div>'
+                        + '<span class="s3d-kp-label">' + kp.label + '</span>'
+                        + (positioned
+                            ? '<span class="s3d-kp-pos"><i class="fas fa-check-circle" style="color:var(--green-500)"></i> ' + kp.x + '%, ' + kp.y + '%</span>'
+                            : '<span class="s3d-kp-pos" style="color:var(--amber-500)"><i class="fas fa-clock"></i> 待定位</span>')
+                        + '<button class="s3d-kp-del" data-id="' + kp.id + '" title="删除"><i class="fas fa-times"></i></button>'
+                        + '</div>';
+                }).join('');
+
+                list.querySelectorAll('.s3d-kp-row').forEach(function(row){
+                    row.addEventListener('click', function(e){
+                        if (e.target.closest('.s3d-kp-del')) return;
+                        _enterPinMode(this.dataset.id);
+                    });
+                });
+                list.querySelectorAll('.s3d-kp-del').forEach(function(btn){
+                    btn.addEventListener('click', function(e){
+                        e.stopPropagation();
+                        _deleteKp(this.dataset.id);
+                    });
+                });
+            }
+
+            // ── 全景 Three.js 渲染 ──────────────────────────────────────────
+            function _startPanorama(dataUrl) {
+                // 若已在渲染，先销毁
+                if (_threeAlive) { _threeAlive = false; if (_threeRenderer) _threeRenderer.dispose(); }
+                panoEmpty.style.display = 'none';
+                panoHint.style.display = 'block';
+
+                function boot() {
+                    var THREE = window.THREE;
+                    _panoW = panoWrap.clientWidth;
+                    _panoH = panoWrap.clientHeight;
+
+                    _threeRenderer = new THREE.WebGLRenderer({ canvas: panoCanvas, antialias: true });
+                    _threeRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+                    _threeRenderer.setSize(_panoW, _panoH);
+
+                    _threeScene = new THREE.Scene();
+                    _threeCamera = new THREE.PerspectiveCamera(75, _panoW / _panoH, 0.1, 1000);
+                    _threeCamera.position.set(0, 0, 0.01);
+
+                    var geo = new THREE.SphereGeometry(500, 64, 40);
+                    geo.scale(-1, 1, 1);
+                    var loader = new THREE.TextureLoader();
+                    loader.load(dataUrl, function(tex) {
+                        var mat = new THREE.MeshBasicMaterial({ map: tex });
+                        _threeScene.add(new THREE.Mesh(geo, mat));
+                        panoBadge.innerHTML = '<i class="fas fa-panorama"></i> 全景图模式';
+                        panoBadge.style.background = 'rgba(16,185,129,.15)';
+                        panoBadge.style.color = '#34d399';
+                    });
+
+                    // 拖拽控制
+                    panoCanvas.addEventListener('mousedown',  function(e){ _isDrag=true; _prevMx=e.clientX; _prevMy=e.clientY; });
+                    panoCanvas.addEventListener('mousemove',  function(e){
+                        if (!_isDrag) return;
+                        _lon -= (e.clientX - _prevMx) * 0.22;
+                        _lat += (e.clientY - _prevMy) * 0.22;
+                        _lat = Math.max(-85, Math.min(85, _lat));
+                        _prevMx = e.clientX; _prevMy = e.clientY;
+                    });
+                    panoCanvas.addEventListener('mouseup',    function(){ _isDrag = false; });
+                    panoCanvas.addEventListener('mouseleave', function(){ _isDrag = false; });
+                    panoCanvas.addEventListener('touchstart', function(e){ _isDrag=true; _prevMx=e.touches[0].clientX; _prevMy=e.touches[0].clientY; }, {passive:true});
+                    panoCanvas.addEventListener('touchmove',  function(e){
+                        if (!_isDrag) return;
+                        _lon -= (e.touches[0].clientX - _prevMx) * 0.22;
+                        _lat += (e.touches[0].clientY - _prevMy) * 0.22;
+                        _lat = Math.max(-85, Math.min(85, _lat));
+                        _prevMx=e.touches[0].clientX; _prevMy=e.touches[0].clientY;
+                    }, {passive:true});
+                    panoCanvas.addEventListener('touchend',   function(){ _isDrag=false; });
+                    panoCanvas.addEventListener('wheel', function(e){
+                        _threeCamera.fov = Math.max(30, Math.min(100, _threeCamera.fov + e.deltaY * 0.05));
+                        _threeCamera.updateProjectionMatrix();
+                    }, {passive:true});
+
+                    // ResizeObserver
+                    var ro = new ResizeObserver(function(){
+                        _panoW = panoWrap.clientWidth; _panoH = panoWrap.clientHeight;
+                        _threeRenderer.setSize(_panoW, _panoH);
+                        _threeCamera.aspect = _panoW / _panoH;
+                        _threeCamera.updateProjectionMatrix();
+                    });
+                    ro.observe(panoWrap);
+
+                    _threeAlive = true;
+
+                    // 渲染 loop
+                    (function loop() {
+                        if (!_threeAlive) { ro.disconnect(); return; }
+                        requestAnimationFrame(loop);
+                        var phi   = THREE.MathUtils.degToRad(90 - _lat);
+                        var theta = THREE.MathUtils.degToRad(_lon);
+                        _threeCamera.lookAt(
+                            Math.sin(phi)*Math.cos(theta),
+                            Math.cos(phi),
+                            Math.sin(phi)*Math.sin(theta)
+                        );
+                        // 更新全景 marker 位置
+                        _3d_kps.forEach(function(kp){
+                            if (kp.x == null) return;
+                            var el = document.getElementById('pano-mwrap-' + kp.id);
+                            if (!el) return;
+                            var pos = _kpToScreen(kp);
+                            if (!pos) { el.style.display = 'none'; }
+                            else { el.style.display = ''; el.style.left = pos.x + 'px'; el.style.top = pos.y + 'px'; el.style.pointerEvents = 'all'; }
+                        });
+                        _threeRenderer.render(_threeScene, _threeCamera);
+                    })();
+                }
+
+                if (window.THREE) { boot(); }
+                else {
+                    var s = document.createElement('script');
+                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+                    s.onload = boot;
+                    document.head.appendChild(s);
+                }
+            }
+
+            // ── 球面坐标换算 ─────────────────────────────────────────────────
+            // 全景图标准 2:1 Equirectangular：lat = 90 - kp.y/100 * 180
+            function _kpToScreen(kp) {
+                if (!_threeCamera || !window.THREE) return null;
+                var THREE = window.THREE;
+                var lonRaw = kp.x / 100 * 360;
+                var lon = lonRaw > 180 ? lonRaw - 360 : lonRaw;  // x=0→lon=0(前), x=50→lon=180(后), 与初始_lon=0对应图片中央
+                var lat = 90 - kp.y / 100 * 180;
+                var phi   = THREE.MathUtils.degToRad(90 - lat);
+                var theta = THREE.MathUtils.degToRad(lon);
+                var vec = new THREE.Vector3(
+                    Math.sin(phi)*Math.cos(theta),
+                    Math.cos(phi),
+                    Math.sin(phi)*Math.sin(theta)
+                );
+                vec.project(_threeCamera);
+                if (vec.z > 1) return null;
+                return {
+                    x: (vec.x * 0.5 + 0.5) * _panoW,
+                    y: (-(vec.y) * 0.5 + 0.5) * _panoH
+                };
+            }
+            // ── 在全景层插入 marker DOM ──────────────────────────────────────
+            function _renderPanoMarker(kp) {
+                var old = document.getElementById('pano-mwrap-' + kp.id);
+                if (old) old.remove();
+                var idx = _3d_kps.indexOf(kp) + 1;
+                var wrap = document.createElement('div');
+                wrap.className = 'pano-mwrap';
+                wrap.id = 'pano-mwrap-' + kp.id;
+                wrap.innerHTML =
+                    '<div class="pano-ring"></div>'
+                  + '<div class="pano-ring pano-ring-2"></div>'
+                  + '<button class="pano-mbtn" title="' + kp.label + '">' + idx + '</button>';
+                markerLayer.appendChild(wrap);
+                wrap.querySelector('.pano-mbtn').addEventListener('click', function(e){
+                    e.stopPropagation();
+                    showGlobalToast('【' + kp.label + '】' + kp.detail.slice(0, 40), 'info');
+                });
+            }
+
+            // ── 全屏 ─────────────────────────────────────────────────────────
+            document.getElementById('s3d-fullscreen-btn').addEventListener('click', function(){
+                if (panoWrap.requestFullscreen) panoWrap.requestFullscreen();
+            });
+
+            // ── 保存草稿 / 发布 ──────────────────────────────────────────────
             document.getElementById('saveSceneBtn').addEventListener('click', function() {
                 var sceneData = _buildSceneData(false);
                 if (!sceneData) return;
                 var lib = JSON.parse(localStorage.getItem('scenes_library') || '[]');
-                // 检查是否覆盖同名草稿
                 var existIdx = lib.findIndex(function(s){ return s.id === sceneData.id; });
                 if (existIdx >= 0) lib[existIdx] = sceneData; else lib.unshift(sceneData);
                 localStorage.setItem('scenes_library', JSON.stringify(lib));
-                showGlobalToast('草稿已保存，尚未发布给学生', 'info');
+                showGlobalToast('草稿已保存', 'info');
                 updateStorageUsage();
             });
 
-            // ── 发布给学生 ────────────────────────────────────────────────
             document.getElementById('publishSceneBtn').addEventListener('click', function() {
                 var sceneData = _buildSceneData(true);
                 if (!sceneData) return;
@@ -3965,73 +4409,56 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 var existIdx = lib.findIndex(function(s){ return s.id === sceneData.id; });
                 if (existIdx >= 0) lib[existIdx] = sceneData; else lib.unshift(sceneData);
                 localStorage.setItem('scenes_library', JSON.stringify(lib));
-                // 同时更新旧格式 scene_saved_* 以向下兼容
-                localStorage.setItem('scene_saved_' + sceneData.id, sceneData.desc);
-                showGlobalToast('已发布！学生端可以看到「' + sceneData.name + '」', 'success');
+                localStorage.setItem('scene_saved_' + sceneData.id, sceneData.desc || sceneData.name);
+                showGlobalToast('已发布！学生端可看到「' + sceneData.name + '」', 'success');
                 updateStorageUsage();
-                // 按钮反馈
                 this.innerHTML = '<i class="fas fa-check"></i> 已发布';
                 this.style.background = 'var(--green-600)';
                 var self = this;
                 setTimeout(function(){ self.innerHTML = '<i class="fas fa-paper-plane"></i> 发布给学生'; self.style.background = ''; }, 3000);
             });
 
-            // ── 小窗/全屏/重置 ────────────────────────────────────────────
-            document.getElementById('windowPreviewBtn').addEventListener('click', function() {
-                var sv = document.getElementById('sceneView');
-                if (!sv || sv.querySelector('.scene-placeholder')) { showGlobalToast('请先生成3D场景', 'error'); return; }
-                var w = window.open('', '_blank', 'width=820,height=620,menubar=no,toolbar=no');
-                w.document.write('<!DOCTYPE html><html><head><title>3D场景预览</title><style>body{margin:0;background:#1e293b;display:flex;align-items:center;justify-content:center;min-height:100vh}</style></head><body>' + sv.innerHTML + '</body></html>');
-                w.document.close();
-            });
-
-            document.getElementById('fullscreenBtn').addEventListener('click', function() {
-                var sv = document.getElementById('sceneView');
-                if (!sv || sv.querySelector('.scene-placeholder')) { showGlobalToast('请先生成3D场景', 'error'); return; }
-                if (sv.requestFullscreen) sv.requestFullscreen();
-                else showGlobalToast('您的浏览器不支持全屏', 'warning');
-            });
-
+            // ── 重置 ─────────────────────────────────────────────────────────
             document.getElementById('resetSceneBtn').addEventListener('click', function() {
                 _3d_kps = []; _3d_generated = false; _3d_placing = null;
-                sceneView.style.cursor = 'default';
-                sceneView.innerHTML = '<div class="scene-placeholder"><i class="fas fa-cube"></i><p>生成3D场景后，将在此显示预览</p><p class="hint">支持静态场景+微动效果</p></div>';
-                document.getElementById('pointsList').innerHTML = '<div class="empty-points"><i class="fas fa-map-marker-alt"></i><p>暂无知识点标注</p></div>';
-                document.getElementById('interactionList').innerHTML = '<div class="empty-interactions"><p>添加知识点后点击场景画布定位</p></div>';
-                var hint = document.getElementById('scene-drag-hint');
-                if (hint) hint.style.display = 'none';
-                var pubBtn = document.getElementById('publishSceneBtn');
-                if (pubBtn) { pubBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发布给学生'; pubBtn.style.background = ''; }
-                showGlobalToast('场景已重置', 'info');
+                window._sceneImageData = null;
+                srcImg.src = ''; srcImg.style.display = 'none';
+                uploadZone.style.display = 'flex';
+                imgArea.classList.add('no-image');
+                markerSvg.innerHTML = '';
+                markerLayer.innerHTML = '';
+                pinHint.style.display = 'none';
+                _refreshKpList();
+                panoEmpty.style.display = 'flex';
+                panoHint.style.display = 'none';
+                panoBadge.innerHTML = '<i class="fas fa-circle"></i> 等待图片';
+                panoBadge.style.background = 'rgba(255,255,255,.08)';
+                panoBadge.style.color = 'rgba(255,255,255,.45)';
+                if (_threeAlive) { _threeAlive = false; if (_threeRenderer) _threeRenderer.dispose(); }
+                showGlobalToast('已重置', 'info');
             });
         }
 
-        // ── 辅助：构建场景数据对象 ────────────────────────────────────────
+        // ── 构建场景数据（供保存/发布用）────────────────────────────────────
         function _buildSceneData(published) {
-            var name = document.getElementById('sceneName')?.value.trim();
-            var desc = document.getElementById('sceneDescription')?.value.trim();
+            var name    = document.getElementById('sceneName')?.value.trim();
             var subject = document.getElementById('sceneSubject')?.value || '语文';
             var grade   = document.getElementById('sceneGrade')?.value   || '初中';
             if (!name) { showGlobalToast('请填写场景名称', 'error'); return null; }
-            if (!desc) { showGlobalToast('请填写场景描述', 'error'); return null; }
             var sceneObj = {
                 id:        'scene_' + Date.now(),
                 name:      name,
                 subject:   subject,
                 grade:     grade,
-                desc:      desc,
+                desc:      name,
                 emoji:     _subjectEmoji(subject),
                 kps:       JSON.parse(JSON.stringify(_3d_kps)),
                 published: published,
                 createdAt: new Date().toLocaleDateString('zh-CN'),
-                brightness: document.getElementById('sceneBrightness')?.value || 70,
-                motion:     document.getElementById('sceneMotion')?.value     || 50,
-                viewCount:  0
+                viewCount: 0
             };
-            // Attach background image if uploaded
             if (window._sceneImageData) {
                 sceneObj.bgImage = window._sceneImageData;
-                window._sceneImageData = null;
             }
             return sceneObj;
         }
@@ -4040,92 +4467,36 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             return {'语文':'📖','英语':'🔤','历史':'🏯','科学':'🔬','地理':'🌍','其他':'📋'}[subject] || '📖';
         }
 
-        // ── 辅助：渲染画布上的标注点 marker ──────────────────────────────
-        function _renderKpMarker(kp) {
-            var canvas = document.getElementById('sc-canvas');
-            if (!canvas || kp.x == null) return;
-            var old = canvas.querySelector('[data-kp-id="' + kp.id + '"]');
-            if (old) old.remove();
-            var el = document.createElement('button');
-            el.className = 'sc-kp-marker';
-            el.dataset.kpId = kp.id;
-            el.style.left = kp.x + '%';
-            el.style.top  = kp.y + '%';
-            el.innerHTML  = (_3d_kps.indexOf(kp) + 1) || '●';
-            el.title = kp.label;
-            el.addEventListener('click', function(e) {
-                e.stopPropagation();
-                // 拖拽模式：再次点击已定位的标注进入重新定位
-                _enterPlacingMode(kp.id);
-            });
-            canvas.appendChild(el);
-        }
-
-        // ── 辅助：进入「等待点击定位」模式 ──────────────────────────────
-        function _enterPlacingMode(kpId) {
-            var canvas = document.getElementById('sc-canvas');
-            if (!canvas) { showGlobalToast('请先生成场景再定位', 'error'); return; }
-            _3d_placing = kpId;
-            canvas.style.cursor = 'crosshair';
-            // 显示提示气泡
-            var old = canvas.querySelector('.sc-place-hint');
-            if (old) old.remove();
-            var kp = _3d_kps.find(function(k){ return k.id === kpId; });
-            var hint = document.createElement('div');
-            hint.className = 'sc-place-hint';
-            hint.textContent = '点击画布放置「' + (kp ? kp.label : '知识点') + '」';
-            canvas.appendChild(hint);
-            showGlobalToast('请点击场景画布，设置标注位置', 'info');
-        }
-
-        // ── 辅助：刷新左侧知识点列表 ────────────────────────────────────
-        function _refreshKpList() {
+        // ── 删除知识点（全局，供列表行调用）─────────────────────────────
+        function _deleteKp(kpId) {
+            // 移除 SVG 图钉
+            var pin = document.querySelector('[data-kpid="' + kpId + '"]');
+            if (pin) pin.remove();
+            // 移除全景 marker
+            var pm = document.getElementById('pano-mwrap-' + kpId);
+            if (pm) pm.remove();
+            _3d_kps = _3d_kps.filter(function(k){ return k.id !== kpId; });
+            // 刷新列表（调用 init3DScene 内部的 _refreshKpList，通过触发重渲染）
             var list = document.getElementById('pointsList');
-            var interList = document.getElementById('interactionList');
             if (!list) return;
             if (_3d_kps.length === 0) {
-                list.innerHTML = '<div class="empty-points"><i class="fas fa-map-marker-alt"></i><p>暂无知识点标注</p></div>';
-                if (interList) interList.innerHTML = '<div class="empty-interactions"><p>添加知识点后点击场景画布定位</p></div>';
+                list.innerHTML = '<div style="text-align:center;padding:12px;color:var(--gray-400);font-size:.8rem"><i class="fas fa-map-marker-alt" style="display:block;margin-bottom:4px;opacity:.4"></i>暂无标注点</div>';
                 return;
             }
             list.innerHTML = _3d_kps.map(function(kp, i) {
-                var posLabel = kp.x != null
-                    ? ('<span style="color:var(--green-600);font-size:.7rem"><i class="fas fa-check-circle"></i> 已定位 (' + kp.x + '%, ' + kp.y + '%)</span>')
-                    : ('<span style="color:var(--amber-600);font-size:.7rem"><i class="fas fa-exclamation-circle"></i> 待定位</span>');
-                return '<div class="knowledge-point" data-id="' + kp.id + '" style="cursor:pointer" onclick="_enterPlacingMode(\'' + kp.id + '\')">'
-                    + '<div class="point-header">'
-                    + '<div style="display:flex;align-items:center;gap:7px">'
-                    + '<span style="width:22px;height:22px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0">' + (i+1) + '</span>'
-                    + '<span class="point-name">' + kp.label + '</span>'
-                    + '</div>'
-                    + '<button class="point-delete" onclick="event.stopPropagation();_deleteKp(\'' + kp.id + '\')" title="删除"><i class="fas fa-times"></i></button>'
-                    + '</div>'
-                    + '<div class="point-description" style="font-size:.8rem;color:var(--gray-500);margin-top:3px">' + kp.detail.slice(0, 50) + (kp.detail.length>50?'...':'') + '</div>'
-                    + '<div style="margin-top:4px">' + posLabel + '</div>'
+                var positioned = kp.x != null;
+                return '<div class="s3d-kp-row" data-id="' + kp.id + '">'
+                    + '<div class="s3d-kp-num">' + (i+1) + '</div>'
+                    + '<span class="s3d-kp-label">' + kp.label + '</span>'
+                    + (positioned
+                        ? '<span class="s3d-kp-pos"><i class="fas fa-check-circle" style="color:var(--green-500)"></i> ' + kp.x + '%, ' + kp.y + '%</span>'
+                        : '<span class="s3d-kp-pos" style="color:var(--amber-500)"><i class="fas fa-clock"></i> 待定位</span>')
+                    + '<button class="s3d-kp-del" onclick="event.stopPropagation();_deleteKp(\'' + kp.id + '\')" title="删除"><i class="fas fa-times"></i></button>'
                     + '</div>';
             }).join('');
-            if (interList) {
-                interList.innerHTML = _3d_kps.filter(function(k){ return k.x!=null; }).map(function(kp,i) {
-                    return '<div class="interaction-point">'
-                        + '<div class="interaction-marker" style="background:var(--primary);color:white;font-size:.72rem;font-weight:800">' + (_3d_kps.indexOf(kp)+1) + '</div>'
-                        + '<div class="interaction-info"><div class="interaction-name">' + kp.label + '</div>'
-                        + '<div style="font-size:.75rem;color:var(--gray-400)">(' + kp.x + '%, ' + kp.y + '%)</div></div>'
-                        + '</div>';
-                }).join('') || '<div class="empty-interactions"><p>知识点尚未定位</p></div>';
-            }
-        }
-
-        // ── 删除知识点 ────────────────────────────────────────────────────
-        function _deleteKp(kpId) {
-            _3d_kps = _3d_kps.filter(function(k){ return k.id !== kpId; });
-            // 移除画布上的 marker
-            var m = document.querySelector('.sc-kp-marker[data-kp-id="' + kpId + '"]');
-            if (m) m.remove();
-            _refreshKpList();
             showGlobalToast('已删除知识点', 'info');
         }
 
-        // 兼容旧调用
         function deletePoint(pointId) { _deleteKp(pointId); }
 
         function getModuleIcon(module) {
@@ -4696,98 +5067,484 @@ ${text}
                 });
             }
 
-            // ── 情景沉浸页 ────────────────────────────────────────────────
+            // ── 情景沉浸页（全景 + 智能锚点）────────────────────────────────
             function renderScene() {
                 var sc = currentScene;
-                // 只展示已定位的知识点
                 var kps = (sc.kps || []).filter(function(k){ return k.x != null; });
-
-                var kpMarkers = kps.map(function(kp, i) {
-                    return '<button class="s3d-kp-btn" data-id="' + kp.id + '" style="position:absolute;left:' + kp.x + '%;top:' + kp.y + '%;transform:translate(-50%,-50%);background:rgba(37,99,235,.9);color:white;border:2px solid rgba(255,255,255,.85);border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;box-shadow:0 0 0 5px rgba(37,99,235,.2),0 3px 10px rgba(37,99,235,.4);animation:kp-pulse 2s ease infinite;transition:transform .15s" onmouseenter="this.style.transform=\'translate(-50%,-50%) scale(1.15)\'" onmouseleave="this.style.transform=\'translate(-50%,-50%) scale(1)\'">' + (i+1) + '</button>';
-                }).join('');
+                var viewKey = 's3d_view_' + sc.id;
+                var viewRec = JSON.parse(localStorage.getItem(viewKey) || '{}');
 
                 var kpListItems = kps.map(function(kp, i) {
-                    return '<button class="s3d-kp-list-btn" data-id="' + kp.id + '" style="display:flex;align-items:center;gap:9px;padding:9px 11px;border:1.5px solid var(--gray-200);border-radius:9px;background:white;cursor:pointer;text-align:left;width:100%;transition:all .15s" onmouseenter="if(!this.classList.contains(\'s3d-kp-active\')){this.style.borderColor=\'var(--primary)\';this.style.background=\'var(--blue-50)\'}" onmouseleave="if(!this.classList.contains(\'s3d-kp-active\')){this.style.borderColor=\'var(--gray-200)\';this.style.background=\'white\'}">'
+                    return '<button class="s3d-kp-list-btn" data-id="' + kp.id + '" style="display:flex;align-items:center;gap:9px;padding:9px 11px;border:1.5px solid var(--gray-200);border-radius:9px;background:white;cursor:pointer;text-align:left;width:100%;transition:all .15s">'
                         + '<div style="width:24px;height:24px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0">' + (i+1) + '</div>'
                         + '<span style="font-size:.83rem;font-weight:600;color:var(--gray-700)">' + kp.label + '</span>'
                         + '</button>';
                 }).join('');
 
-                var deco = decoMap[sc.id] || '';
-                var viewKey = 's3d_view_' + sc.id;
-                var viewRec = JSON.parse(localStorage.getItem(viewKey) || '{}');
+                body.innerHTML = `
+<style>
+@keyframes pano-pulse{
+  0%,100%{box-shadow:0 0 0 4px rgba(99,179,237,.35),0 0 18px rgba(99,179,237,.5)}
+  50%{box-shadow:0 0 0 10px rgba(99,179,237,.12),0 0 32px rgba(99,179,237,.7)}
+}
+@keyframes pano-ring{
+  0%{transform:translate(-50%,-50%) scale(1);opacity:.7}
+  100%{transform:translate(-50%,-50%) scale(2.4);opacity:0}
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popSlide{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pano-marker-wrap{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:10}
+.pano-marker-ring{position:absolute;top:50%;left:50%;width:36px;height:36px;border-radius:50%;background:rgba(99,179,237,.18);animation:pano-ring 2s ease-out infinite;border:2px solid rgba(99,179,237,.4)}
+.pano-marker-ring2{animation-delay:.7s}
+.pano-marker-btn{position:relative;pointer-events:all;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);border:2.5px solid rgba(255,255,255,.9);color:white;font-size:.72rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;animation:pano-pulse 2.5s ease infinite;transition:transform .18s,filter .18s;box-shadow:0 2px 12px rgba(59,130,246,.5)}
+.pano-marker-btn:hover{transform:scale(1.2);filter:brightness(1.1)}
+.pano-popup{position:absolute;z-index:30;width:300px;background:rgba(15,23,42,.88);backdrop-filter:blur(18px);border:1px solid rgba(99,179,237,.25);border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05);overflow:hidden;animation:popSlide .22s ease}
+.pano-popup-close{position:absolute;top:8px;right:10px;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:.15s}
+.pano-popup-close:hover{background:rgba(255,255,255,.2);color:white}
+.pano-section-label{display:flex;align-items:center;gap:6px;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+.pano-quote{font-size:.9rem;line-height:1.8;color:rgba(255,255,255,.92);font-style:italic;padding:10px 12px;background:rgba(255,255,255,.06);border-radius:8px;border-left:3px solid #60a5fa}
+.pano-ai-text{font-size:.84rem;line-height:1.75;color:rgba(255,255,255,.85)}
+.pano-ai-loading{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.55);font-size:.82rem}
+.pano-ai-spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#60a5fa;border-radius:50%;animation:spin .7s linear infinite}
+.pano-mode-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:12px;font-size:.68rem;font-weight:700}
+#pano-canvas{width:100%;height:100%;display:block;touch-action:none}
+</style>
+<div style="display:flex;flex-direction:column;height:100%">
+  <!-- Topbar -->
+  <div style="display:flex;align-items:center;gap:10px;padding:9px 16px;background:white;border-bottom:1px solid var(--gray-200);flex-shrink:0;flex-wrap:wrap">
+    <button id="s3d-back" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border:1.5px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-600);cursor:pointer;font-size:.82rem;font-weight:600;transition:all .15s">
+      <i class="fas fa-chevron-left"></i> 返回
+    </button>
+    <div style="font-weight:800;font-size:.95rem;color:var(--gray-800)">${sc.emoji} ${sc.name}</div>
+    <div style="background:var(--blue-50);color:var(--blue-700);font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:7px">${sc.subject}</div>
+    <div id="pano-mode-indicator" class="pano-mode-badge" style="background:#dbeafe;color:#1d4ed8"><i class="fas fa-circle-notch fa-spin"></i> 加载全景中…</div>
+    <div style="flex:1"></div>
+    <div style="font-size:.74rem;color:var(--gray-500)"><i class="fas fa-compass" style="color:var(--primary);margin-right:3px"></i>拖拽旋转视角</div>
+    <div style="font-size:.74rem;color:var(--gray-500)"><i class="fas fa-map-marker-alt" style="color:#f59e0b;margin-right:3px"></i>${kps.length} 个标注</div>
+    <button id="s3d-fs" style="width:30px;height:30px;border:1.5px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-500);cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-expand"></i></button>
+  </div>
+  <!-- Body -->
+  <div style="flex:1;display:flex;min-height:0;overflow:hidden">
+    <!-- 全景视口 -->
+    <div style="flex:1;position:relative;overflow:hidden;background:#0f172a" id="s3d-canvas">
+      <canvas id="pano-canvas"></canvas>
+      <!-- Marker overlay: markers are injected here by JS -->
+      <div id="pano-marker-layer" style="position:absolute;inset:0;pointer-events:none;overflow:visible"></div>
+      <!-- Popup container -->
+      <div id="pano-popup-host" style="position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:20"></div>
+    </div>
+    <!-- 右侧知识面板 -->
+    <div style="width:272px;flex-shrink:0;display:flex;flex-direction:column;background:white;border-left:1px solid var(--gray-200);overflow-y:auto">
+      <div style="padding:14px;border-bottom:1px solid var(--gray-100)">
+        <div style="font-weight:700;font-size:.84rem;color:var(--gray-800);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <i class="fas fa-book-open" style="color:var(--primary)"></i> 知识解析
+        </div>
+        <div id="s3d-kp-panel">
+          <div style="text-align:center;padding:24px 12px;color:var(--gray-400)">
+            <i class="fas fa-hand-pointer" style="font-size:1.5rem;display:block;margin-bottom:10px;opacity:.4"></i>
+            <div style="font-size:.82rem">点击场景中发光的<br>蓝色标注点查看解析</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:12px 14px">
+        <div style="font-size:.74rem;font-weight:700;color:var(--gray-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">全部标注（${kps.length}）</div>
+        <div style="display:flex;flex-direction:column;gap:6px" id="s3d-kp-list">
+          ${kps.length ? kpListItems : '<div style="font-size:.82rem;color:var(--gray-400);text-align:center;padding:16px">暂无知识点标注</div>'}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
 
-                body.innerHTML = '<style>'
-                    + '@keyframes kp-pulse{0%,100%{box-shadow:0 0 0 5px rgba(37,99,235,.2),0 3px 10px rgba(37,99,235,.4)}50%{box-shadow:0 0 0 9px rgba(37,99,235,.1),0 3px 14px rgba(37,99,235,.5)}}'
-                    + '@keyframes float-anim{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}'
-                    + '@keyframes sway-anim{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}'
-                    + '@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}'
-                    + '</style>'
-                    + '<div style="display:flex;flex-direction:column;height:100%">'
-                    +   '<div style="display:flex;align-items:center;gap:10px;padding:11px 18px;background:white;border-bottom:1px solid var(--gray-200);flex-shrink:0;flex-wrap:wrap">'
-                    +     '<button id="s3d-back" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border:1.5px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-600);cursor:pointer;font-size:.82rem;font-weight:600;transition:all .15s" onmouseenter="this.style.borderColor=\'var(--primary)\';this.style.color=\'var(--primary)\'" onmouseleave="this.style.borderColor=\'var(--gray-200)\';this.style.color=\'var(--gray-600)\'"><i class="fas fa-chevron-left"></i> 返回</button>'
-                    +     '<div style="font-weight:800;font-size:.95rem;color:var(--gray-800)">' + sc.emoji + ' ' + sc.name + '</div>'
-                    +     '<div style="background:var(--blue-50);color:var(--blue-700);font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:7px">' + sc.subject + '</div>'
-                    +     (sc.createdAt && sc.createdAt!=='演示' ? '<div style="font-size:.72rem;color:var(--gray-400)">教师发布 · ' + sc.createdAt + '</div>' : '')
-                    +     '<div style="flex:1"></div>'
-                    +     '<div style="font-size:.75rem;color:var(--gray-500)"><i class="fas fa-map-marker-alt" style="color:var(--primary);margin-right:3px"></i>共 ' + kps.length + ' 个标注 · 已学 ' + (viewRec.count||1) + ' 次</div>'
-                    +     '<button id="s3d-fs" style="width:30px;height:30px;border:1.5px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-500);cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-expand"></i></button>'
-                    +   '</div>'
-                    +   '<div style="flex:1;display:flex;min-height:0;overflow:hidden">'
-                    +     '<div style="flex:1;position:relative;overflow:hidden;background:' + (sc.bgImage ? 'url(\''+sc.bgImage+'\') center/cover no-repeat' : 'linear-gradient(160deg,'+getGrad(sc.subject)+')') + '" id="s3d-canvas">'
-                    +       '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:7rem;opacity:.07;user-select:none;pointer-events:none">' + sc.emoji + '</div>'
-                    +       deco
-                    +       '<div style="position:absolute;bottom:0;left:0;right:0;padding:24px 28px;background:linear-gradient(transparent,rgba(0,0,0,.42))">'
-                    +         '<p style="color:white;font-size:.95rem;line-height:1.75;text-shadow:0 1px 4px rgba(0,0,0,.5);max-width:560px">' + sc.desc + '</p>'
-                    +       '</div>'
-                    +       kpMarkers
-                    +       (kps.length===0?'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.45);color:white;padding:10px 20px;border-radius:10px;font-size:.84rem;text-align:center">该情景暂无知识点标注</div>':'')
-                    +     '</div>'
-                    +     '<div style="width:280px;flex-shrink:0;display:flex;flex-direction:column;background:white;border-left:1px solid var(--gray-200);overflow-y:auto">'
-                    +       '<div style="padding:14px;border-bottom:1px solid var(--gray-100)">'
-                    +         '<div style="font-weight:700;font-size:.84rem;color:var(--gray-800);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="fas fa-book-open" style="color:var(--primary)"></i> 知识解析</div>'
-                    +         '<div id="s3d-kp-panel"><div style="text-align:center;padding:20px 12px;color:var(--gray-400)"><i class="fas fa-map-marker-alt" style="font-size:1.4rem;display:block;margin-bottom:8px;opacity:.4"></i><div style="font-size:.82rem">点击蓝色标注点查看解析</div></div></div>'
-                    +       '</div>'
-                    +       '<div style="padding:12px 14px">'
-                    +         '<div style="font-size:.75rem;font-weight:700;color:var(--gray-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">全部标注（' + kps.length + '）</div>'
-                    +         '<div style="display:flex;flex-direction:column;gap:6px">' + (kps.length ? kpListItems : '<div style="font-size:.82rem;color:var(--gray-400);text-align:center;padding:16px">教师尚未添加知识点</div>') + '</div>'
-                    +       '</div>'
-                    +     '</div>'
-                    +   '</div>'
-                    + '</div>';
+                // ── 全景渲染引擎（Three.js） ──────────────────────────────
+                var sceneEl = document.getElementById('s3d-canvas');
+                var canvas  = document.getElementById('pano-canvas');
+                var markerLayer = document.getElementById('pano-marker-layer');
+                var popupHost   = document.getElementById('pano-popup-host');
 
-                document.getElementById('s3d-back').addEventListener('click', function(){ viewState='list'; render(); });
-                document.getElementById('s3d-fs').addEventListener('click', function(){
-                    var c = document.getElementById('s3d-canvas');
-                    if (c && c.requestFullscreen) c.requestFullscreen();
+                // 动态加载 Three.js
+                function loadThree(cb) {
+                    if (window.THREE) { cb(); return; }
+                    var s = document.createElement('script');
+                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+                    s.onload = cb;
+                    document.head.appendChild(s);
+                }
+
+                loadThree(function() {
+                    var THREE = window.THREE;
+                    var W = sceneEl.clientWidth, H = sceneEl.clientHeight;
+                    canvas.width = W; canvas.height = H;
+
+                    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                    renderer.setSize(W, H);
+
+                    var panoScene  = new THREE.Scene();
+                    var camera = new THREE.PerspectiveCamera(75, W/H, 0.1, 1000);
+                    camera.position.set(0, 0, 0.01);
+
+                    // 球体（内面渲染）
+                    var geo = new THREE.SphereGeometry(500, 60, 40);
+                    geo.scale(-1, 1, 1);
+
+                    // 选择全景图：优先 bgImage，否则用内置渐变 Canvas
+                    function buildFallbackTexture() {
+                        var fc = document.createElement('canvas');
+                        fc.width = 2048; fc.height = 1024;
+                        var ctx = fc.getContext('2d');
+                        // 夜空渐变
+                        var grd = ctx.createLinearGradient(0,0,0,1024);
+                        grd.addColorStop(0,   '#020818');
+                        grd.addColorStop(0.4, '#0a1628');
+                        grd.addColorStop(0.6, '#0f2240');
+                        grd.addColorStop(0.75,'#1a3a1a');
+                        grd.addColorStop(1,   '#0d1f0d');
+                        ctx.fillStyle = grd; ctx.fillRect(0,0,2048,1024);
+                        // 星星
+                        for (var s=0;s<320;s++){
+                            ctx.beginPath();
+                            var sx=Math.random()*2048, sy=Math.random()*512;
+                            var sr=Math.random()*1.5+0.3;
+                            var sa=Math.random()*.8+.2;
+                            ctx.arc(sx,sy,sr,0,Math.PI*2);
+                            ctx.fillStyle='rgba(255,255,255,'+sa+')';
+                            ctx.fill();
+                        }
+                        // 月亮
+                        var mx=1024+200, my=180, mr=60;
+                        var mg=ctx.createRadialGradient(mx,my,5,mx,my,mr);
+                        mg.addColorStop(0,'rgba(255,250,200,1)');
+                        mg.addColorStop(.5,'rgba(255,240,160,.9)');
+                        mg.addColorStop(1,'rgba(255,220,100,0)');
+                        ctx.beginPath(); ctx.arc(mx,my,mr,0,Math.PI*2);
+                        ctx.fillStyle=mg; ctx.fill();
+                        // 月晕
+                        var mh=ctx.createRadialGradient(mx,my,mr,mx,my,mr*2.5);
+                        mh.addColorStop(0,'rgba(255,240,150,.2)');
+                        mh.addColorStop(1,'rgba(255,240,150,0)');
+                        ctx.beginPath(); ctx.arc(mx,my,mr*2.5,0,Math.PI*2);
+                        ctx.fillStyle=mh; ctx.fill();
+                        // 水面
+                        var wg=ctx.createLinearGradient(0,620,0,1024);
+                        wg.addColorStop(0,'rgba(10,30,60,.9)');
+                        wg.addColorStop(1,'rgba(5,15,30,1)');
+                        ctx.fillStyle=wg; ctx.fillRect(0,620,2048,404);
+                        // 荷叶
+                        for(var li=0;li<18;li++){
+                            var lx=Math.random()*2048,ly=660+Math.random()*200,lr=25+Math.random()*40;
+                            ctx.beginPath(); ctx.ellipse(lx,ly,lr,lr*.55,Math.random()*Math.PI,0,Math.PI*2);
+                            ctx.fillStyle='rgba(20,120,40,'+(.4+Math.random()*.4)+')'; ctx.fill();
+                        }
+                        // 月光倒影
+                        var rg=ctx.createLinearGradient(mx-80,620,mx+80,750);
+                        rg.addColorStop(0,'rgba(255,240,130,0)');
+                        rg.addColorStop(.5,'rgba(255,240,130,.25)');
+                        rg.addColorStop(1,'rgba(255,240,130,0)');
+                        ctx.fillStyle=rg; ctx.fillRect(mx-80,620,160,130);
+                        return new THREE.CanvasTexture(fc);
+                    }
+
+                    var mat = new THREE.MeshBasicMaterial({ side: THREE.FrontSide });
+                    var mesh = new THREE.Mesh(geo, mat);
+                    panoScene.add(mesh);
+
+                    function applyTexture(tex) {
+                        mat.map = tex; mat.needsUpdate = true;
+                        // 更新模式标签
+                        var badge = document.getElementById('pano-mode-indicator');
+                        if (badge) {
+                            badge.innerHTML = sc.bgImage
+                                ? '<i class="fas fa-panorama"></i> 全景图模式'
+                                : '<i class="fas fa-magic"></i> 3D 渲染模式';
+                            badge.style.background = sc.bgImage ? '#d1fae5' : '#ede9fe';
+                            badge.style.color = sc.bgImage ? '#065f46' : '#6b21a8';
+                        }
+                    }
+
+                    if (sc.bgImage) {
+                        var loader = new THREE.TextureLoader();
+                        loader.load(sc.bgImage, applyTexture, undefined, function() {
+                            applyTexture(buildFallbackTexture());
+                        });
+                    } else {
+                        applyTexture(buildFallbackTexture());
+                    }
+
+                    // ── 相机控制（拖拽旋转）──────────────────────────────
+                    var isDragging=false, prevMouse={x:0,y:0};
+                    var lon=0, lat=0, phi=0, theta=0;
+                    lon = 180; lat = 0;  // 初始朝向图片中央
+
+                    function onPointerDown(e) {
+                        isDragging=true;
+                        prevMouse={x:e.clientX||e.touches?.[0]?.clientX, y:e.clientY||e.touches?.[0]?.clientY};
+                    }
+                    function onPointerMove(e) {
+                        if (!isDragging) return;
+                        var cx=e.clientX||(e.touches?.[0]?.clientX||0);
+                        var cy=e.clientY||(e.touches?.[0]?.clientY||0);
+                        lon -= (cx - prevMouse.x) * 0.25;
+                        lat += (cy - prevMouse.y) * 0.25;
+                        lat = Math.max(-85, Math.min(85, lat));
+                        prevMouse={x:cx,y:cy};
+                    }
+                    function onPointerUp() { isDragging=false; }
+                    canvas.addEventListener('mousedown', onPointerDown);
+                    canvas.addEventListener('mousemove', onPointerMove);
+                    canvas.addEventListener('mouseup',   onPointerUp);
+                    canvas.addEventListener('touchstart', onPointerDown, {passive:true});
+                    canvas.addEventListener('touchmove',  onPointerMove, {passive:true});
+                    canvas.addEventListener('touchend',   onPointerUp);
+                    // 滚轮缩放
+                    canvas.addEventListener('wheel', function(e){
+                        camera.fov = Math.max(30, Math.min(100, camera.fov + e.deltaY * 0.05));
+                        camera.updateProjectionMatrix();
+                    }, {passive:true});
+
+                    // ── 坐标转换：球面 (lon,lat) → 屏幕 (px,py) ──────────
+                    function sphereToScreen(lonDeg, latDeg) {
+                        var phiR  = THREE.MathUtils.degToRad(90 - latDeg);
+                        var thetaR= THREE.MathUtils.degToRad(lonDeg);
+                        var vec = new THREE.Vector3();
+                        vec.setFromSphericalCoords(1, phiR, thetaR);
+                        vec.project(camera);
+                        if (vec.z > 1) return null;
+                        return {
+                            x: (vec.x * 0.5 + 0.5) * W,
+                            y: (-(vec.y) * 0.5 + 0.5) * H
+                        };
+                    }
+
+                    // ── kp.x/kp.y 百分比 → 球面坐标（标准 2:1 等距圆柱投影）──
+                    function kpToSphere(kp) {
+                        var lonRaw = kp.x / 100 * 360;
+                        return {
+                            lon: lonRaw > 180 ? lonRaw - 360 : lonRaw,
+                            lat: 90 - kp.y / 100 * 180
+                        };
+                    }
+                    // ── 注入 Marker DOM ─────────────────────────────────────
+                    kps.forEach(function(kp, i) {
+                        var wrap = document.createElement('div');
+                        wrap.className = 'pano-marker-wrap';
+                        wrap.id = 'pano-mwrap-' + kp.id;
+                        wrap.innerHTML =
+                            '<div class="pano-marker-ring"></div>'
+                          + '<div class="pano-marker-ring pano-marker-ring2"></div>'
+                          + '<button class="pano-marker-btn" title="' + kp.label + '">' + (i+1) + '</button>';
+                        markerLayer.appendChild(wrap);
+                        wrap.querySelector('.pano-marker-btn').addEventListener('click', function(e){
+                            e.stopPropagation();
+                            _showPanoKp(kp, kps, i);
+                        });
+                    });
+
+                    // ── 渲染循环 ─────────────────────────────────────────────
+                    var alive = true;
+                    function animate() {
+                        if (!alive) return;
+                        requestAnimationFrame(animate);
+
+                        // 更新相机方向
+                        phi   = THREE.MathUtils.degToRad(90 - lat);
+                        theta = THREE.MathUtils.degToRad(lon);
+                        camera.lookAt(
+                            Math.sin(phi)*Math.cos(theta),
+                            Math.cos(phi),
+                            Math.sin(phi)*Math.sin(theta)
+                        );
+
+                        // 更新 Marker 位置
+                        kps.forEach(function(kp) {
+                            var sp  = kpToSphere(kp);
+                            var pos = sphereToScreen(sp.lon, sp.lat);
+                            var el  = document.getElementById('pano-mwrap-' + kp.id);
+                            if (!el) return;
+                            if (!pos) {
+                                el.style.display = 'none';
+                            } else {
+                                el.style.display = '';
+                                el.style.left = pos.x + 'px';
+                                el.style.top  = pos.y + 'px';
+                                el.style.pointerEvents = 'all';
+                            }
+                        });
+
+                        renderer.render(panoScene, camera);
+                    }
+                    animate();
+
+                    // 响应式
+                    var resizeObs = new ResizeObserver(function() {
+                        W = sceneEl.clientWidth; H = sceneEl.clientHeight;
+                        renderer.setSize(W, H);
+                        camera.aspect = W/H;
+                        camera.updateProjectionMatrix();
+                    });
+                    resizeObs.observe(sceneEl);
+
+                    // 离开时清理
+                    document.getElementById('s3d-back').addEventListener('click', function(){
+                        alive = false; renderer.dispose(); resizeObs.disconnect();
+                        viewState='list'; render();
+                    });
+                    document.getElementById('s3d-fs').addEventListener('click', function(){
+                        if (sceneEl.requestFullscreen) sceneEl.requestFullscreen();
+                    });
+                }); // end loadThree
+
+                // ── 右侧列表点击 ─────────────────────────────────────────────
+                body.querySelectorAll('.s3d-kp-list-btn').forEach(function(btn){
+                    btn.addEventListener('click', function(){
+                        var id = this.dataset.id;
+                        var kp = kps.find(function(k){ return k.id===id; });
+                        if (kp) _showPanoKp(kp, kps, kps.indexOf(kp));
+                    });
+                });
+            }
+
+            // ── 显示 Popup + AI解析 ──────────────────────────────────────────
+            function _showPanoKp(kp, kps, idx) {
+                // 同步右侧列表高亮
+                body.querySelectorAll('.s3d-kp-list-btn').forEach(function(b){
+                    var active = b.dataset.id===kp.id;
+                    b.style.borderColor = active?'var(--primary)':'var(--gray-200)';
+                    b.style.background  = active?'var(--blue-50)':'white';
                 });
 
-                body.querySelectorAll('.s3d-kp-btn, .s3d-kp-list-btn').forEach(function(btn){
-                    btn.addEventListener('click', function(){ _showKp(this.dataset.id, kps); });
+                // 更新右侧解析面板（固定内容，快速显示）
+                var panel = document.getElementById('s3d-kp-panel');
+                if (panel) {
+                    panel.innerHTML = '<div style="animation:fadeIn .2s ease">'
+                        + '<div style="display:flex;align-items:center;gap:7px;margin-bottom:10px">'
+                        +   '<div style="width:26px;height:26px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800">'+(idx+1)+'</div>'
+                        +   '<div style="font-weight:800;font-size:.88rem;color:var(--gray-800)">' + kp.label + '</div>'
+                        + '</div>'
+                        + '<div style="font-size:.84rem;color:var(--gray-700);line-height:1.7;background:var(--gray-50);border-radius:9px;padding:12px;border-left:3px solid var(--primary)">' + kp.detail + '</div>'
+                        + '<div style="margin-top:10px;display:flex;gap:7px">'
+                        +   '<button onclick="if(window.speechSynthesis){var u=new SpeechSynthesisUtterance(\''+kp.label.replace(/'/g,"\\'")+'。'+kp.detail.replace(/'/g,"\\'").slice(0,60).replace(/\n/g,' ')+'\');u.lang=\'zh-CN\';u.rate=.88;speechSynthesis.speak(u);showGlobalToast(\'正在朗读\',\'info\');}" style="flex:1;padding:7px;background:var(--blue-50);color:var(--primary);border:1.5px solid var(--blue-100);border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer"><i class="fas fa-volume-up"></i> 朗读</button>'
+                        +   '<button onclick="_saveNote(\''+kp.id+'\',\''+kp.label.replace(/'/g,"\\'")+'\');" style="flex:1;padding:7px;background:var(--green-50);color:var(--green-600);border:1.5px solid var(--green-100);border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer"><i class="fas fa-pencil-alt"></i> 记笔记</button>'
+                        + '</div></div>';
+                }
+
+                // ── 悬浮 Popup（双板块） ─────────────────────────────────────
+                var host = document.getElementById('pano-popup-host');
+                if (!host) return;
+
+                // 关闭已有 popup
+                host.innerHTML = '';
+
+                var popup = document.createElement('div');
+                popup.className = 'pano-popup';
+                // 定位：锚点按钮附近，右下方偏移
+                var markerWrap = document.getElementById('pano-mwrap-' + kp.id);
+                var px = 100, py = 100;
+                if (markerWrap && markerWrap.style.left) {
+                    px = parseFloat(markerWrap.style.left) + 24;
+                    py = parseFloat(markerWrap.style.top)  + 24;
+                }
+                // 防止超出右边界
+                var canvasW = (document.getElementById('s3d-canvas')||{}).clientWidth || 800;
+                if (px + 310 > canvasW) px = px - 330;
+                if (px < 8) px = 8;
+
+                popup.style.left    = px + 'px';
+                popup.style.top     = py + 'px';
+                popup.style.pointerEvents = 'all';
+
+                // 课文摘抄：取 detail 的第一句作为"课文原文"，其余为解析
+                var parts    = kp.detail.split(/[。！？\n]/).filter(Boolean);
+                var quote    = parts[0] || kp.detail;
+                var analysis = parts.slice(1).join('。') || kp.detail;
+
+                popup.innerHTML = `
+<button class="pano-popup-close" id="pano-popup-close-btn"><i class="fas fa-times"></i></button>
+<div style="padding:16px 16px 0">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0">${idx+1}</div>
+    <div style="font-weight:800;font-size:.92rem;color:white">${kp.label}</div>
+  </div>
+  <!-- 板块1：课文摘抄 -->
+  <div class="pano-section-label" style="color:#93c5fd"><i class="fas fa-book" style="color:#60a5fa"></i> 课文摘抄</div>
+  <div class="pano-quote">"${quote}"</div>
+  <!-- 板块2：AI深度解析 -->
+  <div class="pano-section-label" style="color:#c4b5fd;margin-top:12px"><i class="fas fa-robot" style="color:#a78bfa"></i> AI 深度解析</div>
+  <div id="pano-ai-content" class="pano-ai-loading">
+    <div class="pano-ai-spinner"></div>
+    <span>AI 正在解析中…</span>
+  </div>
+</div>
+<div style="display:flex;border-top:1px solid rgba(255,255,255,.08);margin-top:14px">
+  <button id="pano-tts-btn" style="flex:1;padding:9px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;border-right:1px solid rgba(255,255,255,.08);transition:.15s">
+    <i class="fas fa-volume-up"></i> 朗读
+  </button>
+  <button id="pano-note-btn" style="flex:1;padding:9px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;transition:.15s">
+    <i class="fas fa-pencil-alt"></i> 记笔记
+  </button>
+</div>`;
+
+                host.appendChild(popup);
+
+                document.getElementById('pano-popup-close-btn').addEventListener('click', function(){
+                    popup.remove();
+                });
+                document.getElementById('pano-tts-btn').addEventListener('click', function(){
+                    if (window.speechSynthesis) {
+                        var u = new SpeechSynthesisUtterance(kp.label + '。' + quote);
+                        u.lang='zh-CN'; u.rate=0.88;
+                        speechSynthesis.speak(u);
+                        showGlobalToast('正在朗读', 'info');
+                    }
+                });
+                document.getElementById('pano-note-btn').addEventListener('click', function(){
+                    _saveNote(kp.id, kp.label);
+                });
+
+                // ── 调用 Claude API 做 AI 深度解析 ──────────────────────────
+                _fetchPanoAI(kp, quote, analysis);
+            }
+
+            // ── DeepSeek Chat 解析调用 ──────────────────────────────────────
+            function _fetchPanoAI(kp, quote, fallback) {
+                var aiBox = document.getElementById('pano-ai-content');
+                if (!aiBox) return;
+
+                var prompt = '你是一位语文/人文学科AI导师，请对以下内容进行深度文学赏析（不超过80字，语言生动，适合中学生理解）：\n'
+                           + '知识点：' + kp.label + '\n'
+                           + '原文：' + quote + '\n'
+                           + '请重点分析修辞手法、字词之美或思想情感，直接输出赏析文字，不要开头的"好的"等套话。';
+
+                fetch(DEEPSEEK_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        max_tokens: 200,
+                        messages: [{ role: 'user', content: prompt }]
+                    })
+                })
+                .then(function(r){ return r.json(); })
+                .then(function(data) {
+                    var aiBox2 = document.getElementById('pano-ai-content');
+                    if (!aiBox2) return;
+                    var text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || fallback;
+                    aiBox2.className = 'pano-ai-text';
+                    aiBox2.style.animation = 'fadeIn .3s ease';
+                    aiBox2.textContent = text;
+                })
+                .catch(function() {
+                    var aiBox2 = document.getElementById('pano-ai-content');
+                    if (!aiBox2) return;
+                    aiBox2.className = 'pano-ai-text';
+                    aiBox2.textContent = fallback;
                 });
             }
 
             function _showKp(id, kps) {
                 var kp = kps.find(function(k){ return k.id===id; });
-                if (!kp) return;
-                body.querySelectorAll('.s3d-kp-list-btn').forEach(function(b){
-                    var active = b.dataset.id===id;
-                    b.classList.toggle('s3d-kp-active', active);
-                    b.style.borderColor = active?'var(--primary)':'var(--gray-200)';
-                    b.style.background  = active?'var(--blue-50)':'white';
-                });
-                var panel = document.getElementById('s3d-kp-panel');
-                if (!panel) return;
-                panel.innerHTML = '<div style="animation:fadeIn .2s ease">'
-                    + '<div style="display:flex;align-items:center;gap:7px;margin-bottom:9px">'
-                    +   '<div style="width:26px;height:26px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800"><i class="fas fa-info"></i></div>'
-                    +   '<div style="font-weight:800;font-size:.88rem;color:var(--gray-800)">' + kp.label + '</div>'
-                    + '</div>'
-                    + '<div style="font-size:.84rem;color:var(--gray-700);line-height:1.7;background:var(--gray-50);border-radius:9px;padding:12px;border-left:3px solid var(--primary)">' + kp.detail + '</div>'
-                    + '<div style="margin-top:10px;display:flex;gap:7px">'
-                    +   '<button onclick="if(window.speechSynthesis){var u=new SpeechSynthesisUtterance(\'' + kp.label.replace(/'/g,"\\'") + '。' + kp.detail.replace(/'/g,"\\'").slice(0,60).replace(/\n/g,' ') + '\');u.lang=\'zh-CN\';u.rate=0.88;speechSynthesis.speak(u);showGlobalToast(\'正在朗读\',\'info\');}" style="flex:1;padding:7px;background:var(--blue-50);color:var(--primary);border:1.5px solid var(--blue-100);border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer"><i class="fas fa-volume-up"></i> 朗读</button>'
-                    +   '<button onclick="_saveNote(\'' + kp.id + '\',\'' + kp.label.replace(/'/g,"\\'") + '\')" style="flex:1;padding:7px;background:var(--green-50);color:var(--green-600);border:1.5px solid var(--green-100);border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer"><i class="fas fa-pencil-alt"></i> 记笔记</button>'
-                    + '</div></div>';
+                if (kp) _showPanoKp(kp, kps, kps.indexOf(kp));
             }
 
             // ── 记录浏览 ──────────────────────────────────────────────────
@@ -7267,47 +8024,6 @@ ${text}
         }
 
         // ══════════════════════════════════════════════════════════════
-        // ⑫ 3D 场景配图上传（注入到教师端3D模块）
-        // ══════════════════════════════════════════════════════════════
-        function injectSceneImageUpload() {
-            var descSection = document.getElementById('sceneDescriptionSection');
-            if (!descSection || document.getElementById('scene-img-upload')) return;
-            var wrap = document.createElement('div');
-            wrap.innerHTML = '<div class="scene-img-upload" id="scene-img-upload">'
-                + '<i class="fas fa-image" style="color:var(--gray-400);font-size:1.4rem;display:block;margin-bottom:6px"></i>'
-                + '<p style="font-size:.82rem;color:var(--gray-500);margin:0">点击或拖拽上传背景图片</p>'
-                + '<small style="color:var(--gray-400);font-size:.72rem">支持 JPG / PNG，最大 2MB，存为 base64</small>'
-                + '<input type="file" id="scene-img-input" accept="image/jpeg,image/png" style="display:none">'
-                + '</div>'
-                + '<img id="scene-img-preview" class="scene-img-preview" alt="场景背景预览">';
-            descSection.appendChild(wrap);
-
-            var imgUpload  = document.getElementById('scene-img-upload');
-            var imgInput   = document.getElementById('scene-img-input');
-            var imgPreview = document.getElementById('scene-img-preview');
-
-            imgUpload.addEventListener('click', function(){ imgInput.click(); });
-            imgUpload.addEventListener('dragover', function(e){ e.preventDefault(); imgUpload.style.borderColor='var(--primary)'; });
-            imgUpload.addEventListener('dragleave', function(){ imgUpload.style.borderColor=''; });
-            imgUpload.addEventListener('drop', function(e){ e.preventDefault(); imgUpload.style.borderColor=''; if(e.dataTransfer.files[0]) readImg(e.dataTransfer.files[0]); });
-            imgInput.addEventListener('change', function(){ if(this.files[0]) readImg(this.files[0]); });
-
-            function readImg(file) {
-                if (file.size > 2*1024*1024) { showGlobalToast('图片不能超过 2MB', 'error'); return; }
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    window._sceneImageData = e.target.result;
-                    imgPreview.src = e.target.result;
-                    imgPreview.style.display = 'block';
-                    imgUpload.style.display = 'none';
-                    showGlobalToast('背景图片已加载', 'success');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // bgImage injection is handled inside _buildSceneData directly (see below)
-
         // ══════════════════════════════════════════════════════════════
         // ⑬ PPT 自定义配色编辑器
         // ══════════════════════════════════════════════════════════════
