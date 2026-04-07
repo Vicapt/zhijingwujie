@@ -1812,6 +1812,14 @@ body,html{height:100%;overflow:hidden;color:var(--txt);font-family:'DM Sans',san
 .toast-dismiss:hover{background:var(--glass-h);color:var(--txt)}
 
 @keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+
+/* ── iPad / 触摸设备适配 ── */
+@media (pointer: coarse) {
+  /* 日夜切换按钮移至左上角 */
+  #js-theme-btn { bottom: unset !important; right: unset !important; top: 14px !important; left: 14px !important; }
+  /* 底部栏与对话框保持距离 */
+  #js-footer-bar { bottom: 24px !important; }
+}
 </style>
 </head>
 <body>
@@ -9040,7 +9048,7 @@ window.changeFrameImage = changeFrameImage;
 
 </script>
   <!-- 底部联系栏 -->
-  <div style="position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:0;pointer-events:none;font-size:0.58rem;color:var(--txt-faint);letter-spacing:0.5px;white-space:nowrap">
+  <div id="js-footer-bar" style="position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:0;pointer-events:none;font-size:0.58rem;color:var(--txt-faint);letter-spacing:0.5px;white-space:nowrap">
     <span>@Vicapt</span>
     <span style="margin:0 5px;opacity:0.5">/</span>
     <a href="/cdn-cgi/l/email-protection#f59d80949b9282909c919c839c969e8cb59d9a8198949c99db969a98" style="pointer-events:auto;color:var(--txt-faint);text-decoration:none;transition:color 0.15s" onmouseover="this.style.color='var(--txt-dim)'" onmouseout="this.style.color='var(--txt-faint)'">联系反馈</a>
@@ -9250,7 +9258,7 @@ window.changeFrameImage = changeFrameImage;
   }
 
   /* ── 通用悬浮窗触摸拖拽 ───────────────────────────── */
-  /* 长按解锁 → 拖动 → 点击外部锁定                       */
+  /* 点击解锁 → 拖动 → 点击外部锁定（防划词复制）           */
   function touchDrag(el, onSave) {
     let locked = false, dragging = false, ox = 0, oy = 0;
 
@@ -9273,29 +9281,24 @@ window.changeFrameImage = changeFrameImage;
         return;
       }
 
-      let lt = setTimeout(() => {
-        lt = null;
-        if (moved) return;
-        locked = true; dragging = true;
-        ox = sx - el.offsetLeft; oy = sy - el.offsetTop;
-        el.style.transition = 'none';
-        highlight(true); vib();
-      }, LONG_MS);
+      /* 点击即解锁并开始拖动（无需长按，避免触发iPad划词复制） */
+      dragging = true;
+      ox = tc.clientX - el.offsetLeft;
+      oy = tc.clientY - el.offsetTop;
+      el.style.transition = 'none';
+      highlight(true); vib();
+      e.preventDefault();
 
       function onMove(e2) {
         const tc2 = e2.touches[0];
         if (Math.abs(tc2.clientX-sx)>MOVE_THR || Math.abs(tc2.clientY-sy)>MOVE_THR) {
-          moved = true; clearTimeout(lt); lt = null;
-          el.removeEventListener('touchmove', onMove);
+          moved = true;
         }
       }
-      function onEnd() {
-        clearTimeout(lt); lt = null;
-        el.removeEventListener('touchmove', onMove);
-        el.removeEventListener('touchend',  onEnd);
-      }
       el.addEventListener('touchmove', onMove, {passive:true});
-      el.addEventListener('touchend',  onEnd,  {passive:true, once:true});
+      el.addEventListener('touchend', () => {
+        el.removeEventListener('touchmove', onMove);
+      }, {passive:true, once:true});
     }, {passive: false});
 
     window.addEventListener('touchmove', e => {
@@ -9388,6 +9391,7 @@ window.changeFrameImage = changeFrameImage;
     bottleWrap.removeEventListener('touchstart', bottleDragStart);
 
     let bLocked=false, bDrag=false, bOx=0, bOy=0;
+    let bLastTap=0, bMoved=false, bSx=0, bSy=0;
 
     function bHighlight(on) {
       bottleWrap.style.filter = on ? 'drop-shadow(0 0 8px rgba(255,160,80,.8))' : '';
@@ -9403,7 +9407,7 @@ window.changeFrameImage = changeFrameImage;
     bottleWrap.addEventListener('touchstart', e => {
       if (e.touches.length !== 1) return;
       const tc = e.touches[0];
-      let sx=tc.clientX, sy=tc.clientY, moved=false;
+      bSx=tc.clientX; bSy=tc.clientY; bMoved=false;
 
       if (bLocked) {
         bDrag=true;
@@ -9412,28 +9416,41 @@ window.changeFrameImage = changeFrameImage;
         e.preventDefault(); return;
       }
 
-      let lt = setTimeout(()=>{
-        lt=null; if(moved) return;
-        bLocked=true; bDrag=true;
-        const r=bottleWrap.getBoundingClientRect();
-        bOx=sx-r.left; bOy=sy-r.top;
-        bHighlight(true); vib();
-        showBottleCtxAt({clientX:sx, clientY:sy});
-      }, LONG_MS);
-
       function mv(e2){
         const tc2=e2.touches[0];
-        if(Math.abs(tc2.clientX-sx)>MOVE_THR||Math.abs(tc2.clientY-sy)>MOVE_THR){
-          moved=true; clearTimeout(lt); lt=null;
+        if(Math.abs(tc2.clientX-bSx)>MOVE_THR||Math.abs(tc2.clientY-bSy)>MOVE_THR){
+          bMoved=true;
           bottleWrap.removeEventListener('touchmove',mv);
         }
       }
       bottleWrap.addEventListener('touchmove',mv,{passive:true});
       bottleWrap.addEventListener('touchend',()=>{
-        clearTimeout(lt); lt=null;
         bottleWrap.removeEventListener('touchmove',mv);
       },{once:true, passive:true});
     }, {passive:false});
+
+    /* 单击显示商店选项，双击收取（防划词复制） */
+    bottleWrap.addEventListener('touchend', e => {
+      if (bDrag) { bDrag=false; try{save();}catch(e){} return; }
+      if (bMoved) return;
+
+      const now = Date.now();
+      const isDoubleTap = (now - bLastTap) < 300;
+      bLastTap = now;
+
+      if (isDoubleTap) {
+        /* 双击收取 */
+        if ((appData.bottleDrops||0) >= BOTTLE_MAX) {
+          bottleCollect(); vib();
+        }
+      } else {
+        /* 单击显示商店选项（延迟等待双击） */
+        setTimeout(()=>{
+          if ((Date.now()-bLastTap) < 300) return; /* 双击已触发 */
+          showBottleCtxAt({clientX:bSx, clientY:bSy});
+        }, 300);
+      }
+    }, {passive:true});
 
     window.addEventListener('touchmove', e=>{
       if(!bDrag) return;
