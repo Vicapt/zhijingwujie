@@ -2212,7 +2212,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="3d-view">
                 <i class="fas fa-cube"></i>
-                <span class="menu-text">3D情景学习</span>
+                <span class="menu-text">3D情景学习 <span class="menu-badge">ScriptScene™</span></span>
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="game-play">
                 <i class="fas fa-gamepad"></i>
@@ -3501,10 +3501,19 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 <div class="content-card mod-fullscreen" id="3d-scene">
   <!-- 顶栏 -->
   <div class="sp3-topbar">
-    <div class="sp3-tb-left">
-      <span class="sp3-title"><i class="fas fa-cube"></i> 3D情景生成 ScriptScene™</span>
+    <div class="sp3-tb-left" style="display:flex;align-items:center;gap:0">
+      <span class="sp3-title" style="margin-right:16px"><i class="fas fa-cube"></i> 3D情景生成 ScriptScene™</span>
+      <!-- Tab 切换 -->
+      <div style="display:flex;background:rgba(255,255,255,.1);border-radius:8px;padding:3px;gap:2px">
+        <button id="s3d-tab-edit" onclick="s3dSwitchTab('edit')" style="padding:4px 14px;border-radius:6px;border:none;font-size:.78rem;font-weight:700;cursor:pointer;background:white;color:var(--primary);transition:.15s">
+          <i class="fas fa-pencil-alt"></i> 编辑
+        </button>
+        <button id="s3d-tab-manage" onclick="s3dSwitchTab('manage')" style="padding:4px 14px;border-radius:6px;border:none;font-size:.78rem;font-weight:700;cursor:pointer;background:transparent;color:rgba(255,255,255,.75);transition:.15s">
+          <i class="fas fa-folder-open"></i> 管理
+        </button>
+      </div>
     </div>
-    <div class="sp3-tb-right" style="display:flex;align-items:center;gap:8px">
+    <div class="sp3-tb-right" style="display:flex;align-items:center;gap:8px" id="s3d-topbar-edit-btns">
       <button class="btn btn-secondary" id="resetSceneBtn" style="padding:5px 12px;font-size:.78rem;color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.08)">
         <i class="fas fa-redo"></i> 重置
       </button>
@@ -3517,8 +3526,8 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
     </div>
   </div>
 
-  <!-- 双栏主体 -->
-  <div class="mod-body" style="padding:0;overflow:hidden">
+  <!-- 双栏主体（编辑视图） -->
+  <div class="mod-body" style="padding:0;overflow:hidden" id="s3d-view-edit">
     <div id="s3d-editor-wrap">
 
       <!-- ══ 左栏：场景信息 + 原图标注 ══ -->
@@ -3526,22 +3535,22 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 
         <!-- 基本信息表单 -->
         <div id="s3d-left-top">
-          <div style="display:grid;grid-template-columns:1fr 80px 80px;gap:8px;margin-bottom:8px">
+          <div style="display:grid;grid-template-columns:1fr 90px 90px;gap:8px;margin-bottom:8px">
             <div class="form-group" style="margin:0">
-              <label style="font-size:.75rem">场景名称 <span style="color:var(--red-500)">*</span></label>
-              <input type="text" id="sceneName" placeholder="如：荷塘月色 · 夏夜意境" style="height:32px;font-size:.82rem">
+              <label style="font-size:.73rem;font-weight:600;color:var(--gray-600)">场景名称 <span style="color:var(--red-500)">*</span></label>
+              <input type="text" id="sceneName" placeholder="如：荷塘月色 · 夏夜意境" style="padding:5px 9px;font-size:.82rem;border:1.5px solid var(--gray-200);border-radius:7px;outline:none;width:100%">
             </div>
             <div class="form-group" style="margin:0">
-              <label style="font-size:.75rem">学科</label>
-              <select id="sceneSubject" style="height:32px;font-size:.82rem">
+              <label style="font-size:.73rem;font-weight:600;color:var(--gray-600)">学科</label>
+              <select id="sceneSubject" style="padding:5px 6px;font-size:.82rem;border:1.5px solid var(--gray-200);border-radius:7px;width:100%;background:white">
                 <option value="语文">语文</option><option value="英语">英语</option>
                 <option value="历史">历史</option><option value="科学">科学</option>
                 <option value="地理">地理</option><option value="其他">其他</option>
               </select>
             </div>
             <div class="form-group" style="margin:0">
-              <label style="font-size:.75rem">年级</label>
-              <select id="sceneGrade" style="height:32px;font-size:.82rem">
+              <label style="font-size:.73rem;font-weight:600;color:var(--gray-600)">年级</label>
+              <select id="sceneGrade" style="padding:5px 6px;font-size:.82rem;border:1.5px solid var(--gray-200);border-radius:7px;width:100%;background:white">
                 <option value="小学">小学</option>
                 <option value="初中" selected>初中</option>
                 <option value="高中">高中</option>
@@ -3627,9 +3636,43 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
       </div><!-- /s3d-right-col -->
 
     </div><!-- /s3d-editor-wrap -->
+  </div><!-- /s3d-view-edit -->
+
+  <!-- 管理视图 -->
+  <div class="mod-body" id="s3d-view-manage" style="display:none;padding:0;overflow-y:auto">
+    <div id="s3d-manage-body" style="max-width:900px;margin:0 auto;padding:20px 24px"></div>
   </div>
+
 </div>
                 `;
+
+                // Tab 切换（全局函数，方便 onclick 调用）
+                window.s3dSwitchTab = function(tab) {
+                    var editView   = document.getElementById('s3d-view-edit');
+                    var manageView = document.getElementById('s3d-view-manage');
+                    var editTab    = document.getElementById('s3d-tab-edit');
+                    var manageTab  = document.getElementById('s3d-tab-manage');
+                    var editBtns   = document.getElementById('s3d-topbar-edit-btns');
+                    if (!editView) return;
+                    if (tab === 'manage') {
+                        editView.style.display   = 'none';
+                        manageView.style.display = '';
+                        editTab.style.background   = 'transparent';
+                        editTab.style.color        = 'rgba(255,255,255,.75)';
+                        manageTab.style.background = 'white';
+                        manageTab.style.color      = 'var(--primary)';
+                        if (editBtns) editBtns.style.display = 'none';
+                        renderSceneManager();
+                    } else {
+                        editView.style.display   = '';
+                        manageView.style.display = 'none';
+                        editTab.style.background   = 'white';
+                        editTab.style.color        = 'var(--primary)';
+                        manageTab.style.background = 'transparent';
+                        manageTab.style.color      = 'rgba(255,255,255,.75)';
+                        if (editBtns) editBtns.style.display = 'flex';
+                    }
+                };
 
                 // 初始化3D场景功能
                 init3DScene();
@@ -4439,6 +4482,230 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             });
         }
 
+        // ══════════════════════════════════════════════════════════════
+        // 教师端：3D情景管理（二级文件夹）
+        // ══════════════════════════════════════════════════════════════
+        function renderSceneManager() {
+            var wrap = document.getElementById('s3d-manage-body');
+            if (!wrap) return;
+
+            // 读取数据
+            function getLib() { return JSON.parse(localStorage.getItem('scenes_library') || '[]'); }
+            function getFolders() { return JSON.parse(localStorage.getItem('s3d_folders') || '[]'); }
+            function saveLib(lib) { localStorage.setItem('scenes_library', JSON.stringify(lib)); updateStorageUsage(); }
+            function saveFolders(f) { localStorage.setItem('s3d_folders', JSON.stringify(f)); }
+
+            var currentFolderId = null; // null = 根目录
+
+            function render() {
+                var lib     = getLib();
+                var folders = getFolders();
+
+                if (currentFolderId === null) {
+                    renderRoot(lib, folders);
+                } else {
+                    renderFolder(currentFolderId, lib, folders);
+                }
+            }
+
+            // ── 根目录视图 ───────────────────────────────────────────────
+            function renderRoot(lib, folders) {
+                // 未分组场景：没有 folderId 的
+                var ungrouped = lib.filter(function(s){ return !s.folderId; });
+                var gradMap = {'语文':'#e0f2fe','英语':'#fce7f3','历史':'#fef9c3','科学':'#d1fae5','地理':'#ecfdf5','其他':'#f1f5f9'};
+
+                var folderHtml = folders.map(function(f) {
+                    var count = lib.filter(function(s){ return s.folderId === f.id; }).length;
+                    var pubCount = lib.filter(function(s){ return s.folderId === f.id && s.published; }).length;
+                    return '<div class="s3d-mgr-folder" data-fid="' + f.id + '" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:white;border:1.5px solid var(--gray-200);border-radius:12px;cursor:pointer;transition:all .15s" '
+                        + 'onmouseenter="this.style.borderColor=\'var(--primary)\';this.style.background=\'var(--blue-50)\'" '
+                        + 'onmouseleave="this.style.borderColor=\'var(--gray-200)\';this.style.background=\'white\'">'
+                        + '<div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#fbbf24,#f59e0b);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">📁</div>'
+                        + '<div style="flex:1;min-width:0">'
+                        +   '<div style="font-weight:700;font-size:.88rem;color:var(--gray-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + f.name + '</div>'
+                        +   '<div style="font-size:.72rem;color:var(--gray-400);margin-top:2px">' + count + ' 个场景 · ' + pubCount + ' 已发布</div>'
+                        + '</div>'
+                        + '<div style="display:flex;gap:6px">'
+                        +   '<button class="s3d-mgr-btn-icon" data-action="rename-folder" data-fid="' + f.id + '" title="重命名" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-500);cursor:pointer;font-size:.75rem"><i class="fas fa-pencil-alt"></i></button>'
+                        +   '<button class="s3d-mgr-btn-icon" data-action="delete-folder" data-fid="' + f.id + '" title="删除文件夹" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-500);cursor:pointer;font-size:.75rem"><i class="fas fa-trash-alt"></i></button>'
+                        + '</div>'
+                        + '</div>';
+                }).join('');
+
+                var sceneHtml = ungrouped.map(function(sc) { return sceneRow(sc, lib, folders, true); }).join('');
+
+                wrap.innerHTML = '<style>'
+                    + '.s3d-mgr-scene-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:11px;background:white;transition:all .15s}'
+                    + '.s3d-mgr-scene-row:hover{border-color:var(--primary);background:var(--blue-50)}'
+                    + '.s3d-mgr-btn-icon:hover{background:var(--gray-100)!important;border-color:var(--gray-300)!important}'
+                    + '</style>'
+                    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">'
+                    +   '<div><div style="font-size:1rem;font-weight:800;color:var(--gray-800)">情景管理</div>'
+                    +   '<div style="font-size:.78rem;color:var(--gray-400);margin-top:2px">共 ' + lib.length + ' 个场景，' + folders.length + ' 个文件夹</div></div>'
+                    +   '<button id="s3d-new-folder-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:white;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.8rem;font-weight:600;color:var(--gray-600);cursor:pointer"><i class="fas fa-folder-plus"></i> 新建文件夹</button>'
+                    + '</div>'
+                    + (folders.length ? '<div style="margin-bottom:12px"><div style="font-size:.72rem;font-weight:700;color:var(--gray-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">文件夹</div>'
+                        + '<div style="display:flex;flex-direction:column;gap:7px">' + folderHtml + '</div></div>' : '')
+                    + '<div style="font-size:.72rem;font-weight:700;color:var(--gray-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">未分组场景</div>'
+                    + (ungrouped.length
+                        ? '<div style="display:flex;flex-direction:column;gap:7px">' + sceneHtml + '</div>'
+                        : '<div style="text-align:center;padding:24px;color:var(--gray-300);font-size:.82rem">暂无未分组场景</div>')
+                    + (lib.length === 0 ? '<div style="text-align:center;padding:40px;color:var(--gray-300)"><i class="fas fa-inbox" style="font-size:2.5rem;display:block;margin-bottom:10px;opacity:.3"></i>还没有任何场景，前往「编辑」创建第一个吧</div>' : '');
+
+                // 事件绑定
+                wrap.querySelector('#s3d-new-folder-btn')?.addEventListener('click', function() {
+                    var name = prompt('文件夹名称：');
+                    if (!name || !name.trim()) return;
+                    var folders2 = getFolders();
+                    folders2.push({ id: 'folder_' + Date.now(), name: name.trim() });
+                    saveFolders(folders2);
+                    render();
+                });
+
+                wrap.querySelectorAll('.s3d-mgr-folder[data-fid]').forEach(function(el) {
+                    el.addEventListener('click', function(e) {
+                        if (e.target.closest('.s3d-mgr-btn-icon')) return;
+                        currentFolderId = this.dataset.fid;
+                        render();
+                    });
+                });
+
+                wrap.querySelectorAll('[data-action="rename-folder"]').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var fid = this.dataset.fid;
+                        var folders2 = getFolders();
+                        var f = folders2.find(function(x){ return x.id === fid; });
+                        if (!f) return;
+                        var name = prompt('重命名文件夹：', f.name);
+                        if (!name || !name.trim()) return;
+                        f.name = name.trim();
+                        saveFolders(folders2);
+                        render();
+                    });
+                });
+
+                wrap.querySelectorAll('[data-action="delete-folder"]').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var fid = this.dataset.fid;
+                        if (!confirm('删除此文件夹？文件夹内场景将移至未分组（不会删除场景）')) return;
+                        var folders2 = getFolders();
+                        saveFolders(folders2.filter(function(x){ return x.id !== fid; }));
+                        var lib2 = getLib();
+                        lib2.forEach(function(s){ if (s.folderId === fid) delete s.folderId; });
+                        saveLib(lib2);
+                        render();
+                    });
+                });
+
+                bindSceneRowEvents(wrap, lib, folders);
+            }
+
+            // ── 文件夹内部视图 ───────────────────────────────────────────
+            function renderFolder(folderId, lib, folders) {
+                var folder  = folders.find(function(f){ return f.id === folderId; });
+                var scenes  = lib.filter(function(s){ return s.folderId === folderId; });
+
+                wrap.innerHTML = '<style>'
+                    + '.s3d-mgr-scene-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:11px;background:white;transition:all .15s}'
+                    + '.s3d-mgr-scene-row:hover{border-color:var(--primary);background:var(--blue-50)}'
+                    + '.s3d-mgr-btn-icon:hover{background:var(--gray-100)!important;border-color:var(--gray-300)!important}'
+                    + '</style>'
+                    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">'
+                    +   '<button id="s3d-mgr-back" style="width:30px;height:30px;border:1.5px solid var(--gray-200);border-radius:8px;background:white;color:var(--gray-500);cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-chevron-left"></i></button>'
+                    +   '<div style="font-size:1rem;font-weight:800;color:var(--gray-800)">📁 ' + (folder ? folder.name : '未知文件夹') + '</div>'
+                    +   '<div style="font-size:.78rem;color:var(--gray-400)">' + scenes.length + ' 个场景</div>'
+                    + '</div>'
+                    + (scenes.length
+                        ? '<div style="display:flex;flex-direction:column;gap:7px">' + scenes.map(function(sc){ return sceneRow(sc, lib, folders, false); }).join('') + '</div>'
+                        : '<div style="text-align:center;padding:40px;color:var(--gray-300);font-size:.82rem"><i class="fas fa-box-open" style="font-size:2rem;display:block;margin-bottom:8px;opacity:.3"></i>此文件夹还没有场景</div>');
+
+                wrap.querySelector('#s3d-mgr-back')?.addEventListener('click', function() {
+                    currentFolderId = null; render();
+                });
+
+                bindSceneRowEvents(wrap, lib, folders);
+            }
+
+            // ── 场景行 HTML ──────────────────────────────────────────────
+            function sceneRow(sc, lib, folders) {
+                var pubBadge = sc.published
+                    ? '<span style="padding:2px 8px;border-radius:6px;font-size:.68rem;font-weight:700;background:#d1fae5;color:#065f46">已发布</span>'
+                    : '<span style="padding:2px 8px;border-radius:6px;font-size:.68rem;font-weight:700;background:var(--gray-100);color:var(--gray-500)">草稿</span>';
+                var folderOpts = ['<option value="">— 无文件夹 —</option>']
+                    .concat(folders.map(function(f){
+                        return '<option value="' + f.id + '"' + (sc.folderId===f.id?' selected':'') + '>' + f.name + '</option>';
+                    })).join('');
+                return '<div class="s3d-mgr-scene-row" data-sid="' + sc.id + '">'
+                    + '<div style="width:38px;height:38px;border-radius:9px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">' + sc.emoji + '</div>'
+                    + '<div style="flex:1;min-width:0">'
+                    +   '<div style="display:flex;align-items:center;gap:7px;margin-bottom:2px">'
+                    +     '<span style="font-weight:700;font-size:.86rem;color:var(--gray-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px">' + sc.name + '</span>'
+                    +     pubBadge
+                    +   '</div>'
+                    +   '<div style="font-size:.71rem;color:var(--gray-400)">' + sc.subject + (sc.grade?' · '+sc.grade:'') + ' · ' + (sc.kps?sc.kps.filter(function(k){return k.x!=null;}).length:0) + ' 个标注 · ' + sc.createdAt + '</div>'
+                    + '</div>'
+                    + '<select class="s3d-mgr-folder-sel" data-sid="' + sc.id + '" style="font-size:.75rem;padding:4px 6px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-600);max-width:110px;cursor:pointer">' + folderOpts + '</select>'
+                    + '<div style="display:flex;gap:5px;flex-shrink:0">'
+                    +   '<button class="s3d-mgr-btn-icon" data-action="toggle-pub" data-sid="' + sc.id + '" title="' + (sc.published?'撤回发布':'发布') + '" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:' + (sc.published?'var(--green-600)':'var(--gray-400)') + ';cursor:pointer;font-size:.78rem"><i class="fas ' + (sc.published?'fa-eye':'fa-eye-slash') + '"></i></button>'
+                    +   '<button class="s3d-mgr-btn-icon" data-action="delete-scene" data-sid="' + sc.id + '" title="删除" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-400);cursor:pointer;font-size:.78rem"><i class="fas fa-trash-alt"></i></button>'
+                    + '</div>'
+                    + '</div>';
+            }
+
+            // ── 场景行事件 ───────────────────────────────────────────────
+            function bindSceneRowEvents(container, lib, folders) {
+                // 移动到文件夹
+                container.querySelectorAll('.s3d-mgr-folder-sel').forEach(function(sel) {
+                    sel.addEventListener('change', function(e) {
+                        e.stopPropagation();
+                        var sid = this.dataset.sid;
+                        var fid = this.value;
+                        var lib2 = getLib();
+                        var sc = lib2.find(function(s){ return s.id === sid; });
+                        if (!sc) return;
+                        if (fid) sc.folderId = fid; else delete sc.folderId;
+                        saveLib(lib2);
+                        showGlobalToast(fid ? '已移入文件夹' : '已移出文件夹', 'success');
+                        render();
+                    });
+                });
+
+                // 发布/撤回
+                container.querySelectorAll('[data-action="toggle-pub"]').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var sid = this.dataset.sid;
+                        var lib2 = getLib();
+                        var sc = lib2.find(function(s){ return s.id === sid; });
+                        if (!sc) return;
+                        sc.published = !sc.published;
+                        saveLib(lib2);
+                        showGlobalToast(sc.published ? '已发布给学生 ✓' : '已撤回发布', sc.published ? 'success' : 'info');
+                        render();
+                    });
+                });
+
+                // 删除
+                container.querySelectorAll('[data-action="delete-scene"]').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var sid = this.dataset.sid;
+                        var lib2 = getLib();
+                        var sc = lib2.find(function(s){ return s.id === sid; });
+                        if (!sc) return;
+                        if (!confirm('删除「' + sc.name + '」？此操作不可撤销。')) return;
+                        saveLib(lib2.filter(function(s){ return s.id !== sid; }));
+                        showGlobalToast('已删除', 'info');
+                        render();
+                    });
+                });
+            }
+
+            render();
+        }
+
         // ── 构建场景数据（供保存/发布用）────────────────────────────────────
         function _buildSceneData(published) {
             var name    = document.getElementById('sceneName')?.value.trim();
@@ -4917,62 +5184,8 @@ ${text}
                 }
             }
 
-            // 内置演示场景
-            var demoScenes = [
-                { id:'demo1', name:'荷塘月色', subject:'语文', grade:'高中',
-                  desc:'月光下的荷塘，微风拂过，荷叶轻轻摇曳，荷花散发淡淡清香，远处有蛙声阵阵。',
-                  emoji:'🌿', published:true, createdAt:'演示', viewCount:0,
-                  kps:[
-                    { id:'kp1', x:30, y:40, label:'荷叶田田', detail:'叶子出水很高，像亭亭的舞女的裙。朱自清以比喻手法写出荷叶的优美姿态。' },
-                    { id:'kp2', x:60, y:55, label:'荷花盛开', detail:'有袅娜地开着的，有羞涩地打着朵儿的。拟人手法赋予荷花以人的情态。' },
-                    { id:'kp3', x:75, y:25, label:'月光如水', detail:'月光如流水一般，静静地泻在这一片叶子和花上。"泻"字极具动态美。' },
-                  ]},
-                { id:'demo2', name:'桃花源记', subject:'语文', grade:'初中',
-                  desc:'武陵人缘溪行，忽逢桃花林，芳草鲜美，落英缤纷，豁然开朗，土地平旷，屋舍俨然。',
-                  emoji:'🌸', published:true, createdAt:'演示', viewCount:0,
-                  kps:[
-                    { id:'kp1', x:25, y:50, label:'桃花林', detail:'夹岸数百步，中无杂树，芳草鲜美，落英缤纷。描绘世外桃源入口的奇异景象。' },
-                    { id:'kp2', x:55, y:35, label:'豁然开朗', detail:'初极狭，才通人。复行数十步，豁然开朗。以"狭"与"开朗"形成强烈对比。' },
-                    { id:'kp3', x:70, y:65, label:'世外桃源', detail:'土地平旷，屋舍俨然。表达了陶渊明对理想社会的向往。' },
-                  ]},
-                { id:'demo3', name:'长城', subject:'历史', grade:'初中',
-                  desc:'蜿蜒于群山之巅，城墙巍峨，烽火台屹立，远眺山河壮阔，感受千年历史的沧桑。',
-                  emoji:'🏯', published:true, createdAt:'演示', viewCount:0,
-                  kps:[
-                    { id:'kp1', x:20, y:30, label:'烽火台', detail:'古代军事通信设施，发现敌情时点燃烽火传递消息，最快可日行千里。' },
-                    { id:'kp2', x:50, y:45, label:'城墙结构', detail:'长城城墙一般高7-8米，顶宽约5米，可供五匹马并行，内部有士兵通道。' },
-                    { id:'kp3', x:80, y:30, label:'历史意义', detail:'长城全长超过21196公里，是中国古代最伟大的军事防御工程。' },
-                  ]},
-                { id:'demo4', name:'海底世界', subject:'科学', grade:'小学',
-                  desc:'珊瑚礁间，五颜六色的鱼儿穿梭，海龟悠游，阳光透过水面折射出神奇的光束。',
-                  emoji:'🐠', published:true, createdAt:'演示', viewCount:0,
-                  kps:[
-                    { id:'kp1', x:30, y:60, label:'珊瑚礁', detail:'由珊瑚虫分泌的石灰质骨骼堆积而成，是海洋中生物多样性最丰富的生态系统。' },
-                    { id:'kp2', x:65, y:35, label:'光合作用', detail:'阳光穿透海水，为海藻提供能量。海洋植物产生了地球约70%的氧气。' },
-                    { id:'kp3', x:50, y:70, label:'食物链', detail:'小型浮游生物→小鱼→大鱼→顶级捕食者，维持整个生态系统的平衡。' },
-                  ]},
-                { id:'demo5', name:'故宫·皇家建筑', subject:'历史', grade:'初中',
-                  desc:'巍峨的城楼，朱红色的宫墙，金黄色的琉璃瓦在阳光下熠熠生辉。这里是明清两代皇帝居住和处理朝政的地方，历经600年风雨。',
-                  emoji:'🏮', published:true, createdAt:'演示', viewCount:0,
-                  kps:[
-                    { id:'kp1', x:50, y:25, label:'太和殿', detail:'紫禁城最大的宫殿，俗称「金銮殿」，是举行重大典礼的场所，象征皇权的最高权威。' },
-                    { id:'kp2', x:20, y:55, label:'琉璃瓦', detail:'以铜绿色或金黄色为主，黄色代表皇权，是皇宫建筑的专用装饰材料，不得民间使用。' },
-                    { id:'kp3', x:75, y:60, label:'故宫格局', detail:'按「前朝后寝」布局，南北长961米，东西宽753米，共有房屋9000余间，是世界上现存最大的木构建筑群。' },
-                    { id:'kp4', x:45, y:70, label:'角楼', detail:'故宫四角各有一座角楼，三重檐，造型精巧，共有9梁18柱72条脊，是古代建筑工艺的杰出代表。' },
-                  ]},
-                { id:'demo6', name:'光合作用·植物工厂', subject:'科学', grade:'初中',
-                  desc:'阳光穿透叶片，叶绿体中发生着神奇的化学反应。水分子被分解，二氧化碳被固定，有机物在这片绿色工厂中悄然合成。',
-                  emoji:'🌱', published:true, createdAt:'演示', viewCount:0,
-                  kps:[
-                    { id:'kp1', x:30, y:30, label:'叶绿体', detail:'光合作用的场所，内含叶绿素等光合色素，能吸收光能并将其转化为化学能，这就是植物呈绿色的原因。' },
-                    { id:'kp2', x:65, y:40, label:'光反应', detail:'在类囊体薄膜上进行，吸收光能分解水（H₂O），产生O₂和NADPH、ATP，为暗反应提供能量。' },
-                    { id:'kp3', x:50, y:65, label:'暗反应', detail:'在叶绿体基质中进行，利用光反应产生的ATP和NADPH，将CO₂固定并还原为有机物（C₃H₁₂O₆）。' },
-                    { id:'kp4', x:15, y:60, label:'气孔', detail:'叶片下表皮的小孔，是CO₂进入和O₂逸出的通道，同时参与水分蒸腾调节植物体温。' },
-                  ]},
-            ];
-
-            // 合并：演示场景在前，教师发布的在后
-            var allScenes = demoScenes.concat(publishedScenes);
+            // 只展示教师发布的场景，不再内置演示场景
+            var allScenes = publishedScenes;
 
             var gradientMap = {
                 '语文':'#e0f2fe,#bae6fd', '英语':'#fce7f3,#fbcfe8',
@@ -4981,15 +5194,6 @@ ${text}
                 '生物':'#d1fae5,#a7f3d0', '物理':'#eff6ff,#bfdbfe', '化学':'#fdf4ff,#e9d5ff'
             };
             function getGrad(subj){ return gradientMap[subj] || '#f1f5f9,#e2e8f0'; }
-
-            var decoMap = {
-                demo1:'<div style="position:absolute;top:15%;left:15%;font-size:2.8rem;animation:float-anim 3s ease infinite;opacity:.65">🌿</div><div style="position:absolute;top:20%;left:42%;font-size:2.2rem;animation:float-anim 4s ease infinite;opacity:.55">🌸</div>',
-                demo2:'<div style="position:absolute;top:12%;left:10%;font-size:2.8rem;animation:sway-anim 4s ease infinite;transform-origin:bottom center;opacity:.6">🌸</div><div style="position:absolute;top:18%;right:18%;font-size:2rem;animation:float-anim 3s ease infinite;opacity:.5">🦋</div>',
-                demo3:'<div style="position:absolute;top:10%;left:20%;font-size:1.8rem;animation:float-anim 5s ease infinite;opacity:.4">☁️</div><div style="position:absolute;top:8%;right:25%;font-size:1.5rem;animation:float-anim 4s .8s ease infinite;opacity:.35">🦅</div>',
-                demo4:'<div style="position:absolute;top:20%;left:18%;font-size:2.2rem;animation:float-anim 3s ease infinite;opacity:.6">🐠</div><div style="position:absolute;top:35%;right:15%;font-size:1.8rem;animation:float-anim 4s .5s ease infinite;opacity:.5">🐙</div>',
-                demo5:'<div style="position:absolute;top:12%;left:15%;font-size:2.2rem;animation:sway-anim 3s ease infinite;transform-origin:bottom;opacity:.55">🏮</div><div style="position:absolute;top:10%;right:20%;font-size:1.6rem;animation:float-anim 5s ease infinite;opacity:.4">🌙</div>',
-                demo6:'<div style="position:absolute;top:15%;left:20%;font-size:2rem;animation:float-anim 3s ease infinite;opacity:.55">🌿</div><div style="position:absolute;top:25%;right:18%;font-size:1.8rem;animation:sway-anim 4s ease infinite;transform-origin:bottom;opacity:.5">🌱</div><div style="position:absolute;top:8%;left:45%;font-size:1.5rem;animation:float-anim 2.5s ease infinite;opacity:.4">☀️</div>',
-            };
 
             var viewState = 'list';
             var currentScene = null;
@@ -5001,47 +5205,49 @@ ${text}
 
             // ── 场景列表 ──────────────────────────────────────────────────
             function renderList() {
+                if (allScenes.length === 0) {
+                    body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--gray-400);padding:40px">'
+                        + '<i class="fas fa-vr-cardboard" style="font-size:3.5rem;opacity:.25"></i>'
+                        + '<div style="font-size:1rem;font-weight:700;color:var(--gray-500)">暂无可用的 3D 情景</div>'
+                        + '<div style="font-size:.85rem;text-align:center;line-height:1.7;color:var(--gray-400)">请等待老师发布情景场景<br>发布后将在此处显示</div>'
+                        + '</div>';
+                    return;
+                }
+                var subjects = [...new Set(allScenes.map(function(s){ return s.subject; }))];
                 var cards = allScenes.map(function(sc) {
                     var viewKey = 's3d_view_' + sc.id;
                     var viewRec = JSON.parse(localStorage.getItem(viewKey) || '{}');
                     var viewed = viewRec.count > 0;
-                    var kpCount = sc.kps ? sc.kps.length : 0;
-                    var srcBadge = sc.createdAt === '演示'
-                        ? '<span style="background:#fef9c3;color:#854d0e;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:7px">演示</span>'
-                        : '<span style="background:var(--blue-50);color:var(--blue-700);font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:7px">教师发布</span>';
-                    return '<div class="s3d-card" data-id="' + sc.id + '" data-subject="' + sc.subject + '" style="background:white;border:1.5px solid ' + (viewed?'var(--green-200)':'var(--gray-200)') + ';border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseenter="this.style.transform=\'translateY(-3px)\';this.style.boxShadow=\'0 8px 28px rgba(15,23,42,.1)\';this.style.borderColor=\'var(--primary)\'" onmouseleave="this.style.transform=\'\';this.style.boxShadow=\'\';this.style.borderColor=\'' + (viewed?'var(--green-200)':'var(--gray-200)') + '\'">'
-                        + '<div style="height:110px;background:linear-gradient(135deg,' + getGrad(sc.subject) + ');display:flex;align-items:center;justify-content:center;font-size:3.2rem;position:relative">'
+                    var kpCount = sc.kps ? sc.kps.filter(function(k){ return k.x!=null; }).length : 0;
+                    return '<div class="s3d-card" data-id="' + sc.id + '" data-subject="' + sc.subject + '" style="background:white;border:1.5px solid ' + (viewed?'var(--green-200)':'var(--gray-200)') + ';border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseenter="this.style.transform=\'translateY(-3px)\';this.style.boxShadow=\'0 8px 28px rgba(15,23,42,.1)\';this.style.borderColor=\'var(--primary)\'" onmouseleave="this.style.transform=\'\';this.style.boxShadow=\'\';this.style.borderColor=\'' + (viewed?'var(--green-200)':'var(--gray-200)') + '\'">'
+                        + '<div style="height:100px;background:linear-gradient(135deg,' + getGrad(sc.subject) + ');display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative">'
                         +   sc.emoji
-                        +   '<div style="position:absolute;top:8px;left:8px">' + srcBadge + '</div>'
-                        +   '<div style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);border-radius:8px;padding:2px 8px;font-size:.7rem;font-weight:700;color:var(--gray-700)">' + sc.subject + (sc.grade?' · '+sc.grade:'') + '</div>'
-                        +   (viewed?'<div style="position:absolute;bottom:8px;right:8px;background:rgba(16,185,129,.9);color:white;border-radius:6px;padding:2px 8px;font-size:.68rem;font-weight:700">✓ 已学习</div>':'')
+                        +   '<div style="position:absolute;top:7px;right:7px;background:rgba(255,255,255,.9);border-radius:7px;padding:2px 7px;font-size:.68rem;font-weight:700;color:var(--gray-700)">' + sc.subject + (sc.grade?' · '+sc.grade:'') + '</div>'
+                        +   (viewed?'<div style="position:absolute;bottom:7px;right:7px;background:rgba(16,185,129,.9);color:white;border-radius:5px;padding:1px 7px;font-size:.65rem;font-weight:700">✓ 已学习</div>':'')
                         + '</div>'
-                        + '<div style="padding:14px">'
-                        +   '<div style="font-weight:800;font-size:.92rem;color:var(--gray-800);margin-bottom:5px">' + sc.name + '</div>'
-                        +   '<div style="font-size:.78rem;color:var(--gray-500);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + sc.desc + '</div>'
-                        +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
-                        +     '<span style="font-size:.75rem;color:var(--gray-400)"><i class="fas fa-map-marker-alt" style="color:var(--primary);margin-right:3px"></i>' + kpCount + ' 个知识点标注</span>'
-                        +     (viewRec.count?'<span style="font-size:.72rem;color:var(--gray-400)">已学 '+viewRec.count+' 次</span>':'')
+                        + '<div style="padding:13px">'
+                        +   '<div style="font-weight:800;font-size:.9rem;color:var(--gray-800);margin-bottom:4px">' + sc.name + '</div>'
+                        +   '<div style="font-size:.75rem;color:var(--gray-500);margin-bottom:9px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden">' + (sc.desc||sc.name) + '</div>'
+                        +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">'
+                        +     '<span style="font-size:.72rem;color:var(--gray-400)"><i class="fas fa-map-marker-alt" style="color:var(--primary);margin-right:3px"></i>' + kpCount + ' 个标注</span>'
+                        +     (viewRec.count?'<span style="font-size:.7rem;color:var(--gray-400)">已学 '+viewRec.count+' 次</span>':'')
                         +   '</div>'
-                        +   '<button class="s3d-enter-btn" data-id="' + sc.id + '" style="width:100%;padding:9px;background:linear-gradient(135deg,var(--primary),#0284c7);color:white;border:none;border-radius:10px;font-size:.84rem;font-weight:700;cursor:pointer">'
-                        +     '<i class="fas fa-play"></i> ' + (viewed?'再次学习':'进入情景')
+                        +   '<button class="s3d-enter-btn" data-id="' + sc.id + '" style="width:100%;padding:8px;background:linear-gradient(135deg,var(--primary),#0284c7);color:white;border:none;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer">'
+                        +     '<i class="fas fa-vr-cardboard"></i> ' + (viewed?'再次学习':'进入情景')
                         +   '</button>'
                         + '</div></div>';
                 }).join('');
 
-                body.innerHTML = '<div style="max-width:980px;margin:0 auto">'
-                    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">'
-                    +   '<div><h2 style="font-size:1.25rem;font-weight:800;color:var(--gray-800);margin-bottom:3px">3D情景学习</h2>'
-                    +   '<p style="font-size:.84rem;color:var(--gray-500)">共 ' + allScenes.length + ' 个场景 · 点击进入沉浸式学习</p></div>'
-                    +   '<div style="display:flex;gap:7px" id="s3d-filter">'
-                    +     '<button class="s3d-filter-btn active" data-filter="all">全部</button>'
-                    +     '<button class="s3d-filter-btn" data-filter="语文">语文</button>'
-                    +     '<button class="s3d-filter-btn" data-filter="历史">历史</button>'
-                    +     '<button class="s3d-filter-btn" data-filter="科学">科学</button>'
-                    +     '<button class="s3d-filter-btn" data-filter="教师课件">教师发布</button>'
-                    +   '</div>'
+                var filterBtns = '<button class="s3d-filter-btn active" data-filter="all">全部</button>'
+                    + subjects.map(function(s){ return '<button class="s3d-filter-btn" data-filter="'+s+'">'+s+'</button>'; }).join('');
+
+                body.innerHTML = '<div style="max-width:980px;margin:0 auto;padding:4px 0 20px">'
+                    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">'
+                    +   '<div><h2 style="font-size:1.15rem;font-weight:800;color:var(--gray-800);margin-bottom:2px">3D情景学习</h2>'
+                    +   '<p style="font-size:.82rem;color:var(--gray-500)">共 ' + allScenes.length + ' 个场景</p></div>'
+                    +   '<div style="display:flex;gap:6px;flex-wrap:wrap" id="s3d-filter">' + filterBtns + '</div>'
                     + '</div>'
-                    + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">' + cards + '</div>'
+                    + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">' + cards + '</div>'
                     + '</div>';
 
                 body.querySelectorAll('.s3d-filter-btn').forEach(function(btn) {
@@ -5060,12 +5266,12 @@ ${text}
                         var id = this.dataset.id;
                         currentScene = allScenes.find(function(s){ return s.id===id; });
                         if (!currentScene) return;
-                        // 记录浏览
                         _recordSceneView(id);
                         viewState = 'scene'; render();
                     });
                 });
             }
+
 
             // ── 情景沉浸页（全景 + 智能锚点）────────────────────────────────
             function renderScene() {
@@ -5304,11 +5510,15 @@ ${text}
                     }, {passive:true});
 
                     // ── 坐标转换：球面 (lon,lat) → 屏幕 (px,py) ──────────
+                    // 与教师端 _kpToScreen 完全一致，用直接向量计算而非 setFromSphericalCoords
                     function sphereToScreen(lonDeg, latDeg) {
-                        var phiR  = THREE.MathUtils.degToRad(90 - latDeg);
-                        var thetaR= THREE.MathUtils.degToRad(lonDeg);
-                        var vec = new THREE.Vector3();
-                        vec.setFromSphericalCoords(1, phiR, thetaR);
+                        var phiR   = THREE.MathUtils.degToRad(90 - latDeg);
+                        var thetaR = THREE.MathUtils.degToRad(lonDeg);
+                        var vec = new THREE.Vector3(
+                            Math.sin(phiR)*Math.cos(thetaR),
+                            Math.cos(phiR),
+                            Math.sin(phiR)*Math.sin(thetaR)
+                        );
                         vec.project(camera);
                         if (vec.z > 1) return null;
                         return {
