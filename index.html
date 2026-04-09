@@ -4469,11 +4469,30 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             function _startPanorama(dataUrl) {
                 // 若已在渲染，先销毁
                 if (_threeAlive) { _threeAlive = false; if (_threeRenderer) _threeRenderer.dispose(); }
-                panoEmpty.style.display = 'none';
-                panoHint.style.display = 'block';
+                var pe = document.getElementById('s3d-pano-empty');
+                var ph = document.getElementById('s3d-pano-hint');
+                var pb = document.getElementById('s3d-pano-badge');
+                var pc = document.getElementById('s3d-pano-canvas');
+                var pw = document.getElementById('s3d-pano-wrap');
+                if (!pw || !pc) { console.error('pano elements not found'); return; }
+                if (pe) pe.style.display = 'none';
+                if (ph) ph.style.display = 'block';
+
+                // 标准化 dataUrl：如果是文件名（如 'hetangyuese.jpg'）则转为相对路径
+                var normalizedUrl = dataUrl;
+                if (dataUrl && !dataUrl.startsWith('data:') && !dataUrl.startsWith('http') && !dataUrl.startsWith('blob:') && !dataUrl.startsWith('/')) {
+                    // 去掉开头的 .// if present
+                    normalizedUrl = dataUrl.replace(/^\.\//, '');
+                    if (!normalizedUrl.startsWith('/')) {
+                        normalizedUrl = './' + normalizedUrl;
+                    }
+                }
 
                 function boot() {
                     var THREE = window.THREE;
+                    var panoWrap = document.getElementById('s3d-pano-wrap');
+                    var panoCanvas = document.getElementById('s3d-pano-canvas');
+                    var panoBadge = document.getElementById('s3d-pano-badge');
                     _panoW = panoWrap.clientWidth;
                     _panoH = panoWrap.clientHeight;
 
@@ -4488,7 +4507,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                     var geo = new THREE.SphereGeometry(500, 64, 40);
                     geo.scale(-1, 1, 1);
                     var loader = new THREE.TextureLoader();
-                    loader.load(dataUrl, function(tex) {
+                    loader.load(normalizedUrl, function(tex) {
                         var mat = new THREE.MeshBasicMaterial({ map: tex });
                         _threeScene.add(new THREE.Mesh(geo, mat));
                         panoBadge.innerHTML = '<i class="fas fa-panorama"></i> 全景图模式';
@@ -4894,9 +4913,169 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                         var lib2 = getLib();
                         var sc = lib2.find(function(s){ return s.id === sid; });
                         if (!sc) return;
-                        // 切换到编辑视图并加载场景
-                        switchView('editor');
-                        loadSceneIntoEditor(sc);
+                        // 切换到编辑视图
+                        window.s3dSwitchTab('edit');
+                        // 记录正在编辑的场景ID
+                        _3d_editingSceneId = sc.id;
+                        // 设置基本信息
+                        var nameEl = document.getElementById('sceneName');
+                        var subjectEl = document.getElementById('sceneSubject');
+                        var gradeEl = document.getElementById('sceneGrade');
+                        if (nameEl) nameEl.value = sc.name || '';
+                        if (subjectEl) subjectEl.value = sc.subject || '语文';
+                        if (gradeEl) gradeEl.value = sc.grade || '初中';
+                        // 加载知识点
+                        _3d_kps = sc.kps ? JSON.parse(JSON.stringify(sc.kps)) : [];
+                        _3d_generated = false;
+                        _3d_placing = null;
+                        // 加载背景图（支持文件名和 base64）
+                        if (sc.bgImage) {
+                            var resolvedImgUrl = sc.bgImage;
+                            if (!sc.bgImage.startsWith('data:') && !sc.bgImage.startsWith('http') && !sc.bgImage.startsWith('blob:')) {
+                                resolvedImgUrl = './' + sc.bgImage.replace(/^\.\//, '');
+                            }
+                            window._sceneImageData = sc.bgImage;
+                            var img = new Image();
+                            img.onload = function() {
+                                var srcImg = document.getElementById('s3d-src-img');
+                                var uploadZone = document.getElementById('s3d-upload-zone');
+                                if (srcImg) {
+                                    srcImg.src = resolvedImgUrl;
+                                    srcImg.style.display = 'block';
+                                }
+                                if (uploadZone) uploadZone.style.display = 'none';
+                                // 渲染全景预览（使用和学生端相同的内联渲染逻辑）
+                                (function() {
+                                    var pw = document.getElementById('s3d-pano-wrap');
+                                    var pc = document.getElementById('s3d-pano-canvas');
+                                    var pb = document.getElementById('s3d-pano-badge');
+                                    if (!pw || !pc) return;
+                                    document.getElementById('s3d-pano-empty').style.display = 'none';
+                                    document.getElementById('s3d-pano-hint').style.display = 'block';
+
+                                    if (_threeAlive) { _threeAlive = false; if (_threeRenderer) _threeRenderer.dispose(); }
+
+                                    function buildPanoFallback() {
+                                        var fc = document.createElement('canvas');
+                                        fc.width = 2048; fc.height = 1024;
+                                        var ctx = fc.getContext('2d');
+                                        var grd = ctx.createLinearGradient(0,0,0,1024);
+                                        grd.addColorStop(0,'#020818'); grd.addColorStop(0.4,'#0a1628');
+                                        grd.addColorStop(0.6,'#0f2240'); grd.addColorStop(0.75,'#1a3a1a'); grd.addColorStop(1,'#0d1f0d');
+                                        ctx.fillStyle = grd; ctx.fillRect(0,0,2048,1024);
+                                        for (var s=0;s<320;s++){
+                                            ctx.beginPath();
+                                            ctx.arc(Math.random()*2048,Math.random()*512,Math.random()*1.5+0.3,0,Math.PI*2);
+                                            ctx.fillStyle='rgba(255,255,255,'+(Math.random()*.8+.2)+')'; ctx.fill();
+                                        }
+                                        var mx=1024+200, my=180, mr=60;
+                                        var mg=ctx.createRadialGradient(mx,my,5,mx,my,mr);
+                                        mg.addColorStop(0,'rgba(255,250,200,1)'); mg.addColorStop(.5,'rgba(255,240,160,.9)'); mg.addColorStop(1,'rgba(255,220,100,0)');
+                                        ctx.beginPath(); ctx.arc(mx,my,mr,0,Math.PI*2); ctx.fillStyle=mg; ctx.fill();
+                                        var wg=ctx.createLinearGradient(0,620,0,1024);
+                                        wg.addColorStop(0,'rgba(10,30,60,.9)'); wg.addColorStop(1,'rgba(5,15,30,1)');
+                                        ctx.fillStyle=wg; ctx.fillRect(0,620,2048,404);
+                                        return new THREE.CanvasTexture(fc);
+                                    }
+
+                                    if (!window.THREE) {
+                                        var s = document.createElement('script');
+                                        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+                                        s.onload = initPano; document.head.appendChild(s);
+                                    } else { initPano(); }
+
+                                    function initPano() {
+                                        var THREE = window.THREE;
+                                        var W = pw.clientWidth, H = pw.clientHeight;
+                                        _threeRenderer = new THREE.WebGLRenderer({ canvas: pc, antialias: true });
+                                        _threeRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+                                        _threeRenderer.setSize(W, H);
+                                        _threeScene = new THREE.Scene();
+                                        _threeCamera = new THREE.PerspectiveCamera(75, W/H, 0.1, 1000);
+                                        _threeCamera.position.set(0, 0, 0.01);
+                                        var geo = new THREE.SphereGeometry(500, 64, 40);
+                                        geo.scale(-1, 1, 1);
+                                        var mat = new THREE.MeshBasicMaterial({ side: THREE.FrontSide });
+                                        var mesh = new THREE.Mesh(geo, mat);
+                                        _threeScene.add(mesh);
+
+                                        function applyTex(tex) {
+                                            mat.map = tex; mat.needsUpdate = true;
+                                            if (pb) {
+                                                pb.innerHTML = '<i class="fas fa-panorama"></i> 全景图模式';
+                                                pb.style.background = 'rgba(16,185,129,.15)';
+                                                pb.style.color = '#34d399';
+                                            }
+                                        }
+
+                                        var loader = new THREE.TextureLoader();
+                                        loader.load(resolvedImgUrl, applyTex, undefined, function() {
+                                            applyTex(buildPanoFallback());
+                                        });
+
+                                        // 拖拽控制
+                                        pc.addEventListener('mousedown', function(e){ _isDrag=true; _prevMx=e.clientX; _prevMy=e.clientY; });
+                                        pc.addEventListener('mousemove', function(e){
+                                            if (!_isDrag) return;
+                                            _lon -= (e.clientX-_prevMx)*0.22;
+                                            _lat += (e.clientY-_prevMy)*0.22;
+                                            _lat = Math.max(-85,Math.min(85,_lat));
+                                            _prevMx=e.clientX; _prevMy=e.clientY;
+                                        });
+                                        pc.addEventListener('mouseup', function(){ _isDrag=false; });
+                                        pc.addEventListener('mouseleave', function(){ _isDrag=false; });
+                                        pc.addEventListener('touchstart', function(e){ _isDrag=true; _prevMx=e.touches[0].clientX; _prevMy=e.touches[0].clientY; }, {passive:true});
+                                        pc.addEventListener('touchmove', function(e){
+                                            if (!_isDrag) return;
+                                            _lon -= (e.touches[0].clientX-_prevMx)*0.22;
+                                            _lat += (e.touches[0].clientY-_prevMy)*0.22;
+                                            _lat = Math.max(-85,Math.min(85,_lat));
+                                            _prevMx=e.touches[0].clientX; _prevMy=e.touches[0].clientY;
+                                        }, {passive:true});
+                                        pc.addEventListener('touchend', function(){ _isDrag=false; });
+                                        pc.addEventListener('wheel', function(e){
+                                            _threeCamera.fov = Math.max(30,Math.min(100,_threeCamera.fov+e.deltaY*0.05));
+                                            _threeCamera.updateProjectionMatrix();
+                                        }, {passive:true});
+
+                                        // ResizeObserver
+                                        var ro = new ResizeObserver(function(){
+                                            var nW = pw.clientWidth, nH = pw.clientHeight;
+                                            _threeRenderer.setSize(nW, nH);
+                                            _threeCamera.aspect = nW/nH;
+                                            _threeCamera.updateProjectionMatrix();
+                                        });
+                                        ro.observe(pw);
+
+                                        _threeAlive = true;
+                                        _lon = 180; _lat = 0;
+
+                                        (function loop() {
+                                            if (!_threeAlive) { ro.disconnect(); return; }
+                                            requestAnimationFrame(loop);
+                                            var phi = THREE.MathUtils.degToRad(90-_lat);
+                                            var theta = THREE.MathUtils.degToRad(_lon);
+                                            _threeCamera.lookAt(Math.sin(phi)*Math.cos(theta), Math.cos(phi), Math.sin(phi)*Math.sin(theta));
+                                            _threeRenderer.render(_threeScene, _threeCamera);
+                                        })();
+                                    }
+                                })();
+                                _3d_kps.forEach(function(kp) {
+                                    if (kp.x != null && kp.y != null) {
+                                        _renderPinOnImage(kp);
+                                    }
+                                });
+                                _refreshKpList();
+                            };
+                            img.onerror = function() {
+                                showGlobalToast('图片加载失败，请检查图片路径', 'error');
+                            };
+                            img.src = resolvedImgUrl;
+                        } else {
+                            window._sceneImageData = null;
+                        }
+                        _refreshKpList();
+                        showGlobalToast('已加载场景「' + sc.name + '」，可进行修改后再保存', 'success');
                     });
                 });
 
@@ -4929,61 +5108,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                         render();
                     });
                 });
-            }
-
-            // ── 加载场景到编辑器 ──────────────────────────────────────────
-            function loadSceneIntoEditor(sc) {
-                // 切换到编辑视图
-                window.s3dSwitchTab('edit');
-
-                // 记录正在编辑的场景ID
-                _3d_editingSceneId = sc.id;
-
-                // 设置基本信息
-                var nameEl = document.getElementById('sceneName');
-                var subjectEl = document.getElementById('sceneSubject');
-                var gradeEl = document.getElementById('sceneGrade');
-                if (nameEl) nameEl.value = sc.name || '';
-                if (subjectEl) subjectEl.value = sc.subject || '语文';
-                if (gradeEl) gradeEl.value = sc.grade || '初中';
-
-                // 加载知识点
-                _3d_kps = sc.kps ? JSON.parse(JSON.stringify(sc.kps)) : [];
-                _3d_generated = false;
-                _3d_placing = null;
-
-                // 加载背景图
-                if (sc.bgImage) {
-                    window._sceneImageData = sc.bgImage;
-                    // 如果是base64或文件路径，显示预览
-                    if (sc.bgImage.startsWith('data:') || sc.bgImage.match(/\.(jpg|png|jpeg)$/i)) {
-                        var img = new Image();
-                        img.onload = function() {
-                            var srcImg = document.getElementById('srcImg');
-                            if (srcImg) {
-                                srcImg.src = sc.bgImage;
-                                srcImg.style.display = 'block';
-                                var uploadZone = document.getElementById('uploadZone');
-                                var imgArea = document.getElementById('imgArea');
-                                if (uploadZone) uploadZone.style.display = 'none';
-                                if (imgArea) imgArea.classList.remove('no-image');
-                                // 重绘知识点
-                                _3d_kps.forEach(function(kp) {
-                                    if (kp.x != null && kp.y != null) {
-                                        _renderPinOnImage(kp);
-                                    }
-                                });
-                                _refreshKpList();
-                            }
-                        };
-                        img.src = sc.bgImage;
-                    }
-                } else {
-                    window._sceneImageData = null;
-                }
-
-                _refreshKpList();
-                showGlobalToast('已加载场景「' + sc.name + '」，可进行修改后再保存', 'success');
             }
 
             render();
@@ -5893,9 +6017,13 @@ ${text}
                         }
                     }
 
-                    if (sc.bgImage) {
+                    var studentImgUrl = sc.bgImage;
+                    if (studentImgUrl && !studentImgUrl.startsWith('data:') && !studentImgUrl.startsWith('http') && !studentImgUrl.startsWith('blob:')) {
+                        studentImgUrl = './' + studentImgUrl.replace(/^\.\//, '');
+                    }
+                    if (studentImgUrl) {
                         var loader = new THREE.TextureLoader();
-                        loader.load(sc.bgImage, applyTexture, undefined, function() {
+                        loader.load(studentImgUrl, applyTexture, undefined, function() {
                             applyTexture(buildFallbackTexture());
                         });
                     } else {
