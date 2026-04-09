@@ -4232,6 +4232,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         var _3d_kps = [];
         var _3d_generated = false;   // 全景图是否已加载
         var _3d_placing = null;      // 正在等待定位的 kp id
+        var _3d_editingSceneId = null; // 正在编辑的场景ID，null表示新建
 
         function init3DScene() {
             // 重置状态
@@ -4642,6 +4643,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             document.getElementById('resetSceneBtn').addEventListener('click', function() {
                 _3d_kps = []; _3d_generated = false; _3d_placing = null;
                 window._sceneImageData = null;
+                _3d_editingSceneId = null; // 重置编辑状态
                 srcImg.src = ''; srcImg.style.display = 'none';
                 uploadZone.style.display = 'flex';
                 imgArea.classList.add('no-image');
@@ -4859,6 +4861,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                     + '</div>'
                     + '<select class="s3d-mgr-folder-sel" data-sid="' + sc.id + '" style="font-size:.75rem;padding:4px 6px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-600);max-width:110px;cursor:pointer">' + folderOpts + '</select>'
                     + '<div style="display:flex;gap:5px;flex-shrink:0">'
+                    +   '<button class="s3d-mgr-btn-icon" data-action="edit-scene" data-sid="' + sc.id + '" title="编辑" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--primary);cursor:pointer;font-size:.78rem"><i class="fas fa-edit"></i></button>'
                     +   '<button class="s3d-mgr-btn-icon" data-action="toggle-pub" data-sid="' + sc.id + '" title="' + (sc.published?'撤回发布':'发布') + '" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:' + (sc.published?'var(--green-600)':'var(--gray-400)') + ';cursor:pointer;font-size:.78rem"><i class="fas ' + (sc.published?'fa-eye':'fa-eye-slash') + '"></i></button>'
                     +   '<button class="s3d-mgr-btn-icon" data-action="delete-scene" data-sid="' + sc.id + '" title="删除" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-400);cursor:pointer;font-size:.78rem"><i class="fas fa-trash-alt"></i></button>'
                     + '</div>'
@@ -4880,6 +4883,20 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                         saveLib(lib2);
                         showGlobalToast(fid ? '已移入文件夹' : '已移出文件夹', 'success');
                         render();
+                    });
+                });
+
+                // 编辑场景
+                container.querySelectorAll('[data-action="edit-scene"]').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var sid = this.dataset.sid;
+                        var lib2 = getLib();
+                        var sc = lib2.find(function(s){ return s.id === sid; });
+                        if (!sc) return;
+                        // 切换到编辑视图并加载场景
+                        switchView('editor');
+                        loadSceneIntoEditor(sc);
                     });
                 });
 
@@ -4914,6 +4931,61 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 });
             }
 
+            // ── 加载场景到编辑器 ──────────────────────────────────────────
+            function loadSceneIntoEditor(sc) {
+                // 切换到编辑视图
+                window.s3dSwitchTab('edit');
+
+                // 记录正在编辑的场景ID
+                _3d_editingSceneId = sc.id;
+
+                // 设置基本信息
+                var nameEl = document.getElementById('sceneName');
+                var subjectEl = document.getElementById('sceneSubject');
+                var gradeEl = document.getElementById('sceneGrade');
+                if (nameEl) nameEl.value = sc.name || '';
+                if (subjectEl) subjectEl.value = sc.subject || '语文';
+                if (gradeEl) gradeEl.value = sc.grade || '初中';
+
+                // 加载知识点
+                _3d_kps = sc.kps ? JSON.parse(JSON.stringify(sc.kps)) : [];
+                _3d_generated = false;
+                _3d_placing = null;
+
+                // 加载背景图
+                if (sc.bgImage) {
+                    window._sceneImageData = sc.bgImage;
+                    // 如果是base64或文件路径，显示预览
+                    if (sc.bgImage.startsWith('data:') || sc.bgImage.match(/\.(jpg|png|jpeg)$/i)) {
+                        var img = new Image();
+                        img.onload = function() {
+                            var srcImg = document.getElementById('srcImg');
+                            if (srcImg) {
+                                srcImg.src = sc.bgImage;
+                                srcImg.style.display = 'block';
+                                var uploadZone = document.getElementById('uploadZone');
+                                var imgArea = document.getElementById('imgArea');
+                                if (uploadZone) uploadZone.style.display = 'none';
+                                if (imgArea) imgArea.classList.remove('no-image');
+                                // 重绘知识点
+                                _3d_kps.forEach(function(kp) {
+                                    if (kp.x != null && kp.y != null) {
+                                        _renderPinOnImage(kp);
+                                    }
+                                });
+                                _refreshKpList();
+                            }
+                        };
+                        img.src = sc.bgImage;
+                    }
+                } else {
+                    window._sceneImageData = null;
+                }
+
+                _refreshKpList();
+                showGlobalToast('已加载场景「' + sc.name + '」，可进行修改后再保存', 'success');
+            }
+
             render();
         }
 
@@ -4924,7 +4996,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             var grade   = document.getElementById('sceneGrade')?.value   || '初中';
             if (!name) { showGlobalToast('请填写场景名称', 'error'); return null; }
             var sceneObj = {
-                id:        'scene_' + Date.now(),
+                id:        _3d_editingSceneId || ('scene_' + Date.now()),
                 name:      name,
                 subject:   subject,
                 grade:     grade,
