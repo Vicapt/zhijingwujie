@@ -783,6 +783,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .op-word-en { font-size: 2.6rem; font-weight: 900; color: var(--gray-800); letter-spacing: .02em; }
 .op-word-ph { font-size: 1.05rem; color: var(--gray-500); margin-top: 7px; font-family: var(--font-mono); }
 .op-word-zh { font-size: 1.15rem; color: var(--gray-600); margin-top: 9px; font-weight: 500; }
+.op-word-glyph { font-size: 4rem; margin-top: 14px; line-height: 1.2; }
 .op-controls { display: flex; gap: 11px; justify-content: center; }
 .op-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 22px; border-radius: var(--r-md); font-size: 0.875rem; font-weight: 700; cursor: pointer; border: none; transition: var(--tr); }
 .op-btn:disabled { opacity: .45; cursor: not-allowed; }
@@ -4323,7 +4324,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             addPointBtn.addEventListener('click', async function() {
                 var pointData = await showPointInputDialog();
                 if (!pointData) return;
-                var kp = { id: 'kp_' + Date.now(), label: pointData.name, detail: pointData.desc, x: null, y: null };
+                var kp = { id: 'kp_' + Date.now(), label: pointData.name, detail: pointData.desc, enableAi: pointData.enableAi !== false, x: null, y: null };
                 _3d_kps.push(kp);
                 _refreshKpList();
                 _enterPinMode(kp.id);
@@ -4666,7 +4667,41 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             if (!wrap) return;
 
             // 读取数据
-            function getLib() { return JSON.parse(localStorage.getItem('scenes_library') || '[]'); }
+            function getLib() {
+                var stored = localStorage.getItem('scenes_library');
+                if (stored) return JSON.parse(stored);
+                // 预设演示情景
+                var demo = [
+                    {
+                        id: 'demo_scene_1',
+                        name: '荷塘月色',
+                        subject: '语文',
+                        grade: '初中',
+                        desc: '荷塘月色 - 朱自清',
+                        emoji: '📖',
+                        kps: [],
+                        published: true,
+                        createdAt: '2026-04-09',
+                        viewCount: 0,
+                        bgImage: 'hetangyuese.jpg'
+                    },
+                    {
+                        id: 'demo_scene_2',
+                        name: 'At the Farm',
+                        subject: '英语',
+                        grade: '小学',
+                        desc: 'At the Farm 农场景象',
+                        emoji: '🔤',
+                        kps: [],
+                        published: true,
+                        createdAt: '2026-04-09',
+                        viewCount: 0,
+                        bgImage: 'atthefarm.png'
+                    }
+                ];
+                localStorage.setItem('scenes_library', JSON.stringify(demo));
+                return demo;
+            }
             function getFolders() { return JSON.parse(localStorage.getItem('s3d_folders') || '[]'); }
             function saveLib(lib) { localStorage.setItem('scenes_library', JSON.stringify(lib)); updateStorageUsage(); }
             function saveFolders(f) { localStorage.setItem('s3d_folders', JSON.stringify(f)); }
@@ -5968,6 +6003,12 @@ ${text}
                 var parts    = kp.detail.split(/[。！？\n]/).filter(Boolean);
                 var quote    = parts[0] || kp.detail;
                 var analysis = parts.slice(1).join('。') || kp.detail;
+                var aiSection = kp.enableAi !== false ? `
+  <div class="pano-section-label" style="color:#c4b5fd;margin-top:12px"><i class="fas fa-robot" style="color:#a78bfa"></i> AI 深度解析</div>
+  <div id="pano-ai-content" class="pano-ai-loading">
+    <div class="pano-ai-spinner"></div>
+    <span>AI 正在解析中…</span>
+  </div>` : '';
 
                 popup.innerHTML = `
 <button class="pano-popup-close" id="pano-popup-close-btn"><i class="fas fa-times"></i></button>
@@ -5976,15 +6017,12 @@ ${text}
     <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0">${idx+1}</div>
     <div style="font-weight:800;font-size:.92rem;color:white">${kp.label}</div>
   </div>
+  ${kp.enableAi !== false ? `
   <!-- 板块1：课文摘抄 -->
   <div class="pano-section-label" style="color:#93c5fd"><i class="fas fa-book" style="color:#60a5fa"></i> 课文摘抄</div>
-  <div class="pano-quote">"${quote}"</div>
-  <!-- 板块2：AI深度解析 -->
-  <div class="pano-section-label" style="color:#c4b5fd;margin-top:12px"><i class="fas fa-robot" style="color:#a78bfa"></i> AI 深度解析</div>
-  <div id="pano-ai-content" class="pano-ai-loading">
-    <div class="pano-ai-spinner"></div>
-    <span>AI 正在解析中…</span>
-  </div>
+  <div class="pano-quote">"${quote}"</div>` : ''}
+  <!-- 板块2：AI深度解析（可选） -->
+  ${aiSection}
 </div>
 <div style="display:flex;border-top:1px solid rgba(255,255,255,.08);margin-top:14px">
   <button id="pano-tts-btn" style="flex:1;padding:9px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;border-right:1px solid rgba(255,255,255,.08);transition:.15s">
@@ -6002,7 +6040,7 @@ ${text}
                 });
                 document.getElementById('pano-tts-btn').addEventListener('click', function(){
                     if (window.speechSynthesis) {
-                        var u = new SpeechSynthesisUtterance(kp.label + '。' + quote);
+                        var u = new SpeechSynthesisUtterance(kp.label + '。' + (kp.enableAi !== false ? quote : kp.detail));
                         u.lang='zh-CN'; u.rate=0.88;
                         speechSynthesis.speak(u);
                         showGlobalToast('正在朗读', 'info');
@@ -6012,8 +6050,10 @@ ${text}
                     _saveNote(kp.id, kp.label);
                 });
 
-                // ── 调用 Claude API 做 AI 深度解析 ──────────────────────────
-                _fetchPanoAI(kp, quote, analysis);
+                // ── 调用 AI 做深度解析（仅启用时） ──────────────────────────
+                if (kp.enableAi !== false) {
+                    _fetchPanoAI(kp, quote, analysis);
+                }
             }
 
             // ── DeepSeek Chat 解析调用 ──────────────────────────────────────
@@ -6618,99 +6658,38 @@ ${text}
                 // 演示数据
                 const demo = [
                     {
-                        id: 'f1', name: '语文基础训练', created: '2026-03-10',
+                        id: 'f5', name: '三年级语文知识闯关', created: '2026-04-09',
                         tests: [
                             {
-                                id: 't1', name: '《荷塘月色》精讲测试', created: '2026-03-10',
+                                id: 't7', name: '荷塘月色-课内精读', created: '2026-04-09',
                                 questions: [
-                                    { id:'q1', type:'single', stem:'《荷塘月色》的作者是谁？',
-                                      options:['鲁迅','朱自清','冰心','郁达夫'], answer:1, explanation:'朱自清（1898-1948），现代散文家、诗人，1927年写于清华园。' },
-                                    { id:'q2', type:'judge', stem:'《荷塘月色》描写的是冬夜景色。',
-                                      answer:false, explanation:'文章描写的是盛夏夜晚荷塘的景色。' },
-                                    { id:'q3', type:'fill', stem:'文中「_______，有羞涩地打着朵儿的」描写荷花形态。',
-                                      answer:'零星地点缀着些白花', explanation:'以拟人手法写荷花姿态，「羞涩」赋予花朵生命感。' },
-                                    { id:'q4', type:'single', stem:'「月光如流水一般，静静地泻在这一片叶子和花上」使用了什么修辞手法？',
-                                      options:['比喻','拟人','排比','夸张'], answer:0, explanation:'把月光比作流水，形象地写出月光流动、柔和的特点，「泻」字极具动态美。' },
-                                    { id:'q5', type:'judge', stem:'文章的写作背景是五四运动高潮时期，作者心情愉悦。',
-                                      answer:false, explanation:'写作于1927年大革命失败后，作者彼时苦闷彷徨，全文笼罩淡淡的哀愁。' },
-                                    { id:'q6', type:'fill', stem:'「_______，_______；远处高楼上渺茫的歌声似乎也没有了。」这句话体现了荷塘环境的静谧。',
-                                      answer:'树缝里也漏着一两点路灯光，没精打采的', explanation:'以「路灯光」的「没精打采」反衬荷塘四周的幽寂。' }
-                                ]
-                            },
-                            {
-                                id: 't2', name: '《背影》专项测试', created: '2026-03-12',
-                                questions: [
-                                    { id:'q7', type:'single', stem:'《背影》中父亲为作者买的是什么？',
-                                      options:['苹果','橘子','香蕉','西瓜'], answer:1, explanation:'父亲穿越铁道，爬上月台，为儿子买橘子，是全文感情最浓烈的场景。' },
-                                    { id:'q8', type:'judge', stem:'《背影》是一篇以父子离别为背景的叙事散文。',
-                                      answer:true, explanation:'文章以浦口车站送行为核心场景，重点刻画父亲买橘子时的背影。' },
-                                    { id:'q9', type:'single', stem:'「背影」在文章中出现了几次？',
-                                      options:['两次','三次','四次','五次'], answer:2, explanation:'背影在文中共出现四次，层层深化父子情感。' },
-                                    { id:'q10', type:'fill', stem:'「他用两手_______着上面，两脚再向上缩；他肥胖的身子向左微_______，显出努力的样子。」',
-                                      answer:'攀、倾', explanation:'「攀」和「倾」两个动词细腻刻画父亲爬月台的动作，笨拙中见深情。' }
+                                    { id:'q25', type:'fill', stem:'「叶子出水很高，像_______的舞女的裙。」', answer:'亭亭', explanation:'以舞女的裙比喻荷叶，写出其轻盈、舒展的姿态。' },
+                                    { id:'q26', type:'fill', stem:'「月光如_______一般，静静地泻在这一片叶子和花上。」', answer:'流水', explanation:'把月光比作流水，形象写出月光的流动感和柔和之美。' },
+                                    { id:'q27', type:'fill', stem:'「塘中的月色并不均匀；但光与影有着和谐的_______，如梵婀玲上奏着的名曲。」', answer:'旋律', explanation:'这里把光影的和谐比作名曲，是以视觉写听觉，通感的运用。' },
+                                    { id:'q28', type:'judge', stem:'「作者开篇的情感是喜悦的。」', answer:false, explanation:'文章开头「心里颇不宁静」说明作者心情是烦闷不静的。' },
+                                    { id:'q29', type:'judge', stem:'「《荷塘月色》主要描写了荷塘和月色的美景，没有抒发情感。」', answer:false, explanation:'文章情景交融，在写景中流露出作者淡淡的哀愁和难得的自由。' },
+                                    { id:'q30', type:'judge', stem:'「通感是一种修辞手法，把一种感官的感觉移到另一种感官。」', answer:true, explanation:'通感是将视觉、听觉、嗅觉等感觉相互转换，如「微风过处，送来缕缕清香，仿佛远处高楼上渺茫的歌声似的」。' },
+                                    { id:'q31', type:'single', stem:'下列句子中使用了「通感」的是——', options:['A. 叶子出水很高，像亭亭的舞女的裙。','B. 微风过处，送来缕缕清香，仿佛远处高楼上渺茫的歌声似的。','C. 月光如流水一般，静静地泻在这一片叶子和花上。'], answer:1, explanation:'B选项把嗅觉（清香）转化为听觉（歌声），是典型的通感手法。' }
                                 ]
                             }
                         ]
                     },
                     {
-                        id: 'f2', name: '英语语法专项', created: '2026-03-08',
+                        id: 'f6', name: '小学英语题库', created: '2026-04-09',
                         tests: [
                             {
-                                id: 't3', name: '一般现在时 vs 现在进行时', created: '2026-03-08',
+                                id: 't8', name: 'At the Farm 语法练习', created: '2026-04-09',
                                 questions: [
-                                    { id:'q11', type:'single', stem:'选择正确的句子：She _____ English every day.',
-                                      options:['study','studies','is studying','studied'], answer:1, explanation:'主语为第三人称单数she，一般现在时谓语动词需加-s/-es。' },
-                                    { id:'q12', type:'judge', stem:'「Look! The birds are flying in the sky.」使用了一般现在时。',
-                                      answer:false, explanation:'Look暗示正在发生，应使用现在进行时be+doing。' },
-                                    { id:'q13', type:'fill', stem:'把下面的句子改为否定句：He likes basketball.',
-                                      answer:'He does not / does not like basketball.', explanation:'一般现在时否定句：主语+does not+动词原形（第三人称单数）。' },
-                                    { id:'q14', type:'single', stem:'下列句子中，使用现在进行时正确的是？',
-                                      options:['I am go to school now.','They are playing football.','She is like cats.','He are reading.'], answer:1, explanation:'现在进行时结构：be（am/is/are）+ 动词-ing。' }
-                                ]
-                            },
-                            {
-                                id: 't4', name: '冠词 a / an / the 用法', created: '2026-03-09',
-                                questions: [
-                                    { id:'q15', type:'single', stem:'There is _____ apple on the table.',
-                                      options:['a','an','the','×'], answer:1, explanation:'apple以元音音素开头，泛指单数名词用an。' },
-                                    { id:'q16', type:'judge', stem:'「The sun rises in the east」中两个the用法相同。',
-                                      answer:false, explanation:'第一个the表独一无二的事物（太阳），第二个the表特指（东方）。' },
-                                    { id:'q17', type:'fill', stem:'Play _____ piano is her hobby.（填写适当冠词）',
-                                      answer:'the', explanation:'演奏乐器前加the，这是固定搭配。' }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        id: 'f3', name: '数学综合练习', created: '2026-03-05',
-                        tests: [
-                            {
-                                id: 't5', name: '一次方程基础', created: '2026-03-05',
-                                questions: [
-                                    { id:'q18', type:'single', stem:'解方程 2x + 6 = 14，x 的值是？',
-                                      options:['2','3','4','5'], answer:2, explanation:'2x = 14 - 6 = 8，x = 4。移项时注意变号。' },
-                                    { id:'q19', type:'judge', stem:'方程 x + 3 = 3 + x 是一次方程。',
-                                      answer:false, explanation:'两边化简后左右相等，变量消去，不是方程（恒等式）。' },
-                                    { id:'q20', type:'fill', stem:'若 3x - 7 = 2，则 x = _______',
-                                      answer:'3', explanation:'3x = 2 + 7 = 9，x = 9 ÷ 3 = 3。' }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        id: 'f4', name: '历史知识竞答', created: '2026-03-01',
-                        tests: [
-                            {
-                                id: 't6', name: '中国古代史基础', created: '2026-03-01',
-                                questions: [
-                                    { id:'q21', type:'single', stem:'秦朝统一六国是在哪一年？',
-                                      options:['公元前230年','公元前221年','公元前210年','公元前200年'], answer:1, explanation:'公元前221年，秦始皇统一六国，建立中国历史上第一个统一的中央集权国家。' },
-                                    { id:'q22', type:'judge', stem:'长城最初修建于明朝。',
-                                      answer:false, explanation:'长城最早修建于战国时期，秦始皇将各国长城连接，明朝大规模修缮扩建。' },
-                                    { id:'q23', type:'single', stem:'「丝绸之路」的起点城市是？',
-                                      options:['洛阳','长安（今西安）','开封','北京'], answer:1, explanation:'丝绸之路起点为汉代都城长安，向西经河西走廊通往中亚、西亚乃至欧洲。' },
-                                    { id:'q24', type:'fill', stem:'我国历史上第一个奴隶制王朝是_______。',
-                                      answer:'夏朝', explanation:'夏朝（约前2070—前1600年）是中国历史上第一个有文献记载的朝代。' }
+                                    { id:'q32', type:'single', stem:'—What\'s this? —____ a hen. 🐔', options:['A. It\'s','B. They\'re','C. I\'m'], answer:0, explanation:'What\'s this? 询问单数事物，用It\'s回答。' },
+                                    { id:'q33', type:'single', stem:'—Are these cows? —Yes, ____. 🐄🐄', options:['A. it is','B. they are','C. I am'], answer:1, explanation:'these cows是复数，回答用they are。' },
+                                    { id:'q34', type:'single', stem:'It\'s a ____. 🐴', options:['A. horse','B. cow','C. sheep'], answer:0, explanation:'图片是马（horse），horse以辅音音素开头，用a。' },
+                                    { id:'q35', type:'single', stem:'—What are these? —They are ____. 🐔🐔', options:['A. hen','B. hens','C. a hen'], answer:1, explanation:'these表示复数，回答用hens（复数形式）。' },
+                                    { id:'q36', type:'fill', stem:'What\'s ____? It\'s ____ sheep. 🐑', answer:'this; a', explanation:'What\'s this? 这是什么？It\'s a... 这是...（单数名词前用a/an）。' },
+                                    { id:'q37', type:'fill', stem:'Are ____ horses? No, they ____. 🐄🐄', answer:'these; aren\'t', explanation:'Are these...? 这些是...吗？复数疑问句用these；否定回答they aren\'t。' },
+                                    { id:'q38', type:'fill', stem:'They are ____. 🐄🐄', answer:'cows', explanation:'they are后面跟复数名词，cow的复数是cows。' },
+                                    { id:'q39', type:'judge', stem:'It\'s a horse. 🐔', answer:false, explanation:'图片是小鸡（hen），不是马（horse）。' },
+                                    { id:'q40', type:'judge', stem:'Are these sheep? Yes, they are. 🐑🐑', answer:true, explanation:'图片是两只羊（sheep），表述正确。' },
+                                    { id:'q41', type:'judge', stem:'They are cow.', answer:false, explanation:'cow是单数，复数应写成cows。' }
                                 ]
                             }
                         ]
@@ -7440,20 +7419,43 @@ ${text}
                     '<input id="_pd-name" type="text" placeholder="如：月光意象" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;outline:none;box-sizing:border-box"></div>' +
                     '<div><label style="display:block;font-size:.85rem;font-weight:600;color:#374151;margin-bottom:6px">描述说明</label>' +
                     '<textarea id="_pd-desc" rows="3" placeholder="这个知识点的含义或解释..." style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;outline:none;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea></div>' +
+                    '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">' +
+                    '<div><div style="font-size:.85rem;font-weight:600;color:#374151">启用 AI 深度解析</div><div style="font-size:.72rem;color:#64748b;margin-top:2px">关闭后不显示AI解析板块</div></div>' +
+                    '<label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">' +
+                    '<input id="_pd-ai" type="checkbox" checked style="opacity:0;width:0;height:0">' +
+                    '<span style="position:absolute;inset:0;background:#cbd5e1;border-radius:12px;transition:.2s"></span>' +
+                    '<span style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span>' +
+                    '</label></div>' +
                     '</div>' +
                     '<div style="padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:10px">' +
                     '<button id="_pd-cancel" style="padding:9px 18px;border:1.5px solid #e2e8f0;border-radius:8px;background:white;color:#475569;cursor:pointer;font-size:.9rem">取消</button>' +
                     '<button id="_pd-ok" style="padding:9px 18px;border:none;border-radius:8px;background:#2563eb;color:white;cursor:pointer;font-size:.9rem;font-weight:600">添加</button>' +
                     '</div></div>';
                 document.body.appendChild(dlg);
+                // 开关交互
+                var toggle = dlg.querySelector('label');
+                var checkbox = document.getElementById('_pd-ai');
+                var slider = toggle.querySelector('span:first-child');
+                var knob = toggle.querySelector('span:last-child');
+                toggle.addEventListener('click', function() {
+                    checkbox.checked = !checkbox.checked;
+                    if (checkbox.checked) {
+                        slider.style.background = '#cbd5e1';
+                        knob.style.left = '2px';
+                    } else {
+                        slider.style.background = '#2563eb';
+                        knob.style.left = '22px';
+                    }
+                });
                 document.getElementById('_pd-close').onclick = function() { dlg.remove(); resolve(null); };
                 document.getElementById('_pd-cancel').onclick = function() { dlg.remove(); resolve(null); };
                 document.getElementById('_pd-ok').onclick = function() {
                     var name = document.getElementById('_pd-name').value.trim();
                     if (!name) { showGlobalToast('请输入知识点名称', 'error'); return; }
                     var desc = document.getElementById('_pd-desc').value.trim() || '暂无描述';
+                    var enableAi = document.getElementById('_pd-ai').checked;
                     dlg.remove();
-                    resolve({ name: name, desc: desc });
+                    resolve({ name: name, desc: desc, enableAi: enableAi });
                 };
                 dlg.addEventListener('click', function(e) { if (e.target === dlg) { dlg.remove(); resolve(null); } });
             });
@@ -9111,53 +9113,15 @@ ${text}
                 const raw = localStorage.getItem('oral_data');
                 if (raw) return JSON.parse(raw);
                 const demo = [{
-                    id:'of1', name:'初中英语词汇', created:'2026-03-01', lastModified:'2026-03-15',
+                    id:'of1', name:'At the Farm 口语练习', created:'2026-04-09', lastModified:'2026-04-09',
                     books:[
                         {
-                            id:'ob1', name:'Unit 1 日常生活词汇', created:'2026-03-01',
-                            raw:'apple/ˈæp.əl/苹果；orange/ˈɒr.ɪndʒ/橘子；banana/bəˈnɑː.nə/香蕉；book/bʊk/书；pen/pen/钢笔；teacher/ˈtiː.tʃər/老师；student/ˈstjuː.dənt/学生；school/skuːl/学校；friend/frend/朋友；family/ˈfæm.ɪ.li/家庭；happy/ˈhæp.i/快乐的；morning/ˈmɔː.nɪŋ/早晨；breakfast/ˈbrek.fəst/早餐；lunch/lʌntʃ/午餐；dinner/ˈdɪn.ər/晚餐'
+                            id:'ob1', name:'At the Farm 单词与句子', created:'2026-04-09',
+                            raw:'horse/hɔːs/马 🐴；cow/kaʊ/牛 🐄；sheep/ʃiːp/羊 🐑；hen/hen/母鸡 🐔；farm/fɑːm/农场 🏡；horses/hɔːsɪz/马（复数）🐴🐴；cows/kaʊz/牛（复数）🐄🐄；sheep/ʃiːp/羊（复数）🐑🐑；hens/henz/母鸡（复数）🐔🐔'
                         },
                         {
-                            id:'ob2', name:'Unit 2 学校场所词汇', created:'2026-03-05',
-                            raw:'classroom/ˈklɑːs.ruːm/教室；library/ˈlaɪ.brər.i/图书馆；playground/ˈpleɪ.ɡraʊnd/操场；canteen/kænˈtiːn/食堂；office/ˈɒf.ɪs/办公室；laboratory/ləˈbɒr.ə.tri/实验室；gym/dʒɪm/体育馆；dormitory/ˈdɔː.mɪ.tər.i/宿舍；gate/ɡeɪt/大门；corridor/ˈkɒr.ɪ.dɔːr/走廊'
-                        },
-                        {
-                            id:'ob3', name:'Unit 3 时间与日期', created:'2026-03-08',
-                            raw:'Monday/ˈmʌn.deɪ/星期一；Tuesday/ˈtjuːz.deɪ/星期二；Wednesday/ˈwenz.deɪ/星期三；Thursday/ˈθɜːz.deɪ/星期四；Friday/ˈfraɪ.deɪ/星期五；Saturday/ˈsæt.ər.deɪ/星期六；Sunday/ˈsʌn.deɪ/星期日；January/ˈdʒæn.ju.ər.i/一月；February/ˈfeb.ru.ər.i/二月；March/mɑːtʃ/三月；April/ˈeɪ.prəl/四月；May/meɪ/五月；June/dʒuːn/六月'
-                        },
-                        {
-                            id:'ob4', name:'Unit 4 动词短语精讲', created:'2026-03-12',
-                            raw:'get up/ˈɡet ʌp/起床；go to school/ɡəʊ tə skuːl/去上学；do homework/duː ˈhəʊm.wɜːk/做作业；watch TV/wɒtʃ ˌtiːˈviː/看电视；play basketball/pleɪ ˈbɑːs.kɪt.bɔːl/打篮球；read books/riːd bʊks/读书；listen to music/ˈlɪs.ən tə ˈmjuː.zɪk/听音乐；have dinner/hæv ˈdɪn.ər/吃晚饭；take a shower/teɪk ə ˈʃaʊ.ər/洗澡；go to bed/ɡəʊ tə bed/上床睡觉'
-                        }
-                    ]
-                },
-                {
-                    id:'of2', name:'高中英语词汇', created:'2026-03-02', lastModified:'2026-03-14',
-                    books:[
-                        {
-                            id:'ob5', name:'必修一重点词汇', created:'2026-03-02',
-                            raw:'achieve/əˈtʃiːv/实现；achieve；adore/əˈdɔːr/崇拜；ambition/æmˈbɪʃ.ən/抱负；anxious/ˈæŋk.ʃəs/焦虑的；appreciate/əˈpriː.ʃi.eɪt/欣赏；approach/əˈprəʊtʃ/方法；arrange/əˈreɪndʒ/安排；assist/əˈsɪst/协助；available/əˈveɪ.lə.bəl/可得到的；avoid/əˈvɔɪd/避免；aware/əˈweər/意识到；challenge/ˈtʃæl.ɪndʒ/挑战；communicate/kəˈmjuː.nɪ.keɪt/沟通；concentrate/ˈkɒn.sən.treɪt/专注；contribute/kənˈtrɪb.juːt/贡献'
-                        },
-                        {
-                            id:'ob6', name:'必修二情感与性格词汇', created:'2026-03-06',
-                            raw:'confident/ˈkɒn.fɪ.dənt/自信的；creative/kriˈeɪ.tɪv/有创造力的；curious/ˈkjʊə.ri.əs/好奇的；determined/dɪˈtɜː.mɪnd/坚定的；enthusiastic/ɪnˌθjuː.ziˈæs.tɪk/热情的；generous/ˈdʒen.ər.əs/慷慨的；honest/ˈɒn.ɪst/诚实的；humble/ˈhʌm.bəl/谦逊的；independent/ˌɪn.dɪˈpen.dənt/独立的；optimistic/ˌɒp.tɪˈmɪs.tɪk/乐观的；patient/ˈpeɪ.ʃənt/耐心的；polite/pəˈlaɪt/礼貌的；responsible/rɪˈspɒn.sɪ.bəl/负责任的；sensitive/ˈsen.sɪ.tɪv/敏感的'
-                        },
-                        {
-                            id:'ob7', name:'大学英语四级高频词', created:'2026-03-10',
-                            raw:'abandon/əˈbæn.dən/放弃；abstract/ˈæb.strækt/抽象的；accommodate/əˈkɒm.ə.deɪt/容纳；accomplish/əˈkʌm.plɪʃ/完成；acknowledge/əkˈnɒl.ɪdʒ/承认；acquire/əˈkwaɪər/获得；adequate/ˈæd.ɪ.kwɪt/足够的；advocate/ˈæd.və.keɪt/倡导；allocate/ˈæl.ə.keɪt/分配；analyze/ˈæn.ə.laɪz/分析；assert/əˈsɜːt/声称；assess/əˈses/评估'
-                        }
-                    ]
-                },
-                {
-                    id:'of3', name:'语文古诗词积累', created:'2026-02-20', lastModified:'2026-03-10',
-                    books:[
-                        {
-                            id:'ob8', name:'必背古诗 · 小学篇', created:'2026-02-20',
-                            raw:'床前明月光/chuáng qián míng yuè guāng/李白《静夜思》第一句；疑是地上霜/yí shì dì shàng shuāng/李白《静夜思》第二句；举头望明月/jǔ tóu wàng míng yuè/李白《静夜思》第三句；低头思故乡/dī tóu sī gù xiāng/李白《静夜思》第四句；春眠不觉晓/chūn mián bù jué xiǎo/孟浩然《春晓》第一句；处处闻啼鸟/chù chù wén tí niǎo/孟浩然《春晓》第二句；夜来风雨声/yè lái fēng yǔ shēng/孟浩然《春晓》第三句；花落知多少/huā luò zhī duō shǎo/孟浩然《春晓》第四句'
-                        },
-                        {
-                            id:'ob9', name:'必背古诗 · 初中篇', created:'2026-02-25',
-                            raw:'会当凌绝顶/huì dāng líng jué dǐng/杜甫《望岳》；一览众山小/yī lǎn zhòng shān xiǎo/杜甫《望岳》；烽火连三月/fēng huǒ lián sān yuè/杜甫《春望》；家书抵万金/jiā shū dǐ wàn jīn/杜甫《春望》；东风不与周郎便/dōng fēng bù yǔ zhōu láng biàn/杜牧《赤壁》；铜雀春深锁二乔/tóng què chūn shēn suǒ èr qiáo/杜牧《赤壁》；山重水复疑无路/shān chóng shuǐ fù yí wú lù/陆游《游山西村》；柳暗花明又一村/liǔ àn huā míng yòu yī cūn/陆游《游山西村》'
+                            id:'ob2', name:'At the Farm 核心句型', created:'2026-04-09',
+                            raw:"What's this?/wɒts ðɪs/这是什么？；It's a horse./ɪts ə hɔːs/它是一匹马。；It's a cow./ɪts ə kaʊ/它是一头牛。；It's a sheep./ɪts ə ʃiːp/它是一只羊。；It's a hen./ɪts ə hen/它是一只母鸡。；What can you see on the farm?/wɒt kæn juː siː ɒn ðə fɑːm/你在农场上能看到什么？"
                         }
                     ]
                 }];
@@ -9439,10 +9403,29 @@ ${text}
                 if (!raw || !raw.trim()) return [];
                 return raw.split(/[；;]/).map(s=>s.trim()).filter(Boolean).map(entry => {
                     const parts = entry.split('/');
-                    if (parts.length >= 3) return { en:parts[0].trim(), ph:parts[1].trim(), zh:parts.slice(2).join('/').trim() };
-                    if (parts.length === 2) return { en:parts[0].trim(), ph:'', zh:parts[1].trim() };
-                    const m = entry.match(/^([a-zA-Z\s\-\']+)(.*)/);
-                    return m ? { en:m[1].trim(), ph:'', zh:m[2].trim() } : { en:entry, ph:'', zh:'' };
+                    let zh = '';
+                    let en = '';
+                    let ph = '';
+                    let glyph = '';
+                    if (parts.length >= 3) {
+                        en = parts[0].trim();
+                        ph = parts[1].trim();
+                        zh = parts.slice(2).join('/').trim();
+                        // 提取emoji到glyph
+                        const emojiMatch = zh.match(/[\u{1F300}-\u{1F9FF}]/gu);
+                        if (emojiMatch) {
+                            glyph = emojiMatch.join(' ');
+                            zh = zh.replace(glyph, '').trim();
+                        }
+                    } else if (parts.length === 2) {
+                        en = parts[0].trim();
+                        zh = parts[1].trim();
+                    } else {
+                        const m = entry.match(/^([a-zA-Z\s\-\']+)(.*)/);
+                        if (m) { en = m[1].trim(); zh = m[2].trim(); }
+                        else { en = entry; }
+                    }
+                    return { en, ph, zh, glyph };
                 }).filter(w=>w.en);
             }
 
@@ -9575,6 +9558,7 @@ ${text}
                     '<div class="op-word-en">' + w.en + '</div>' +
                     (w.ph ? '<div class="op-word-ph">/' + w.ph + '/</div>' : '') +
                     (w.zh ? '<div class="op-word-zh">' + w.zh + '</div>' : '') +
+                    (w.glyph ? '<div class="op-word-glyph">' + w.glyph + '</div>' : '') +
                     '</div>' +
 
                     '<div class="op-controls">' +
@@ -9680,6 +9664,10 @@ ${text}
                 document.getElementById('op-next')?.addEventListener('click', () => {
                     if (curIdx < total-1) { curIdx++; saveProg(); render(); }
                     else { saveProg(true); state='result'; render(); }
+                });
+                document.getElementById('op-back')?.addEventListener('click', () => {
+                    state = 'select';
+                    render();
                 });
 
                 function saveProg(finished) {
