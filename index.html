@@ -898,67 +898,244 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .study-quick-btn { width: 100%; padding: 7px 11px; text-align: left; background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: var(--r); cursor: pointer; font-size: 0.78rem; color: var(--gray-700); transition: var(--tr); }
 .study-quick-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--blue-50); }
 
-/* ── 13. PPT Module ────────────────────────────────────────── */
-.ppt-container { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
-.ppt-left, .ppt-right { display: flex; flex-direction: column; gap: 18px; }
-.section-title { font-size: 1rem; font-weight: 700; color: var(--gray-800); margin-bottom: 14px; }
-.script-input textarea { width: 100%; height: 160px; padding: 13px; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); font-family: inherit; font-size: 0.9rem; resize: vertical; outline: none; transition: border-color var(--tr); line-height: 1.6; color: var(--gray-800); }
-.script-input textarea:focus { border-color: var(--primary); }
-.script-actions { display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end; }
-.script-info { font-size: 0.78rem; color: var(--gray-400); margin-top: 6px; }
-.char-count { font-weight: 700; color: var(--primary); }
-.template-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.template-card { background: white; border: 2px solid var(--gray-200); border-radius: var(--r-md); padding: 13px; cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 10px; }
-.template-card:hover, .template-card.active { border-color: var(--primary); background: var(--blue-50); }
-.template-icon { font-size: 1.4rem; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--gray-100); border-radius: var(--r); }
-.template-info h4 { margin: 0 0 3px; font-size: 0.9rem; color: var(--gray-800); font-weight: 600; }
-.template-info p  { margin: 0; font-size: 0.76rem; color: var(--gray-500); }
-.preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-.preview-header h3 { margin: 0; font-size: 1rem; font-weight: 700; color: var(--gray-800); }
-.slide-count { font-size: 0.84rem; color: var(--gray-500); background: var(--gray-100); padding: 3px 10px; border-radius: 10px; }
-.thumbnail-container { background: var(--gray-50); border-radius: var(--r-md); padding: 12px; }
-.thumbnail-scroll { display: flex; gap: 7px; overflow-x: auto; padding: 4px 0; }
-.thumbnail-placeholder { text-align: center; padding: 20px; color: var(--gray-400); }
-.thumbnail-placeholder i { font-size: 2rem; margin-bottom: 8px; opacity: .4; display: block; }
-.thumbnail-placeholder p { font-size: 0.82rem; }
-.slide-view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.slide-view-header h4 { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--gray-700); }
-.slide-nav { display: flex; align-items: center; gap: 8px; }
-.nav-btn { width: 28px; height: 28px; border-radius: var(--r-sm); background: var(--gray-100); color: var(--gray-600); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--tr); border: none; }
-.nav-btn:hover:not(:disabled) { background: var(--blue-50); color: var(--primary); }
-.nav-btn:disabled { opacity: .4; cursor: not-allowed; }
-.slide-position { font-size: 0.82rem; color: var(--gray-500); }
-.slide-preview { background: white; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); padding: 18px; min-height: 180px; position: relative; }
-.slide-content { position: relative; }
-.slide-background { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: var(--r); z-index: 1; }
-.slide-header { position: relative; z-index: 2; margin-bottom: 10px; }
-.slide-title { font-size: 1.3rem; font-weight: 700; color: var(--gray-800); margin-bottom: 5px; }
-.slide-subtitle { font-size: 0.875rem; color: var(--gray-500); }
-.slide-body { position: relative; z-index: 2; }
-.slide-text { color: var(--gray-700); line-height: 1.65; font-size: 0.9rem; }
-.slide-animation { display: flex; gap: 5px; margin-top: 10px; }
-.animation-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); opacity: .3; animation: pulse-dot 1.5s infinite; }
-.animation-dot:nth-child(2) { animation-delay: .3s; }
-.animation-dot:nth-child(3) { animation-delay: .6s; }
-@keyframes pulse-dot { 0%,100%{ opacity:.3; transform:scale(1); } 50%{ opacity:.7; transform:scale(1.2); } }
-.preview-actions { display: flex; gap: 9px; justify-content: flex-end; margin-top: 16px; }
-.action-group { display: flex; gap: 9px; flex-wrap: wrap; }
-.progress-container { margin-top: 18px; background: white; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); padding: 16px; }
-.progress-header { display: flex; justify-content: space-between; margin-bottom: 9px; font-size: 0.84rem; }
+/* ── 13. PPT Module (New) ────────────────────────────────────────── */
+/* 左右布局容器 */
+.ppt-new-body { flex: 1; overflow: hidden; padding: 16px 20px; display: flex; flex-direction: column; }
+.ppt-new-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 1fr;
+    gap: 14px;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+}
+.ppt-left-col { display: flex; flex-direction: column; gap: 14px; overflow-y: auto; min-height: 0; }
+.ppt-preview-col { display: flex; flex-direction: column; min-height: 0; }
+.ppt-teaching-col { display: flex; flex-direction: column; min-height: 0; }
+
+/* PPT预览保持3:2比例 */
+.ppt-preview-stage { aspect-ratio: 3/2; min-height: 240px; }
+
+/* 卡片通用样式 */
+.ppt-card {
+    background: white;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-xs);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.ppt-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
+}
+.ppt-card-icon {
+    width: 36px; height: 36px;
+    border-radius: var(--r);
+    background: var(--blue-50);
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.ppt-card-icon.teaching-icon { background: var(--amber-50); color: var(--amber-600); }
+.ppt-card-titles { flex: 1; min-width: 0; }
+.ppt-card-titles h3 { font-size: 0.875rem; font-weight: 700; color: var(--gray-800); margin-bottom: 2px; }
+.ppt-card-titles p { font-size: 0.75rem; color: var(--gray-500); line-height: 1.4; }
+
+/* 输入卡片 */
+.ppt-input-card { flex: 1; display: flex; flex-direction: column; }
+.ppt-textarea {
+    flex: 1;
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--gray-700);
+    outline: none;
+    min-height: 140px;
+    background: var(--gray-50);
+}
+.ppt-textarea:focus { background: white; }
+.ppt-textarea::placeholder { color: var(--gray-400); }
+.ppt-input-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-top: 1px solid var(--gray-100);
+    background: white;
+    flex-shrink: 0;
+}
+.ppt-char-info { font-size: 0.75rem; color: var(--gray-500); }
+.ppt-char-count { font-weight: 700; color: var(--primary); }
+.ppt-char-hint { margin-left: 4px; }
+.ppt-generate-btn { padding: 8px 16px; font-size: 0.82rem; }
+
+/* 风格选择卡片 */
+.ppt-style-card { flex-shrink: 0; }
+.ppt-style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 14px; }
+.ppt-style-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--r);
+    cursor: pointer;
+    transition: var(--tr);
+}
+.ppt-style-item:hover { border-color: var(--primary); background: var(--blue-50); }
+.ppt-style-item.active { border-color: var(--primary); background: var(--blue-50); }
+.ppt-style-preview {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.ppt-style-info h4 { font-size: 0.78rem; font-weight: 600; color: var(--gray-800); margin-bottom: 1px; }
+.ppt-style-info p { font-size: 0.68rem; color: var(--gray-500); }
+
+/* 预览卡片 */
+.ppt-preview-card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.ppt-slide-counter {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    background: var(--gray-100);
+    padding: 3px 10px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+/* 缩略图 */
+.ppt-thumbnails {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
+    min-height: 54px;
+    background: var(--gray-50);
+}
+.ppt-thumb-placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 60px; height: 40px;
+    color: var(--gray-400); font-size: 0.7rem; text-align: center;
+}
+.ppt-thumb-placeholder i { font-size: 1rem; margin-bottom: 3px; opacity: 0.4; }
+.ppt-thumb {
+    min-width: 64px; height: 40px;
+    border-radius: 6px;
+    border: 2px solid var(--gray-200);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 3px; cursor: pointer; transition: var(--tr);
+    font-size: 0.65rem; color: var(--gray-600); text-align: center;
+    background: white;
+}
+.ppt-thumb:hover { border-color: var(--primary); transform: translateY(-2px); }
+.ppt-thumb.active { border-color: var(--primary); background: var(--blue-50); }
+.ppt-thumb-num { font-weight: 700; color: var(--gray-400); margin-bottom: 1px; font-size: 0.6rem; }
+.ppt-thumb-title { overflow: hidden; max-width: 52px; line-height: 1.2; }
+
+/* 大预览区 */
+.ppt-preview-main { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 12px 14px; }
+.ppt-preview-nav { display: flex; align-items: center; gap: 10px; flex: 1; }
+.ppt-nav-btn {
+    width: 32px; height: 32px;
+    border-radius: var(--r);
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-size: 0.8rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: var(--tr);
+    border: none; flex-shrink: 0;
+}
+.ppt-nav-btn:hover:not(:disabled) { background: var(--blue-50); color: var(--primary); }
+.ppt-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ppt-preview-stage {
+    flex: 1;
+    border-radius: var(--r-md);
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+    min-height: 160px;
+    border: 1px solid var(--gray-200);
+}
+.ppt-slide-bg {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1; border-radius: var(--r-md);
+}
+.ppt-slide-content { position: relative; z-index: 2; }
+.ppt-slide-header { margin-bottom: 12px; }
+.ppt-slide-title { font-size: 1.25rem; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; line-height: 1.3; }
+.ppt-slide-subtitle { font-size: 0.8rem; color: var(--gray-500); }
+.ppt-slide-body { }
+.ppt-slide-text { color: var(--gray-700); line-height: 1.7; font-size: 0.875rem; }
+.ppt-preview-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--gray-100);
+    flex-shrink: 0;
+}
+.ppt-page-indicator { font-size: 0.78rem; color: var(--gray-500); }
+.ppt-page-indicator strong { color: var(--primary); }
+.ppt-preview-actions { display: flex; gap: 6px; }
+.btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+
+/* 教学提示卡片 */
+.ppt-teaching-card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.ppt-teaching-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px;
+    min-height: 0;
+}
+.ppt-tip-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 20px 10px;
+    color: var(--gray-500);
+}
+.ppt-tip-empty i { font-size: 2rem; margin-bottom: 10px; opacity: 0.4; color: var(--amber-500); }
+.ppt-tip-empty p { font-size: 0.85rem; margin-bottom: 6px; }
+.ppt-tip-empty span { font-size: 0.72rem; color: var(--gray-400); }
+
+.ppt-tip-section { margin-bottom: 14px; }
+.ppt-tip-section:last-child { margin-bottom: 0; }
+.ppt-tip-label {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.72rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 10px;
+    margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+}
+.ppt-tip-label.intro { background: var(--blue-100); color: var(--blue-700); }
+.ppt-tip-label.interact { background: var(--green-100); color: var(--green-700); }
+.ppt-tip-label.tip { background: var(--amber-100); color: var(--amber-700); }
+.ppt-tip-text { font-size: 0.82rem; color: var(--gray-700); line-height: 1.6; }
+.ppt-teaching-actions {
+    padding: 10px 14px;
+    border-top: 1px solid var(--gray-100);
+    flex-shrink: 0;
+}
+.ppt-teaching-actions .btn { width: 100%; }
+
+/* 进度条 */
+.progress-container { background: white; border: 1px solid var(--gray-200); border-radius: var(--r-md); padding: 14px 16px; margin-top: 12px; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.82rem; }
 .progress-title { color: var(--gray-700); font-weight: 500; }
 .progress-percent { color: var(--primary); font-weight: 700; }
-.progress-bar { height: 8px; background: var(--gray-100); border-radius: 4px; overflow: hidden; margin-bottom: 7px; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--blue-700)); border-radius: 4px; width: 0%; transition: width .3s ease; }
-.progress-text { font-size: 0.78rem; color: var(--gray-500); text-align: center; }
-.edit-panel { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--r-md); padding: 18px; margin-top: 18px; }
-.panel-title { font-size: 0.9rem; font-weight: 700; color: var(--gray-800); margin-bottom: 14px; }
-.control-row { display: flex; gap: 14px; flex-wrap: wrap; }
-.control-item { display: flex; flex-direction: column; gap: 6px; }
-.control-item label { font-size: 0.82rem; font-weight: 600; color: var(--gray-600); }
-.form-control { padding: 7px 10px; border: 1.5px solid var(--gray-200); border-radius: var(--r-sm); font-size: 0.875rem; width: 90px; outline: none; }
-.form-control:focus { border-color: var(--primary); }
-.color-picker { width: 52px; height: 36px; padding: 2px; border: 1.5px solid var(--gray-200); border-radius: var(--r-sm); cursor: pointer; }
-.control-actions { display: flex; gap: 8px; margin-top: 12px; }
+.progress-bar { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--blue-700)); border-radius: 3px; width: 0%; transition: width .3s ease; }
 
 /* 3D Scene */
 .scene-container { display: grid; grid-template-columns: 2fr 3fr; gap: 20px; }
@@ -2176,7 +2353,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             <!-- 教师端菜单 - 7大核心功能 -->
             <a href="javascript:void(0)" class="menu-item active" data-module="ppt">
                 <i class="fas fa-file-powerpoint"></i>
-                <span class="menu-text">PPT课件生成</span>
+                <span class="menu-text">智能PPT备课</span>
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="3d">
                 <i class="fas fa-cube"></i>
@@ -2235,168 +2412,167 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
     </nav>
 
     <!-- PPT持久化容器 - 不放在moduleContent里，避免被innerHTML覆盖 -->
-    <div id="ppt-persistent-wrapper" style="display:none;position:fixed;top:calc(var(--header-h) + 20px);right:20px;bottom:calc(var(--footer-h) + 20px);left:calc(var(--sidebar-width) + 20px);z-index:50;overflow:hidden;transition:left .18s cubic-bezier(.4,0,.2,1);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.07)">
+    <div id="ppt-persistent-wrapper" style="display:none;position:fixed;top:calc(var(--header-h) + 20px);right:20px;bottom:calc(var(--footer-h) + 20px);left:calc(var(--sidebar-width) + 20px);z-index:50;overflow:hidden;transition:left .18s cubic-bezier(.4,0,.2,1);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.10)">
         <div class="module-content" style="height:100%;display:flex;flex-direction:column">
             <!-- PPT课件生成模块内容嵌入这里 -->
                 <div class="content-card mod-fullscreen" id="ppt-generator">
-                    <div class="sp3-topbar"><div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-file-powerpoint"></i> PPT课件生成</span></div><div class="sp3-tb-right"></div></div>
-                    <div class="mod-body">
-                        <div class="ppt-container">
-                            <!-- 左侧操作区 -->
-                            <div class="ppt-left">
-                                <div class="operation-section">
-                                    <h3 class="section-title">输入教案脚本</h3>
-                                    <div class="script-input">
-                                        <textarea id="textInput" placeholder="粘贴或输入课文教案脚本。&#10;&#10;示例：&#10;《荷塘月色》是朱自清1927年写的一篇散文，描写盛夏月夜荷塘的景色，情感含蓄，意境优美。&#10;&#10;支持「描述挑战」「互动提问」等互动环节设计..." rows="10" style="resize:vertical;min-height:120px"></textarea>
-                                        <div class="script-actions">
-                                            <button class="btn btn-outline" id="saveDraftBtn">
-                                                <i class="fas fa-save"></i> 保存草稿
-                                            </button>
-                                            <button class="btn btn-primary" id="generatePptBtn">
-                                                <i class="fas fa-magic"></i> 一键生成课件
-                                            </button>
-                                        </div>
-                                        <div class="script-info">
-                                            <span class="char-count" id="charCount">0</span> 字符
-                                            <span class="hint">（建议200-1000字）</span>
+                    <div class="sp3-topbar"><div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-file-powerpoint"></i> 智能PPT备课助手</span></div><div class="sp3-tb-right"></div></div>
+                    <div class="ppt-new-body">
+                        <!-- 三栏布局：左侧输入 | 右上预览 | 右下教学提示 -->
+                        <div class="ppt-new-grid">
+                            <!-- 左栏：教案输入区 -->
+                            <div class="ppt-left-col">
+                                <div class="ppt-card ppt-input-card">
+                                    <div class="ppt-card-header">
+                                        <div class="ppt-card-icon"><i class="fas fa-pen-fancy"></i></div>
+                                        <div class="ppt-card-titles">
+                                            <h3>输入教案或课文</h3>
+                                            <p>粘贴课文内容，AI将分析结构并生成教学建议</p>
                                         </div>
                                     </div>
-                                    
-                                    <div class="template-section">
-                                        <h3 class="section-title">课件风格预设</h3>
-                                        <div class="template-grid">
-                                            <div class="template-card active" data-style="fresh">
-                                                <div class="template-icon">🌿</div>
-                                                <div class="template-info">
-                                                    <h4>清新自然</h4>
-                                                    <p>适合语文/自然课</p>
-                                                </div>
+                                    <textarea id="textInput" class="ppt-textarea" placeholder="请粘贴课文或教案内容...
+
+例如：
+《荷塘月色》朱自清
+这几天心里颇不宁静。今晚在院子里坐着乘凉，忽然想起日日走过的荷塘，在这满月的光里，总该另有一番样子吧..."></textarea>
+                                    <div class="ppt-input-footer">
+                                        <div class="ppt-char-info">
+                                            <span class="ppt-char-count" id="charCount">0</span> 字符
+                                            <span class="ppt-char-hint">（建议200-1000字）</span>
+                                        </div>
+                                        <button class="btn btn-primary ppt-generate-btn" id="generatePptBtn">
+                                            <i class="fas fa-wand-magic-sparkles"></i> 智能生成
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 风格选择 -->
+                                <div class="ppt-card ppt-style-card">
+                                    <div class="ppt-card-header">
+                                        <div class="ppt-card-icon"><i class="fas fa-palette"></i></div>
+                                        <div class="ppt-card-titles">
+                                            <h3>选择课件风格</h3>
+                                            <p>AI将据此调整PPT的视觉呈现</p>
+                                        </div>
+                                    </div>
+                                    <div class="ppt-style-grid">
+                                        <div class="ppt-style-item active" data-style="fresh">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#f0fdf4,#bbf7d0)">
+                                                <i class="fas fa-leaf" style="color:#166534"></i>
                                             </div>
-                                            <div class="template-card" data-style="strict">
-                                                <div class="template-icon">🧮</div>
-                                                <div class="template-info">
-                                                    <h4>数理严谨</h4>
-                                                    <p>适合数学/科学课</p>
-                                                </div>
+                                            <div class="ppt-style-info">
+                                                <h4>清新自然</h4>
+                                                <p>语文/自然/生物</p>
                                             </div>
-                                            <div class="template-card" data-style="fun">
-                                                <div class="template-icon">🎨</div>
-                                                <div class="template-info">
-                                                    <h4>活泼童趣</h4>
-                                                    <p>适合低年级</p>
-                                                </div>
+                                        </div>
+                                        <div class="ppt-style-item" data-style="strict">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#eff6ff,#bfdbfe)">
+                                                <i class="fas fa-square-root-variable" style="color:#1e40af"></i>
                                             </div>
-                                            <div class="template-card" data-style="classic">
-                                                <div class="template-icon">📜</div>
-                                                <div class="template-info">
-                                                    <h4>古典国风</h4>
-                                                    <p>适合古诗文</p>
-                                                </div>
+                                            <div class="ppt-style-info">
+                                                <h4>数理严谨</h4>
+                                                <p>数学/物理/化学</p>
+                                            </div>
+                                        </div>
+                                        <div class="ppt-style-item" data-style="fun">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fdf4ff,#e9d5ff)">
+                                                <i class="fas fa-birthday-cake" style="color:#7e22ce"></i>
+                                            </div>
+                                            <div class="ppt-style-info">
+                                                <h4>活泼童趣</h4>
+                                                <p>小学/趣味课堂</p>
+                                            </div>
+                                        </div>
+                                        <div class="ppt-style-item" data-style="classic">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fefce8,#fef08a)">
+                                                <i class="fas fa-scroll" style="color:#854d0e"></i>
+                                            </div>
+                                            <div class="ppt-style-info">
+                                                <h4>古典国风</h4>
+                                                <p>古诗文/历史</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- 右侧预览区 -->
-                            <div class="ppt-right">
-                                <div class="preview-section">
-                                    <div class="preview-header">
-                                        <h3 class="section-title">课件预览</h3>
-                                        <div class="slide-count" id="slideCount">共0页</div>
-                                    </div>
-                                    
-                                    <div class="preview-content">
-                                        <!-- 缩略图列表 -->
-                                        <div class="thumbnail-container">
-                                            <div class="thumbnail-scroll" id="thumbnailScroll">
-                                                <div class="thumbnail-placeholder">
-                                                    <i class="fas fa-images"></i>
-                                                    <p>生成课件后显示缩略图</p>
-                                                </div>
-                                            </div>
+
+                            <!-- 右侧两栏并排：PPT预览 + 教学提示 -->
+                            <div class="ppt-preview-col">
+                                <!-- PPT预览 -->
+                                <div class="ppt-card ppt-preview-card">
+                                    <div class="ppt-card-header">
+                                        <div class="ppt-card-icon"><i class="fas fa-presentation"></i></div>
+                                        <div class="ppt-card-titles">
+                                            <h3>PPT大纲梳理</h3>
+                                            <p>点击缩略图或使用箭头切换页面</p>
                                         </div>
-                                        
-                                        <!-- 当前页预览 -->
-                                        <div class="current-slide-view">
-                                            <div class="slide-view-header">
-                                                <h4>当前页预览</h4>
-                                                <div class="slide-nav">
-                                                    <button class="nav-btn prev-slide" id="prevSlideBtn" disabled>
-                                                        <i class="fas fa-chevron-left"></i>
-                                                    </button>
-                                                    <span class="slide-position">第 <span id="currentSlideNum">1</span> 页</span>
-                                                    <button class="nav-btn next-slide" id="nextSlideBtn" disabled>
-                                                        <i class="fas fa-chevron-right"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="slide-preview" id="slidePreview">
-                                                <div class="slide-content">
-                                                    <div class="slide-background" id="slideBackground"></div>
-                                                    <div class="slide-header">
-                                                        <h3 class="slide-title" id="slideTitle">课件标题</h3>
-                                                        <div class="slide-subtitle" id="slideSubtitle">副标题内容</div>
+                                        <div class="ppt-slide-counter" id="slideCount">共 0 页</div>
+                                    </div>
+                                    <div class="ppt-thumbnails" id="thumbnailScroll">
+                                        <div class="ppt-thumb-placeholder" id="thumbPlaceholder">
+                                            <i class="fas fa-layer-group"></i>
+                                            <p>生成课件后在此预览</p>
+                                        </div>
+                                    </div>
+                                    <div class="ppt-preview-main">
+                                        <div class="ppt-preview-nav">
+                                            <button class="ppt-nav-btn" id="prevSlideBtn" disabled>
+                                                <i class="fas fa-chevron-left"></i>
+                                            </button>
+                                            <div class="ppt-preview-stage" id="slidePreview">
+                                                <div class="ppt-slide-bg" id="slideBackground"></div>
+                                                <div class="ppt-slide-content">
+                                                    <div class="ppt-slide-header">
+                                                        <h2 class="ppt-slide-title" id="slideTitle">等待生成课件</h2>
+                                                        <div class="ppt-slide-subtitle" id="slideSubtitle">请先在左侧输入课文内容</div>
                                                     </div>
-                                                    <div class="slide-body">
-                                                        <div class="slide-text" id="slideText">
-                                                            课件内容将在此显示，支持图文混排和动画效果。
-                                                        </div>
-                                                        <div class="slide-animation" id="slideAnimation">
-                                                            <div class="animation-dot"></div>
-                                                            <div class="animation-dot"></div>
-                                                            <div class="animation-dot"></div>
-                                                        </div>
+                                                    <div class="ppt-slide-body">
+                                                        <p class="ppt-slide-text" id="slideText">AI将为您分析课文结构，生成条理清晰的PPT课件，帮助学生更好地理解和掌握知识。</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- 底部操作 -->
-                                    <div class="preview-actions">
-                                        <div class="action-group">
-                                            <button class="btn btn-outline" id="editPptBtn">
-                                                <i class="fas fa-edit"></i> 简易编辑
-                                            </button>
-                                            <button class="btn btn-outline" id="downloadPptBtn">
-                                                <i class="fas fa-download"></i> 下载PPT
-                                            </button>
-                                            <button class="btn btn-primary" id="generate3dBtn">
-                                                <i class="fas fa-cube"></i> 生成3D情景
+                                            <button class="ppt-nav-btn" id="nextSlideBtn" disabled>
+                                                <i class="fas fa-chevron-right"></i>
                                             </button>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- 编辑面板 -->
-                                    <div class="edit-panel" id="editPanel" style="display: none;">
-                                        <h4 class="panel-title">课件编辑</h4>
-                                        <div class="edit-controls">
-                                            <div class="control-row">
-                                                <div class="control-item">
-                                                    <label>总页数</label>
-                                                    <input type="number" id="editPageCount" min="5" max="30" value="15" class="form-control">
-                                                </div>
-                                                <div class="control-item">
-                                                    <label>标题颜色</label>
-                                                    <input type="color" id="editTitleColor" value="#2563eb" class="color-picker">
-                                                </div>
-                                                <div class="control-item">
-                                                    <label>背景颜色</label>
-                                                    <input type="color" id="editBgColor" value="#ffffff" class="color-picker">
-                                                </div>
-                                            </div>
-                                            <div class="control-actions">
-                                                <button class="btn btn-primary" id="applyEditBtn">应用修改</button>
-                                                <button class="btn btn-outline" id="cancelEditBtn">取消</button>
+                                        <div class="ppt-preview-footer">
+                                            <span class="ppt-page-indicator">第 <strong id="currentSlideNum">1</strong> 页</span>
+                                            <div class="ppt-preview-actions">
+                                                <button class="btn btn-sm btn-outline" id="editPptBtn"><i class="fas fa-sliders"></i> 调整</button>
+                                                <button class="btn btn-sm btn-primary" id="copyMarkdownBtn"><i class="fas fa-copy"></i> 复制为Markdown</button>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：教学提示 -->
+                            <div class="ppt-teaching-col">
+                                <!-- AI教学提示 -->
+                                <div class="ppt-card ppt-teaching-card">
+                                    <div class="ppt-card-header">
+                                        <div class="ppt-card-icon teaching-icon"><i class="fas fa-lightbulb"></i></div>
+                                        <div class="ppt-card-titles">
+                                            <h3>教学互动建议</h3>
+                                            <p>本页的教学引入与互动设计提示</p>
+                                        </div>
+                                    </div>
+                                    <div class="ppt-teaching-content" id="teachingTips">
+                                        <div class="ppt-tip-empty">
+                                            <i class="fas fa-brain"></i>
+                                            <p>生成课件后，AI将为每一页提供教学互动建议</p>
+                                            <span>包括：如何引入话题、提问方式、帮助学生理解的技巧等</span>
+                                        </div>
+                                    </div>
+                                    <div class="ppt-teaching-actions">
+                                        <button class="btn btn-sm btn-outline" id="regenerateTipBtn" disabled>
+                                            <i class="fas fa-rotate"></i> 重新生成提示
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- 进度条容器 -->
                         <div class="progress-container" id="progressContainer" style="display: none;">
                             <div class="progress-header">
@@ -2409,7 +2585,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                         </div>
                     </div>
                 </div>
-                
+
         </div><!-- end ppt-persistent-wrapper inner -->
     </div><!-- end ppt-persistent-wrapper -->
 
@@ -3213,8 +3389,8 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         function getModuleInfo(module) {
             const modules = {
                 'ppt': {
-                    title: 'PPT课件生成',
-                    subtitle: '基于课文内容智能生成PPT课件，支持一键导出'
+                    title: '智能PPT备课助手',
+                    subtitle: 'AI分析教案结构，生成教学建议，降低师资不平等'
                 },
                 '3d': {
                     title: '3D情景生成 (ScriptScene™)',
@@ -4813,24 +4989,29 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         // 幻灯片数据
         let pptSlides = [];
         let pptCurrentIdx = 0;
+        let pptTeachingTips = {}; // 存储每页的教学提示
 
         const styleThemes = {
-            fresh:   { bg:'#f0fdf4', titleColor:'#166534', accent:'#22c55e', name:'清新自然' },
-            strict:  { bg:'#eff6ff', titleColor:'#1e40af', accent:'#3b82f6', name:'数理严谨' },
-            fun:     { bg:'#fdf4ff', titleColor:'#7e22ce', accent:'#a855f7', name:'活泼童趣' },
-            classic: { bg:'#fefce8', titleColor:'#854d0e', accent:'#d97706', name:'古典国风' }
+            fresh:   { bg:'linear-gradient(135deg,#f0fdf4,#dcfce7)', titleColor:'#166534', accent:'#22c55e', name:'清新自然' },
+            strict:  { bg:'linear-gradient(135deg,#eff6ff,#dbeafe)', titleColor:'#1e40af', accent:'#3b82f6', name:'数理严谨' },
+            fun:     { bg:'linear-gradient(135deg,#fdf4ff,#e9d5ff)', titleColor:'#7e22ce', accent:'#a855f7', name:'活泼童趣' },
+            classic: { bg:'linear-gradient(135deg,#fefce8,#fef9c3)', titleColor:'#854d0e', accent:'#d97706', name:'古典国风' }
         };
         let pptStyle = 'fresh';
 
-        // 风格卡片选择
-        document.querySelectorAll('.template-card').forEach(card => {
+        // 风格卡片选择 - 新布局
+        document.querySelectorAll('.ppt-style-item').forEach(card => {
             card.addEventListener('click', function() {
-                document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.ppt-style-item').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
                 pptStyle = this.dataset.style;
-                if (pptSlides.length > 0) renderCurrentSlide();
+                if (pptSlides.length > 0) {
+                    renderThumbnails();
+                    renderCurrentSlide();
+                }
             });
         });
+
         // 自定义配色编辑器
         setTimeout(injectPptThemeEditor, 100);
 
@@ -4842,7 +5023,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         const DEEPSEEK_API_KEY = 'sk-ac481fe817df49b19865494c10febd0d';
         const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top';
 
-        async function callDeepSeek(userPrompt) {
+        async function callDeepSeek(messages, maxTokens = 2000) {
             const response = await fetch(DEEPSEEK_API_URL, {
                 method: 'POST',
                 headers: {
@@ -4851,18 +5032,9 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 },
                 body: JSON.stringify({
                     model: 'deepseek-chat',
-                    max_tokens: 2000,
+                    max_tokens: maxTokens,
                     temperature: 0.7,
-                    messages: [
-                        {
-                            role: 'system',
-                            content: '你是一位专业的中学语文教师，擅长将课文内容拆解为结构清晰的PPT课件。请严格按照JSON格式输出，不要有任何多余的文字或markdown代码块标记。'
-                        },
-                        {
-                            role: 'user',
-                            content: userPrompt
-                        }
-                    ]
+                    messages: messages
                 })
             });
             if (!response.ok) {
@@ -4871,6 +5043,104 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             }
             const data = await response.json();
             return data.choices[0].message.content;
+        }
+
+        // 生成教学提示
+        async function generateTeachingTip(slide, index) {
+            try {
+                const tipPrompt = `作为教学设计专家，请为以下PPT页面设计教学互动建议：
+
+页面标题：${slide.title}
+页面内容：${slide.content || '无'}
+页面类型：${slide.type}
+
+请给出3个方面的建议，每方面用中文描述，格式如下（不要使用markdown或特殊符号，直接输出）：
+【引入建议】
+[在这里描述如何引入这个知识点的具体方法，1-2句话]
+【互动设计】
+[在这里描述如何与学生互动的具体方法，1-2句话]
+【理解技巧】
+[在这里描述帮助学生理解的具体技巧，1-2句话]`;
+
+                const rawTip = await callDeepSeek([
+                    { role: 'system', content: '你是一位经验丰富的教学设计专家，擅长帮助教师设计生动有趣的课堂互动环节。' },
+                    { role: 'user', content: tipPrompt }
+                ], 1500);
+
+                // 解析教学提示
+                const tip = parseTeachingTip(rawTip);
+                pptTeachingTips[index] = tip;
+
+                // 如果是当前页，立即更新显示
+                if (index === pptCurrentIdx) {
+                    renderTeachingTips();
+                }
+            } catch (err) {
+                console.error('生成教学提示失败:', err);
+                pptTeachingTips[index] = {
+                    intro: '建议从学生熟悉的生活实例入手，引出本课主题。',
+                    interact: '可以先让学生自由发言，再引导到课文内容。',
+                    tip: '利用多媒体或图片帮助学生建立直观印象。'
+                };
+                if (index === pptCurrentIdx) {
+                    renderTeachingTips();
+                }
+            }
+        }
+
+        // 解析教学提示
+        function parseTeachingTip(raw) {
+            const result = { intro: '', interact: '', tip: '' };
+            const introMatch = raw.match(/【引入建议】\s*([^\n【]+)/);
+            const interactMatch = raw.match(/【互动设计】\s*([^\n【]+)/);
+            const tipMatch = raw.match(/【理解技巧】\s*([^\n【]+)/);
+
+            if (introMatch) result.intro = introMatch[1].trim();
+            if (interactMatch) result.interact = interactMatch[1].trim();
+            if (tipMatch) result.tip = tipMatch[1].trim();
+
+            // 如果解析失败，使用默认提示
+            if (!result.intro) result.intro = '可以从课文标题或作者入手，激发学生学习兴趣。';
+            if (!result.interact) result.interact = '设置开放性问题，鼓励学生思考和表达。';
+            if (!result.tip) result.tip = '结合课文内容，使用具体案例帮助学生理解抽象概念。';
+
+            return result;
+        }
+
+        // 渲染教学提示
+        function renderTeachingTips() {
+            const container = document.getElementById('teachingTips');
+            if (!container) return;
+
+            const tip = pptTeachingTips[pptCurrentIdx];
+
+            if (!tip) {
+                container.innerHTML = `
+                    <div class="ppt-tip-empty">
+                        <i class="fas fa-brain"></i>
+                        <p>正在生成教学建议...</p>
+                        <span>请稍候</span>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="ppt-tip-section">
+                    <div class="ppt-tip-label intro"><i class="fas fa-play-circle"></i> 引入建议</div>
+                    <p class="ppt-tip-text">${tip.intro}</p>
+                </div>
+                <div class="ppt-tip-section">
+                    <div class="ppt-tip-label interact"><i class="fas fa-comments"></i> 互动设计</div>
+                    <p class="ppt-tip-text">${tip.interact}</p>
+                </div>
+                <div class="ppt-tip-section">
+                    <div class="ppt-tip-label tip"><i class="fas fa-lightbulb"></i> 理解技巧</div>
+                    <p class="ppt-tip-text">${tip.tip}</p>
+                </div>`;
+
+            // 启用重新生成按钮
+            const regenerateBtn = document.getElementById('regenerateTipBtn');
+            if (regenerateBtn) regenerateBtn.disabled = false;
         }
 
         document.getElementById('generatePptBtn')?.addEventListener('click', async function() {
@@ -4890,12 +5160,11 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             let progress = 0;
             const interval = setInterval(() => {
                 progress += Math.random() * 4 + 1;
-                if (progress > 90) progress = 90; // 最多到90%，等API完成再到100%
+                if (progress > 90) progress = 90;
                 if (progressFill) progressFill.style.width = progress + '%';
                 if (progressPercent) progressPercent.textContent = Math.round(progress) + '%';
             }, 200);
 
-            // 更新 apiStatus 状态点为连接中
             const apiStatusDot = document.getElementById('apiStatus');
             if (apiStatusDot) apiStatusDot.className = 'status-dot connecting';
 
@@ -4914,13 +5183,14 @@ ${text}
   {"type":"summary","title":"课文小结","content":"总结课文主旨、情感与写作特色"}
 ]`;
 
-                const rawJson = await callDeepSeek(prompt);
+                const rawJson = await callDeepSeek([
+                    { role: 'system', content: '你是一位专业的中学语文教师，擅长将课文内容拆解为结构清晰的PPT课件。请严格按照JSON格式输出，不要有任何多余的文字或markdown代码块标记。' },
+                    { role: 'user', content: prompt }
+                ]);
 
-                // 解析AI返回的JSON
                 const cleanJson = rawJson.replace(/```json|```/g, '').trim();
                 const slides = JSON.parse(cleanJson);
 
-                // 完成进度条
                 clearInterval(interval);
                 if (progressFill) progressFill.style.width = '100%';
                 if (progressPercent) progressPercent.textContent = '100%';
@@ -4930,7 +5200,7 @@ ${text}
                     if (progressContainer) progressContainer.style.display = 'none';
                     if (progressFill) progressFill.style.width = '0%';
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-magic"></i> 一键生成课件';
+                    btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> 智能生成';
 
                     buildPptSlidesFromAI(slides);
                     showGlobalToast('AI课件生成成功！共 ' + pptSlides.length + ' 页', 'success');
@@ -4943,11 +5213,10 @@ ${text}
                 if (progressContainer) progressContainer.style.display = 'none';
                 if (progressFill) progressFill.style.width = '0%';
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-magic"></i> 一键生成课件';
+                btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> 智能生成';
                 if (apiStatusDot) apiStatusDot.className = 'status-dot offline';
                 console.error('DeepSeek API Error:', err);
                 showGlobalToast('AI生成失败：' + err.message + '，已切换为本地生成', 'error');
-                // 降级：使用本地算法生成
                 buildPptSlides(text);
                 showGlobalToast('课件已生成（本地模式），共 ' + pptSlides.length + ' 页', 'info');
             }
@@ -4955,7 +5224,7 @@ ${text}
 
         // AI返回JSON直接构建幻灯片
         function buildPptSlidesFromAI(slides) {
-            const theme = styleThemes[pptStyle] || styleThemes.fresh;
+            pptTeachingTips = {};
             pptSlides = slides.map(s => ({
                 type: s.type || 'content',
                 title: s.title || '',
@@ -4963,16 +5232,24 @@ ${text}
                 content: s.content || ''
             }));
             pptCurrentIdx = 0;
-            renderThumbnails(theme);
+            renderThumbnails();
             renderCurrentSlide();
             document.getElementById('slideCount').textContent = '共 ' + pptSlides.length + ' 页';
             document.getElementById('prevSlideBtn').disabled = true;
             document.getElementById('nextSlideBtn').disabled = pptSlides.length <= 1;
+
+            // 异步生成每页的教学提示
+            pptSlides.forEach((slide, index) => {
+                setTimeout(() => generateTeachingTip(slide, index), index * 300);
+            });
+
+            // 渲染当前页教学提示
+            renderTeachingTips();
         }
 
-        // 本地降级版本（API失败时使用）
+        // 本地降级版本
         function buildPptSlides(text) {
-            const theme = styleThemes[pptStyle] || styleThemes.fresh;
+            pptTeachingTips = {};
             const rawSentences = text.split(/[。！？\n]/).map(s => s.trim()).filter(s => s.length > 2);
             pptSlides = [];
             const title = rawSentences[0] ? rawSentences[0].slice(0, 20) : '课文标题';
@@ -4984,36 +5261,48 @@ ${text}
             }
             pptSlides.push({ type: 'summary', title: '课文小结', content: '请同学们回顾今天所学的内容，思考文章的主题与情感。' });
             pptCurrentIdx = 0;
-            renderThumbnails(theme);
+            renderThumbnails();
             renderCurrentSlide();
             document.getElementById('slideCount').textContent = '共 ' + pptSlides.length + ' 页';
             document.getElementById('prevSlideBtn').disabled = true;
             document.getElementById('nextSlideBtn').disabled = pptSlides.length <= 1;
+
+            // 生成本地默认教学提示
+            pptSlides.forEach((slide, index) => {
+                pptTeachingTips[index] = {
+                    intro: '可以从课文标题或相关生活实例入手，引导学生进入主题。',
+                    interact: '设置简单问题，鼓励学生举手回答或小组讨论。',
+                    tip: '使用板书或PPT突出重点，帮助学生抓住核心内容。'
+                };
+            });
+            renderTeachingTips();
         }
 
-        function renderThumbnails(theme) {
+        function renderThumbnails() {
             const scroll = document.getElementById('thumbnailScroll');
+            const placeholder = document.getElementById('thumbPlaceholder');
             if (!scroll) return;
+
+            if (placeholder) placeholder.style.display = 'none';
+
+            const theme = styleThemes[pptStyle] || styleThemes.fresh;
             scroll.innerHTML = pptSlides.map((s, i) => `
-                <div onclick="jumpToSlide(${i})" id="thumb-${i}" style="
-                    min-width:72px;height:50px;border-radius:6px;border:2px solid ${i===0?'var(--primary)':'var(--gray-200)'};
-                    background:${(styleThemes[pptStyle]||styleThemes.fresh).bg};cursor:pointer;
-                    display:flex;flex-direction:column;align-items:center;justify-content:center;
-                    padding:4px;transition:all .15s;font-size:9px;color:var(--gray-700);text-align:center;overflow:hidden">
-                    <div style="font-weight:700;font-size:8px;color:var(--gray-400);margin-bottom:2px">${i+1}</div>
-                    <div style="font-size:9px;overflow:hidden;max-height:28px;line-height:1.3;word-break:break-all">${s.title.slice(0,12)}</div>
+                <div class="ppt-thumb ${i === pptCurrentIdx ? 'active' : ''}" onclick="jumpToSlide(${i})" id="thumb-${i}">
+                    <div class="ppt-thumb-num">${i + 1}</div>
+                    <div class="ppt-thumb-title">${s.title.slice(0, 10)}</div>
                 </div>`).join('');
         }
 
         function jumpToSlide(idx) {
             pptCurrentIdx = idx;
-            document.querySelectorAll('[id^="thumb-"]').forEach((t, i) => {
-                t.style.borderColor = i === idx ? 'var(--primary)' : 'var(--gray-200)';
+            document.querySelectorAll('.ppt-thumb').forEach((t, i) => {
+                t.classList.toggle('active', i === idx);
             });
             renderCurrentSlide();
             document.getElementById('prevSlideBtn').disabled = idx === 0;
             document.getElementById('nextSlideBtn').disabled = idx >= pptSlides.length - 1;
             document.getElementById('currentSlideNum').textContent = idx + 1;
+            renderTeachingTips();
         }
 
         function renderCurrentSlide() {
@@ -5026,7 +5315,7 @@ ${text}
             const textEl = document.getElementById('slideText');
             if (bg) bg.style.background = theme.bg;
             if (titleEl) { titleEl.textContent = slide.title; titleEl.style.color = theme.titleColor; }
-            if (subtitleEl) subtitleEl.textContent = slide.type === 'title' ? slide.subtitle : ('第 '+(pptCurrentIdx+1)+' 页');
+            if (subtitleEl) subtitleEl.textContent = slide.type === 'title' ? slide.subtitle : ('第 ' + (pptCurrentIdx + 1) + ' 页');
             if (textEl) textEl.textContent = slide.content || '';
         }
 
@@ -5037,33 +5326,45 @@ ${text}
             if (pptCurrentIdx < pptSlides.length - 1) jumpToSlide(pptCurrentIdx + 1);
         });
 
+        // 重新生成教学提示
+        document.getElementById('regenerateTipBtn')?.addEventListener('click', async function() {
+            if (!pptSlides.length) return;
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+            await generateTeachingTip(pptSlides[pptCurrentIdx], pptCurrentIdx);
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-rotate"></i> 重新生成提示';
+            showGlobalToast('教学提示已更新', 'success');
+        });
+
         // 简易编辑面板
         document.getElementById('editPptBtn')?.addEventListener('click', function() {
-            const panel = document.getElementById('editPanel');
-            if (!panel) return;
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        });
-        document.getElementById('cancelEditBtn')?.addEventListener('click', () => {
-            const panel = document.getElementById('editPanel');
-            if (panel) panel.style.display = 'none';
-        });
-        document.getElementById('applyEditBtn')?.addEventListener('click', function() {
-            const titleColor = document.getElementById('editTitleColor')?.value;
-            const bgColor = document.getElementById('editBgColor')?.value;
-            if (titleColor) { const el = document.getElementById('slideTitle'); if(el) el.style.color = titleColor; }
-            if (bgColor) { const el = document.getElementById('slideBackground'); if(el) el.style.background = bgColor; }
-            showGlobalToast('样式已应用', 'success');
+            showGlobalToast('简易编辑功能开发中，敬请期待', 'info');
         });
 
-        document.getElementById('downloadPptBtn')?.addEventListener('click', function() {
-            showGlobalToast('PPT导出需要后端支持，敬请期待', 'info');
-        });
-
-        // ── 3D 情景生成：携带课件内容跳转 ──────────────────────────
-        document.getElementById('generate3dBtn')?.addEventListener('click', function() {
-            const text = document.getElementById('textInput')?.value?.trim() || '';
-            window._pptTextForScene = text;
-            loadModule('3d');
+        // 复制为Markdown格式
+        document.getElementById('copyMarkdownBtn')?.addEventListener('click', function() {
+            if (!pptSlides.length) {
+                showGlobalToast('请先生成PPT课件', 'error');
+                return;
+            }
+            const theme = styleThemes[pptStyle] || styleThemes.fresh;
+            let md = `# ${pptSlides[0]?.title || '课件标题'}\n\n`;
+            pptSlides.forEach((slide, i) => {
+                md += `## 第${i + 1}页：${slide.title}\n\n`;
+                if (slide.content) md += `${slide.content}\n\n`;
+                const tip = pptTeachingTips[i];
+                if (tip) {
+                    md += `> **引入建议**：${tip.intro}\n`;
+                    md += `> **互动设计**：${tip.interact}\n`;
+                    md += `> **理解技巧**：${tip.tip}\n\n`;
+                }
+            });
+            navigator.clipboard.writeText(md).then(() => {
+                showGlobalToast('已复制到剪贴板，可直接粘贴到Markdown编辑器', 'success');
+            }).catch(() => {
+                showGlobalToast('复制失败，请手动复制', 'error');
+            });
         });
 
         // ── 用户下拉菜单 ──────────────────────────────────────────────
@@ -5128,8 +5429,7 @@ ${text}
                         :root[data-theme="dark"] .gp-question-card,
                         :root[data-theme="dark"] .study-tool-card,
                         :root[data-theme="dark"] .chat-interface,
-                        :root[data-theme="dark"] .slide-preview,
-                        :root[data-theme="dark"] .template-card,
+                        :root[data-theme="dark"] .ppt-card,
                         :root[data-theme="dark"] .ana-section,
                         :root[data-theme="dark"] .gp-levelend { background:#1e293b!important; }
                         :root[data-theme="dark"] .header { border-bottom-color:#334155; }
