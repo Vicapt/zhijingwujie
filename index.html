@@ -4233,6 +4233,44 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         var _3d_generated = false;   // 全景图是否已加载
         var _3d_placing = null;      // 正在等待定位的 kp id
         var _3d_editingSceneId = null; // 正在编辑的场景ID，null表示新建
+        // Three.js 全景状态（公共作用域，供 init3DScene 和 renderSceneManager 共用）
+        var _threeAlive = false;
+        var _threeRenderer = null, _threeCamera = null, _threeScene = null;
+        var _lon = 180, _lat = 10, _isDrag = false, _prevMx = 0, _prevMy = 0;
+        var _panoW = 0, _panoH = 0;
+
+        // ── 刷新知识点列表（公共函数，供 init3DScene 和 renderSceneManager 共用）──
+        function _refreshKpList() {
+            var list = document.getElementById('pointsList');
+            if (!list) return;
+            if (_3d_kps.length === 0) {
+                list.innerHTML = '<div style="text-align:center;padding:12px;color:var(--gray-400);font-size:.8rem"><i class="fas fa-map-marker-alt" style="display:block;margin-bottom:4px;opacity:.4"></i>暂无标注点</div>';
+                return;
+            }
+            list.innerHTML = _3d_kps.map(function(kp, i) {
+                var positioned = kp.x != null;
+                return '<div class="s3d-kp-row' + (_3d_placing===kp.id?' active':'') + '" data-id="' + kp.id + '">'
+                    + '<div class="s3d-kp-num">' + (i+1) + '</div>'
+                    + '<span class="s3d-kp-label">' + kp.label + '</span>'
+                    + (positioned
+                        ? '<span class="s3d-kp-pos"><i class="fas fa-check-circle" style="color:var(--green-500)"></i> ' + kp.x + '%, ' + kp.y + '%</span>'
+                        : '<span class="s3d-kp-pos" style="color:var(--amber-500)"><i class="fas fa-clock"></i> 待定位</span>')
+                    + '<button class="s3d-kp-del" data-id="' + kp.id + '" title="删除"><i class="fas fa-times"></i></button>'
+                    + '</div>';
+            }).join('');
+            list.querySelectorAll('.s3d-kp-row').forEach(function(row){
+                row.addEventListener('click', function(e){
+                    if (e.target.closest('.s3d-kp-del')) return;
+                    _enterPinMode(this.dataset.id);
+                });
+            });
+            list.querySelectorAll('.s3d-kp-del').forEach(function(btn){
+                btn.addEventListener('click', function(e){
+                    e.stopPropagation();
+                    _deleteKp(this.dataset.id);
+                });
+            });
+        }
 
         function init3DScene() {
             // 重置状态
@@ -4257,11 +4295,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             var panoEmpty   = document.getElementById('s3d-pano-empty');
             var panoBadge   = document.getElementById('s3d-pano-badge');
             var panoHint    = document.getElementById('s3d-pano-hint');
-
-            var _threeAlive = false;
-            var _threeRenderer = null, _threeCamera = null, _threeScene = null;
-            var _lon = 180, _lat = 10, _isDrag = false, _prevMx = 0, _prevMy = 0;
-            var _panoW = 0, _panoH = 0; // canvas display size
 
             // ── 图片上传 ─────────────────────────────────────────────────────
             uploadBtn.addEventListener('click', function(){ imgInput.click(); });
@@ -4430,40 +4463,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 
             // 窗口 resize 时刷新
             window.addEventListener('resize', _refreshAllPins);
-
-            // ── 刷新知识点列表 ───────────────────────────────────────────────
-            function _refreshKpList() {
-                var list = document.getElementById('pointsList');
-                if (!list) return;
-                if (_3d_kps.length === 0) {
-                    list.innerHTML = '<div style="text-align:center;padding:12px;color:var(--gray-400);font-size:.8rem"><i class="fas fa-map-marker-alt" style="display:block;margin-bottom:4px;opacity:.4"></i>暂无标注点</div>';
-                    return;
-                }
-                list.innerHTML = _3d_kps.map(function(kp, i) {
-                    var positioned = kp.x != null;
-                    return '<div class="s3d-kp-row' + (_3d_placing===kp.id?' active':'') + '" data-id="' + kp.id + '">'
-                        + '<div class="s3d-kp-num">' + (i+1) + '</div>'
-                        + '<span class="s3d-kp-label">' + kp.label + '</span>'
-                        + (positioned
-                            ? '<span class="s3d-kp-pos"><i class="fas fa-check-circle" style="color:var(--green-500)"></i> ' + kp.x + '%, ' + kp.y + '%</span>'
-                            : '<span class="s3d-kp-pos" style="color:var(--amber-500)"><i class="fas fa-clock"></i> 待定位</span>')
-                        + '<button class="s3d-kp-del" data-id="' + kp.id + '" title="删除"><i class="fas fa-times"></i></button>'
-                        + '</div>';
-                }).join('');
-
-                list.querySelectorAll('.s3d-kp-row').forEach(function(row){
-                    row.addEventListener('click', function(e){
-                        if (e.target.closest('.s3d-kp-del')) return;
-                        _enterPinMode(this.dataset.id);
-                    });
-                });
-                list.querySelectorAll('.s3d-kp-del').forEach(function(btn){
-                    btn.addEventListener('click', function(e){
-                        e.stopPropagation();
-                        _deleteKp(this.dataset.id);
-                    });
-                });
-            }
 
             // ── 全景 Three.js 渲染 ──────────────────────────────────────────
             function _startPanorama(dataUrl) {
