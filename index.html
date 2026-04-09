@@ -2447,50 +2447,50 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                                     </div>
                                 </div>
 
-                                <!-- 风格选择 -->
+                                <!-- 教育侧重点选择 -->
                                 <div class="ppt-card ppt-style-card">
                                     <div class="ppt-card-header">
-                                        <div class="ppt-card-icon"><i class="fas fa-palette"></i></div>
+                                        <div class="ppt-card-icon"><i class="fas fa-bullseye"></i></div>
                                         <div class="ppt-card-titles">
-                                            <h3>选择课件风格</h3>
-                                            <p>AI将据此调整PPT的视觉呈现</p>
+                                            <h3>选择教育侧重点</h3>
+                                            <p>AI将据此调整教学互动建议的输出方向</p>
                                         </div>
                                     </div>
                                     <div class="ppt-style-grid">
-                                        <div class="ppt-style-item active" data-style="fresh">
-                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#f0fdf4,#bbf7d0)">
-                                                <i class="fas fa-leaf" style="color:#166534"></i>
+                                        <div class="ppt-style-item active" data-focus="reading">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#eff6ff,#bfdbfe)">
+                                                <i class="fas fa-book-open" style="color:#1e40af"></i>
                                             </div>
                                             <div class="ppt-style-info">
-                                                <h4>清新自然</h4>
-                                                <p>语文/自然/生物</p>
+                                                <h4>阅读理解</h4>
+                                                <p>语文/英语/文综</p>
                                             </div>
                                         </div>
-                                        <div class="ppt-style-item" data-style="strict">
-                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#eff6ff,#bfdbfe)">
-                                                <i class="fas fa-square-root-variable" style="color:#1e40af"></i>
+                                        <div class="ppt-style-item" data-focus="formula">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#f0fdf4,#bbf7d0)">
+                                                <i class="fas fa-square-root-variable" style="color:#166534"></i>
                                             </div>
                                             <div class="ppt-style-info">
-                                                <h4>数理严谨</h4>
+                                                <h4>公式推理</h4>
                                                 <p>数学/物理/化学</p>
                                             </div>
                                         </div>
-                                        <div class="ppt-style-item" data-style="fun">
-                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fdf4ff,#e9d5ff)">
-                                                <i class="fas fa-birthday-cake" style="color:#7e22ce"></i>
+                                        <div class="ppt-style-item" data-focus="memorize">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fefce8,#fef08a)">
+                                                <i class="fas fa-brain" style="color:#854d0e"></i>
                                             </div>
                                             <div class="ppt-style-info">
-                                                <h4>活泼童趣</h4>
-                                                <p>小学/趣味课堂</p>
+                                                <h4>记忆强化</h4>
+                                                <p>历史/地理/生物</p>
                                             </div>
                                         </div>
-                                        <div class="ppt-style-item" data-style="classic">
-                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fefce8,#fef08a)">
-                                                <i class="fas fa-scroll" style="color:#854d0e"></i>
+                                        <div class="ppt-style-item" data-focus="skill">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fdf4ff,#e9d5ff)">
+                                                <i class="fas fa-tools" style="color:#7e22ce"></i>
                                             </div>
                                             <div class="ppt-style-info">
-                                                <h4>古典国风</h4>
-                                                <p>古诗文/历史</p>
+                                                <h4>技能训练</h4>
+                                                <p>信息技术/实操</p>
                                             </div>
                                         </div>
                                     </div>
@@ -5032,14 +5032,14 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             fun:     { bg:'linear-gradient(135deg,#fdf4ff,#e9d5ff)', titleColor:'#7e22ce', accent:'#a855f7', name:'活泼童趣' },
             classic: { bg:'linear-gradient(135deg,#fefce8,#fef9c3)', titleColor:'#854d0e', accent:'#d97706', name:'古典国风' }
         };
-        let pptStyle = 'fresh';
+        let pptFocus = 'reading';
 
-        // 风格卡片选择 - 新布局
+        // 教育侧重点卡片选择
         document.querySelectorAll('.ppt-style-item').forEach(card => {
             card.addEventListener('click', function() {
                 document.querySelectorAll('.ppt-style-item').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
-                pptStyle = this.dataset.style;
+                pptFocus = this.dataset.focus;
                 if (pptSlides.length > 0) {
                     renderThumbnails();
                     renderCurrentSlide();
@@ -5083,7 +5083,14 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         // 生成教学提示
         async function generateTeachingTip(slide, index) {
             try {
-                const tipPrompt = `作为教学设计专家，请为以下PPT页面设计教学互动建议：
+                const focusMap = {
+                    reading: '阅读理解：注重文章结构分析、段落大意概括、中心思想提炼、关键词句品析',
+                    formula: '公式推理：注重概念理解、公式推导过程、例题演示、变式训练',
+                    memorize: '记忆强化：注重口诀歌谣、联想记忆、反复练习、及时复习',
+                    skill: '技能训练：注重步骤分解、示范演示、模仿练习、反馈纠错'
+                };
+                const focusDesc = focusMap[pptFocus] || focusMap.reading;
+                const tipPrompt = `作为教学设计专家，请为以下PPT页面设计教学互动建议。教育侧重点：【${focusDesc}】
 
 页面标题：${slide.title}
 页面内容：${slide.content || '无'}
@@ -5135,9 +5142,16 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             if (tipMatch) result.tip = tipMatch[1].trim();
 
             // 如果解析失败，使用默认提示
-            if (!result.intro) result.intro = '可以从课文标题或作者入手，激发学生学习兴趣。';
-            if (!result.interact) result.interact = '设置开放性问题，鼓励学生思考和表达。';
-            if (!result.tip) result.tip = '结合课文内容，使用具体案例帮助学生理解抽象概念。';
+            const defaultTips = {
+                reading: { intro: '可以从课文标题或关键图片入手，激发学生阅读兴趣。', interact: '设置开放性问题，鼓励学生自由表达和讨论。', tip: '引导学生抓住关键词句，分析文章结构和写作手法。' },
+                formula: { intro: '从生活实例或旧知识引入新概念，自然过渡。', interact: '让学生先尝试自己推导，教师再点评补充。', tip: '通过变式练习逐步加深理解，注重公式适用条件。' },
+                memorize: { intro: '用口诀、歌谣或联想方式帮助学生建立记忆锚点。', interact: '采用小组竞赛或抽答形式，保持学生参与度。', tip: '多次重复结合间隔复习，帮助学生形成长期记忆。' },
+                skill: { intro: '先示范完整操作步骤，让学生形成整体印象。', interact: '学生模仿操作，教师巡视指导并及时纠错。', tip: '分步骤练习，从简单到复杂，逐步提升熟练度。' }
+            };
+            const defaults = defaultTips[pptFocus] || defaultTips.reading;
+            if (!result.intro) result.intro = defaults.intro;
+            if (!result.interact) result.interact = defaults.interact;
+            if (!result.tip) result.tip = defaults.tip;
 
             return result;
         }
@@ -5303,12 +5317,15 @@ ${text}
             document.getElementById('nextSlideBtn').disabled = pptSlides.length <= 1;
 
             // 生成本地默认教学提示
+            const defaultTips = {
+                reading: { intro: '可以从课文标题或关键图片入手，激发学生阅读兴趣。', interact: '设置开放性问题，鼓励学生自由表达和讨论。', tip: '引导学生抓住关键词句，分析文章结构和写作手法。' },
+                formula: { intro: '从生活实例或旧知识引入新概念，自然过渡。', interact: '让学生先尝试自己推导，教师再点评补充。', tip: '通过变式练习逐步加深理解，注重公式适用条件。' },
+                memorize: { intro: '用口诀、歌谣或联想方式帮助学生建立记忆锚点。', interact: '采用小组竞赛或抽答形式，保持学生参与度。', tip: '多次重复结合间隔复习，帮助学生形成长期记忆。' },
+                skill: { intro: '先示范完整操作步骤，让学生形成整体印象。', interact: '学生模仿操作，教师巡视指导并及时纠错。', tip: '分步骤练习，从简单到复杂，逐步提升熟练度。' }
+            };
+            const defaults = defaultTips[pptFocus] || defaultTips.reading;
             pptSlides.forEach((slide, index) => {
-                pptTeachingTips[index] = {
-                    intro: '可以从课文标题或相关生活实例入手，引导学生进入主题。',
-                    interact: '设置简单问题，鼓励学生举手回答或小组讨论。',
-                    tip: '使用板书或PPT突出重点，帮助学生抓住核心内容。'
-                };
+                pptTeachingTips[index] = { ...defaults };
             });
             renderTeachingTips();
         }
