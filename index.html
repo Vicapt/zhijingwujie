@@ -5227,6 +5227,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             fun:     { bg:'linear-gradient(135deg,#fdf4ff,#e9d5ff)', titleColor:'#7e22ce', accent:'#a855f7', name:'活泼童趣' },
             classic: { bg:'linear-gradient(135deg,#fefce8,#fef9c3)', titleColor:'#854d0e', accent:'#d97706', name:'古典国风' }
         };
+        let pptStyle = 'fresh';  // 当前主题（修复：原代码缺少此声明导致 renderThumbnails/renderCurrentSlide 报错）
         let pptFocus = 'reading';
 
         // 教育侧重点卡片选择
@@ -5251,7 +5252,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 
         // ── DeepSeek API 配置 ─────────────────────────────────────
         const DEEPSEEK_API_KEY = 'sk-ac481fe817df49b19865494c10febd0d';
-        const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top';
+        const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top/v1/chat/completions';
 
         async function callDeepSeek(messages, maxTokens = 2000) {
             const response = await fetch(DEEPSEEK_API_URL, {
@@ -5276,6 +5277,17 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         }
 
         // 生成教学提示
+        // PPT生成提示词根据侧重点调整
+        function getPptFocusInstructions(focus) {
+            const focusInstructions = {
+                reading: '侧重：文章结构分析、段落大意概括、中心思想提炼、关键词句品析、阅读方法指导',
+                formula: '侧重：概念讲解透彻、公式推导清晰、例题演示规范、变式训练递进、知识框架建构',
+                memorize: '侧重：口诀歌谣归纳、联想记忆方法、知识反复巩固、检测练习设计、复习计划提示',
+                skill: '侧重：操作步骤分解、标准示范演示、分层练习设计、反馈纠错机制、成果展示评价'
+            };
+            return focusInstructions[focus] || focusInstructions.reading;
+        }
+
         async function generateTeachingTip(slide, index) {
             try {
                 const focusMap = {
@@ -5413,10 +5425,13 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             if (apiStatusDot) apiStatusDot.className = 'status-dot connecting';
 
             try {
+                const focusInstructions = getPptFocusInstructions(pptFocus);
                 const prompt = `请将以下课文内容拆解为PPT课件结构，生成6到10页幻灯片。
 
 课文内容：
 ${text}
+
+教育侧重点：【${focusInstructions}】
 
 请严格按照以下JSON数组格式输出，不要有任何其他文字：
 [
@@ -5427,8 +5442,12 @@ ${text}
   {"type":"summary","title":"课文小结","content":"总结课文主旨、情感与写作特色"}
 ]`;
 
+                const systemPrompt = `你是一位专业的中学教师，擅长将课文内容拆解为结构清晰的PPT课件。请严格按照JSON格式输出，不要有任何多余的文字或markdown代码块标记。
+
+教育侧重点参考：【${getPptFocusInstructions(pptFocus)}】`;
+
                 const rawJson = await callDeepSeek([
-                    { role: 'system', content: '你是一位专业的中学语文教师，擅长将课文内容拆解为结构清晰的PPT课件。请严格按照JSON格式输出，不要有任何多余的文字或markdown代码块标记。' },
+                    { role: 'system', content: systemPrompt },
                     { role: 'user', content: prompt }
                 ]);
 
@@ -6219,55 +6238,71 @@ ${text}
                 var parts    = kp.detail.split(/[。！？\n]/).filter(Boolean);
                 var quote    = parts[0] || kp.detail;
                 var analysis = parts.slice(1).join('。') || kp.detail;
-                var aiSection = kp.enableAi !== false ? `
+                // 判断是否有真实简介（排除默认占位文字）
+                var hasRealDesc = kp.detail && kp.detail !== '暂无描述' && kp.detail.trim() !== '';
+                var hasAi = kp.enableAi === true;
+
+                var descSection = hasRealDesc ? `
+  <!-- 板块1：简介 -->
+  <div class="pano-section-label" style="color:#93c5fd"><i class="fas fa-book" style="color:#60a5fa"></i> 知识简介</div>
+  <div class="pano-quote">"${quote}"</div>` : '';
+
+                var aiSection = hasAi ? `
   <div class="pano-section-label" style="color:#c4b5fd;margin-top:12px"><i class="fas fa-robot" style="color:#a78bfa"></i> AI 深度解析</div>
   <div id="pano-ai-content" class="pano-ai-loading">
     <div class="pano-ai-spinner"></div>
     <span>AI 正在解析中…</span>
   </div>` : '';
 
+                // 如果没有简介也没有AI解析，内容区只显示名称（无额外信息区域）
+                var hasContent = hasRealDesc || hasAi;
+
                 popup.innerHTML = `
 <button class="pano-popup-close" id="pano-popup-close-btn"><i class="fas fa-times"></i></button>
-<div style="padding:16px 16px 0">
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+<div style="padding:16px 16px ${hasContent ? '0' : '16px'}">
+  <div style="display:flex;align-items:center;gap:8px;${hasContent ? 'margin-bottom:12px' : ''}">
     <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0">${idx+1}</div>
     <div style="font-weight:800;font-size:.92rem;color:white">${kp.label}</div>
   </div>
-  ${kp.enableAi !== false ? `
-  <!-- 板块1：课文摘抄 -->
-  <div class="pano-section-label" style="color:#93c5fd"><i class="fas fa-book" style="color:#60a5fa"></i> 课文摘抄</div>
-  <div class="pano-quote">"${quote}"</div>` : ''}
-  <!-- 板块2：AI深度解析（可选） -->
+  ${descSection}
   ${aiSection}
 </div>
-<div style="display:flex;border-top:1px solid rgba(255,255,255,.08);margin-top:14px">
+${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.08);margin-top:14px">
   <button id="pano-tts-btn" style="flex:1;padding:9px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;border-right:1px solid rgba(255,255,255,.08);transition:.15s">
     <i class="fas fa-volume-up"></i> 朗读
   </button>
   <button id="pano-note-btn" style="flex:1;padding:9px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;transition:.15s">
     <i class="fas fa-pencil-alt"></i> 记笔记
   </button>
-</div>`;
+</div>` : `<div style="display:flex;border-top:1px solid rgba(255,255,255,.08)">
+  <button id="pano-note-btn" style="flex:1;padding:9px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;transition:.15s">
+    <i class="fas fa-pencil-alt"></i> 记笔记
+  </button>
+</div>`}`;
 
                 host.appendChild(popup);
 
                 document.getElementById('pano-popup-close-btn').addEventListener('click', function(){
                     popup.remove();
                 });
-                document.getElementById('pano-tts-btn').addEventListener('click', function(){
-                    if (window.speechSynthesis) {
-                        var u = new SpeechSynthesisUtterance(kp.label + '。' + (kp.enableAi !== false ? quote : kp.detail));
-                        u.lang='zh-CN'; u.rate=0.88;
-                        speechSynthesis.speak(u);
-                        showGlobalToast('正在朗读', 'info');
-                    }
-                });
+                var ttsBtnEl = document.getElementById('pano-tts-btn');
+                if (ttsBtnEl) {
+                    ttsBtnEl.addEventListener('click', function(){
+                        if (window.speechSynthesis) {
+                            var readText = hasRealDesc ? (kp.label + '。' + quote) : kp.label;
+                            var u = new SpeechSynthesisUtterance(readText);
+                            u.lang='zh-CN'; u.rate=0.88;
+                            speechSynthesis.speak(u);
+                            showGlobalToast('正在朗读', 'info');
+                        }
+                    });
+                }
                 document.getElementById('pano-note-btn').addEventListener('click', function(){
                     _saveNote(kp.id, kp.label);
                 });
 
                 // ── 调用 AI 做深度解析（仅启用时） ──────────────────────────
-                if (kp.enableAi !== false) {
+                if (hasAi) {
                     _fetchPanoAI(kp, quote, analysis);
                 }
             }
@@ -7637,10 +7672,10 @@ ${text}
                     '<textarea id="_pd-desc" rows="3" placeholder="这个知识点的含义或解释..." style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;outline:none;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea></div>' +
                     '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">' +
                     '<div><div style="font-size:.85rem;font-weight:600;color:#374151">启用 AI 深度解析</div><div style="font-size:.72rem;color:#64748b;margin-top:2px">关闭后不显示AI解析板块</div></div>' +
-                    '<label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">' +
+                    '<label id="_pd-ai-toggle" style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">' +
                     '<input id="_pd-ai" type="checkbox" checked style="opacity:0;width:0;height:0">' +
-                    '<span style="position:absolute;inset:0;background:#cbd5e1;border-radius:12px;transition:.2s"></span>' +
-                    '<span style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span>' +
+                    '<span class="toggle-slider" style="position:absolute;inset:0;background:#2563eb;border-radius:12px;transition:.2s"></span>' +
+                    '<span class="toggle-knob" style="position:absolute;left:22px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span>' +
                     '</label></div>' +
                     '</div>' +
                     '<div style="padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:10px">' +
@@ -7648,19 +7683,24 @@ ${text}
                     '<button id="_pd-ok" style="padding:9px 18px;border:none;border-radius:8px;background:#2563eb;color:white;cursor:pointer;font-size:.9rem;font-weight:600">添加</button>' +
                     '</div></div>';
                 document.body.appendChild(dlg);
-                // 开关交互
-                var toggle = dlg.querySelector('label');
+                // 开关交互 - 用自定义div替代label的默认行为
+                var toggle = dlg.querySelector('#_pd-ai-toggle');
                 var checkbox = document.getElementById('_pd-ai');
-                var slider = toggle.querySelector('span:first-child');
-                var knob = toggle.querySelector('span:last-child');
+                var slider = toggle.querySelector('.toggle-slider');
+                var knob = toggle.querySelector('.toggle-knob');
+                // 初始化开关外观（默认已勾选=启用AI，显示蓝色）
+                slider.style.background = '#2563eb';
+                knob.style.left = '22px';
+                toggle.style.cursor = 'pointer';
                 toggle.addEventListener('click', function() {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        slider.style.background = '#cbd5e1';
-                        knob.style.left = '2px';
-                    } else {
+                    var nowChecked = !checkbox.checked;
+                    checkbox.checked = nowChecked;
+                    if (nowChecked) {
                         slider.style.background = '#2563eb';
                         knob.style.left = '22px';
+                    } else {
+                        slider.style.background = '#cbd5e1';
+                        knob.style.left = '2px';
                     }
                 });
                 document.getElementById('_pd-close').onclick = function() { dlg.remove(); resolve(null); };
