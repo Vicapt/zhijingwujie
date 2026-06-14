@@ -783,7 +783,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .op-word-en { font-size: 2.6rem; font-weight: 900; color: var(--gray-800); letter-spacing: .02em; }
 .op-word-ph { font-size: 1.05rem; color: var(--gray-500); margin-top: 7px; font-family: var(--font-mono); }
 .op-word-zh { font-size: 1.15rem; color: var(--gray-600); margin-top: 9px; font-weight: 500; }
-.op-word-glyph { font-size: 4rem; margin-top: 14px; line-height: 1.2; }
 .op-controls { display: flex; gap: 11px; justify-content: center; }
 .op-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 22px; border-radius: var(--r-md); font-size: 0.875rem; font-weight: 700; cursor: pointer; border: none; transition: var(--tr); }
 .op-btn:disabled { opacity: .45; cursor: not-allowed; }
@@ -899,244 +898,67 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .study-quick-btn { width: 100%; padding: 7px 11px; text-align: left; background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: var(--r); cursor: pointer; font-size: 0.78rem; color: var(--gray-700); transition: var(--tr); }
 .study-quick-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--blue-50); }
 
-/* ── 13. PPT Module (New) ────────────────────────────────────────── */
-/* 左右布局容器 */
-.ppt-new-body { flex: 1; overflow: hidden; padding: 16px 20px; display: flex; flex-direction: column; }
-.ppt-new-grid {
-    display: grid;
-    grid-template-columns: 320px 1fr 1fr;
-    gap: 14px;
-    flex: 1;
-    min-height: 0;
-    height: 100%;
-}
-.ppt-left-col { display: flex; flex-direction: column; gap: 14px; overflow-y: auto; min-height: 0; }
-.ppt-preview-col { display: flex; flex-direction: column; min-height: 0; }
-.ppt-teaching-col { display: flex; flex-direction: column; min-height: 0; }
-
-/* PPT预览保持3:2比例 */
-.ppt-preview-stage { aspect-ratio: 3/2; min-height: 240px; }
-
-/* 卡片通用样式 */
-.ppt-card {
-    background: white;
-    border-radius: var(--r-lg);
-    border: 1px solid var(--gray-200);
-    box-shadow: var(--shadow-xs);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-.ppt-card-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 14px 16px 12px;
-    border-bottom: 1px solid var(--gray-100);
-    flex-shrink: 0;
-}
-.ppt-card-icon {
-    width: 36px; height: 36px;
-    border-radius: var(--r);
-    background: var(--blue-50);
-    color: var(--primary);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-}
-.ppt-card-icon.teaching-icon { background: var(--amber-50); color: var(--amber-600); }
-.ppt-card-titles { flex: 1; min-width: 0; }
-.ppt-card-titles h3 { font-size: 0.875rem; font-weight: 700; color: var(--gray-800); margin-bottom: 2px; }
-.ppt-card-titles p { font-size: 0.75rem; color: var(--gray-500); line-height: 1.4; }
-
-/* 输入卡片 */
-.ppt-input-card { flex: 1; display: flex; flex-direction: column; }
-.ppt-textarea {
-    flex: 1;
-    width: 100%;
-    padding: 12px 14px;
-    border: none;
-    resize: none;
-    font-family: inherit;
-    font-size: 0.85rem;
-    line-height: 1.7;
-    color: var(--gray-700);
-    outline: none;
-    min-height: 140px;
-    background: var(--gray-50);
-}
-.ppt-textarea:focus { background: white; }
-.ppt-textarea::placeholder { color: var(--gray-400); }
-.ppt-input-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    border-top: 1px solid var(--gray-100);
-    background: white;
-    flex-shrink: 0;
-}
-.ppt-char-info { font-size: 0.75rem; color: var(--gray-500); }
-.ppt-char-count { font-weight: 700; color: var(--primary); }
-.ppt-char-hint { margin-left: 4px; }
-.ppt-generate-btn { padding: 8px 16px; font-size: 0.82rem; }
-
-/* 风格选择卡片 */
-.ppt-style-card { flex-shrink: 0; }
-.ppt-style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 14px; }
-.ppt-style-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    border: 2px solid var(--gray-200);
-    border-radius: var(--r);
-    cursor: pointer;
-    transition: var(--tr);
-}
-.ppt-style-item:hover { border-color: var(--primary); background: var(--blue-50); }
-.ppt-style-item.active { border-color: var(--primary); background: var(--blue-50); }
-.ppt-style-preview {
-    width: 32px; height: 32px;
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-}
-.ppt-style-info h4 { font-size: 0.78rem; font-weight: 600; color: var(--gray-800); margin-bottom: 1px; }
-.ppt-style-info p { font-size: 0.68rem; color: var(--gray-500); }
-
-/* 预览卡片 */
-.ppt-preview-card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.ppt-slide-counter {
-    font-size: 0.75rem;
-    color: var(--gray-500);
-    background: var(--gray-100);
-    padding: 3px 10px;
-    border-radius: 10px;
-    flex-shrink: 0;
-}
-
-/* 缩略图 */
-.ppt-thumbnails {
-    display: flex;
-    gap: 8px;
-    padding: 10px 14px;
-    overflow-x: auto;
-    border-bottom: 1px solid var(--gray-100);
-    flex-shrink: 0;
-    min-height: 54px;
-    background: var(--gray-50);
-}
-.ppt-thumb-placeholder {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-width: 60px; height: 40px;
-    color: var(--gray-400); font-size: 0.7rem; text-align: center;
-}
-.ppt-thumb-placeholder i { font-size: 1rem; margin-bottom: 3px; opacity: 0.4; }
-.ppt-thumb {
-    min-width: 64px; height: 40px;
-    border-radius: 6px;
-    border: 2px solid var(--gray-200);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 3px; cursor: pointer; transition: var(--tr);
-    font-size: 0.65rem; color: var(--gray-600); text-align: center;
-    background: white;
-}
-.ppt-thumb:hover { border-color: var(--primary); transform: translateY(-2px); }
-.ppt-thumb.active { border-color: var(--primary); background: var(--blue-50); }
-.ppt-thumb-num { font-weight: 700; color: var(--gray-400); margin-bottom: 1px; font-size: 0.6rem; }
-.ppt-thumb-title { overflow: hidden; max-width: 52px; line-height: 1.2; }
-
-/* 大预览区 */
-.ppt-preview-main { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 12px 14px; }
-.ppt-preview-nav { display: flex; align-items: center; gap: 10px; flex: 1; }
-.ppt-nav-btn {
-    width: 32px; height: 32px;
-    border-radius: var(--r);
-    background: var(--gray-100);
-    color: var(--gray-600);
-    font-size: 0.8rem;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: var(--tr);
-    border: none; flex-shrink: 0;
-}
-.ppt-nav-btn:hover:not(:disabled) { background: var(--blue-50); color: var(--primary); }
-.ppt-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.ppt-preview-stage {
-    flex: 1;
-    border-radius: var(--r-md);
-    padding: 18px 20px;
-    position: relative;
-    overflow: hidden;
-    min-height: 160px;
-    border: 1px solid var(--gray-200);
-}
-.ppt-slide-bg {
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 1; border-radius: var(--r-md);
-}
-.ppt-slide-content { position: relative; z-index: 2; }
-.ppt-slide-header { margin-bottom: 12px; }
-.ppt-slide-title { font-size: 1.25rem; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; line-height: 1.3; }
-.ppt-slide-subtitle { font-size: 0.8rem; color: var(--gray-500); }
-.ppt-slide-body { }
-.ppt-slide-text { color: var(--gray-700); line-height: 1.7; font-size: 0.875rem; }
-.ppt-preview-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 10px; padding-top: 10px;
-    border-top: 1px solid var(--gray-100);
-    flex-shrink: 0;
-}
-.ppt-page-indicator { font-size: 0.78rem; color: var(--gray-500); }
-.ppt-page-indicator strong { color: var(--primary); }
-.ppt-preview-actions { display: flex; gap: 6px; }
-.btn-sm { padding: 5px 10px; font-size: 0.75rem; }
-
-/* 教学提示卡片 */
-.ppt-teaching-card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.ppt-teaching-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px 14px;
-    min-height: 0;
-}
-.ppt-tip-empty {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 20px 10px;
-    color: var(--gray-500);
-}
-.ppt-tip-empty i { font-size: 2rem; margin-bottom: 10px; opacity: 0.4; color: var(--amber-500); }
-.ppt-tip-empty p { font-size: 0.85rem; margin-bottom: 6px; }
-.ppt-tip-empty span { font-size: 0.72rem; color: var(--gray-400); }
-
-.ppt-tip-section { margin-bottom: 14px; }
-.ppt-tip-section:last-child { margin-bottom: 0; }
-.ppt-tip-label {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 0.72rem; font-weight: 700;
-    padding: 3px 8px; border-radius: 10px;
-    margin-bottom: 6px;
-    text-transform: uppercase; letter-spacing: 0.03em;
-}
-.ppt-tip-label.intro { background: var(--blue-100); color: var(--blue-700); }
-.ppt-tip-label.interact { background: var(--green-100); color: var(--green-700); }
-.ppt-tip-label.tip { background: var(--amber-100); color: var(--amber-700); }
-.ppt-tip-text { font-size: 0.82rem; color: var(--gray-700); line-height: 1.6; }
-.ppt-teaching-actions {
-    padding: 10px 14px;
-    border-top: 1px solid var(--gray-100);
-    flex-shrink: 0;
-}
-.ppt-teaching-actions .btn { width: 100%; }
-
-/* 进度条 */
-.progress-container { background: white; border: 1px solid var(--gray-200); border-radius: var(--r-md); padding: 14px 16px; margin-top: 12px; }
-.progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.82rem; }
+/* ── 13. PPT Module ────────────────────────────────────────── */
+.ppt-container { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+.ppt-left, .ppt-right { display: flex; flex-direction: column; gap: 18px; }
+.section-title { font-size: 1rem; font-weight: 700; color: var(--gray-800); margin-bottom: 14px; }
+.script-input textarea { width: 100%; height: 160px; padding: 13px; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); font-family: inherit; font-size: 0.9rem; resize: vertical; outline: none; transition: border-color var(--tr); line-height: 1.6; color: var(--gray-800); }
+.script-input textarea:focus { border-color: var(--primary); }
+.script-actions { display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end; }
+.script-info { font-size: 0.78rem; color: var(--gray-400); margin-top: 6px; }
+.char-count { font-weight: 700; color: var(--primary); }
+.template-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.template-card { background: white; border: 2px solid var(--gray-200); border-radius: var(--r-md); padding: 13px; cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 10px; }
+.template-card:hover, .template-card.active { border-color: var(--primary); background: var(--blue-50); }
+.template-icon { font-size: 1.4rem; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--gray-100); border-radius: var(--r); }
+.template-info h4 { margin: 0 0 3px; font-size: 0.9rem; color: var(--gray-800); font-weight: 600; }
+.template-info p  { margin: 0; font-size: 0.76rem; color: var(--gray-500); }
+.preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.preview-header h3 { margin: 0; font-size: 1rem; font-weight: 700; color: var(--gray-800); }
+.slide-count { font-size: 0.84rem; color: var(--gray-500); background: var(--gray-100); padding: 3px 10px; border-radius: 10px; }
+.thumbnail-container { background: var(--gray-50); border-radius: var(--r-md); padding: 12px; }
+.thumbnail-scroll { display: flex; gap: 7px; overflow-x: auto; padding: 4px 0; }
+.thumbnail-placeholder { text-align: center; padding: 20px; color: var(--gray-400); }
+.thumbnail-placeholder i { font-size: 2rem; margin-bottom: 8px; opacity: .4; display: block; }
+.thumbnail-placeholder p { font-size: 0.82rem; }
+.slide-view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.slide-view-header h4 { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--gray-700); }
+.slide-nav { display: flex; align-items: center; gap: 8px; }
+.nav-btn { width: 28px; height: 28px; border-radius: var(--r-sm); background: var(--gray-100); color: var(--gray-600); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--tr); border: none; }
+.nav-btn:hover:not(:disabled) { background: var(--blue-50); color: var(--primary); }
+.nav-btn:disabled { opacity: .4; cursor: not-allowed; }
+.slide-position { font-size: 0.82rem; color: var(--gray-500); }
+.slide-preview { background: white; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); padding: 18px; min-height: 180px; position: relative; }
+.slide-content { position: relative; }
+.slide-background { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: var(--r); z-index: 1; }
+.slide-header { position: relative; z-index: 2; margin-bottom: 10px; }
+.slide-title { font-size: 1.3rem; font-weight: 700; color: var(--gray-800); margin-bottom: 5px; }
+.slide-subtitle { font-size: 0.875rem; color: var(--gray-500); }
+.slide-body { position: relative; z-index: 2; }
+.slide-text { color: var(--gray-700); line-height: 1.65; font-size: 0.9rem; }
+.slide-animation { display: flex; gap: 5px; margin-top: 10px; }
+.animation-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); opacity: .3; animation: pulse-dot 1.5s infinite; }
+.animation-dot:nth-child(2) { animation-delay: .3s; }
+.animation-dot:nth-child(3) { animation-delay: .6s; }
+@keyframes pulse-dot { 0%,100%{ opacity:.3; transform:scale(1); } 50%{ opacity:.7; transform:scale(1.2); } }
+.preview-actions { display: flex; gap: 9px; justify-content: flex-end; margin-top: 16px; }
+.action-group { display: flex; gap: 9px; flex-wrap: wrap; }
+.progress-container { margin-top: 18px; background: white; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); padding: 16px; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 9px; font-size: 0.84rem; }
 .progress-title { color: var(--gray-700); font-weight: 500; }
 .progress-percent { color: var(--primary); font-weight: 700; }
-.progress-bar { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--blue-700)); border-radius: 3px; width: 0%; transition: width .3s ease; }
+.progress-bar { height: 8px; background: var(--gray-100); border-radius: 4px; overflow: hidden; margin-bottom: 7px; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--blue-700)); border-radius: 4px; width: 0%; transition: width .3s ease; }
+.progress-text { font-size: 0.78rem; color: var(--gray-500); text-align: center; }
+.edit-panel { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--r-md); padding: 18px; margin-top: 18px; }
+.panel-title { font-size: 0.9rem; font-weight: 700; color: var(--gray-800); margin-bottom: 14px; }
+.control-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.control-item { display: flex; flex-direction: column; gap: 6px; }
+.control-item label { font-size: 0.82rem; font-weight: 600; color: var(--gray-600); }
+.form-control { padding: 7px 10px; border: 1.5px solid var(--gray-200); border-radius: var(--r-sm); font-size: 0.875rem; width: 90px; outline: none; }
+.form-control:focus { border-color: var(--primary); }
+.color-picker { width: 52px; height: 36px; padding: 2px; border: 1.5px solid var(--gray-200); border-radius: var(--r-sm); cursor: pointer; }
+.control-actions { display: flex; gap: 8px; margin-top: 12px; }
 
 /* 3D Scene */
 .scene-container { display: grid; grid-template-columns: 2fr 3fr; gap: 20px; }
@@ -2354,7 +2176,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             <!-- 教师端菜单 - 7大核心功能 -->
             <a href="javascript:void(0)" class="menu-item active" data-module="ppt">
                 <i class="fas fa-file-powerpoint"></i>
-                <span class="menu-text">智能PPT备课</span>
+                <span class="menu-text">PPT课件生成</span>
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="3d">
                 <i class="fas fa-cube"></i>
@@ -2413,167 +2235,168 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
     </nav>
 
     <!-- PPT持久化容器 - 不放在moduleContent里，避免被innerHTML覆盖 -->
-    <div id="ppt-persistent-wrapper" style="display:none;position:fixed;top:calc(var(--header-h) + 20px);right:20px;bottom:calc(var(--footer-h) + 20px);left:calc(var(--sidebar-width) + 20px);z-index:50;overflow:hidden;transition:left .18s cubic-bezier(.4,0,.2,1);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.10)">
+    <div id="ppt-persistent-wrapper" style="display:none;position:fixed;top:calc(var(--header-h) + 20px);right:20px;bottom:calc(var(--footer-h) + 20px);left:calc(var(--sidebar-width) + 20px);z-index:50;overflow:hidden;transition:left .18s cubic-bezier(.4,0,.2,1);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.07)">
         <div class="module-content" style="height:100%;display:flex;flex-direction:column">
             <!-- PPT课件生成模块内容嵌入这里 -->
                 <div class="content-card mod-fullscreen" id="ppt-generator">
-                    <div class="sp3-topbar"><div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-file-powerpoint"></i> 智能PPT备课助手</span></div><div class="sp3-tb-right"></div></div>
-                    <div class="ppt-new-body">
-                        <!-- 三栏布局：左侧输入 | 右上预览 | 右下教学提示 -->
-                        <div class="ppt-new-grid">
-                            <!-- 左栏：教案输入区 -->
-                            <div class="ppt-left-col">
-                                <div class="ppt-card ppt-input-card">
-                                    <div class="ppt-card-header">
-                                        <div class="ppt-card-icon"><i class="fas fa-pen-fancy"></i></div>
-                                        <div class="ppt-card-titles">
-                                            <h3>输入教案或课文</h3>
-                                            <p>粘贴课文内容，AI将分析结构并生成教学建议</p>
+                    <div class="sp3-topbar"><div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-file-powerpoint"></i> PPT课件生成</span></div><div class="sp3-tb-right"></div></div>
+                    <div class="mod-body">
+                        <div class="ppt-container">
+                            <!-- 左侧操作区 -->
+                            <div class="ppt-left">
+                                <div class="operation-section">
+                                    <h3 class="section-title">输入教案脚本</h3>
+                                    <div class="script-input">
+                                        <textarea id="textInput" placeholder="粘贴或输入课文教案脚本。&#10;&#10;示例：&#10;《荷塘月色》是朱自清1927年写的一篇散文，描写盛夏月夜荷塘的景色，情感含蓄，意境优美。&#10;&#10;支持「描述挑战」「互动提问」等互动环节设计..." rows="10" style="resize:vertical;min-height:120px"></textarea>
+                                        <div class="script-actions">
+                                            <button class="btn btn-outline" id="saveDraftBtn">
+                                                <i class="fas fa-save"></i> 保存草稿
+                                            </button>
+                                            <button class="btn btn-primary" id="generatePptBtn">
+                                                <i class="fas fa-magic"></i> 一键生成课件
+                                            </button>
+                                        </div>
+                                        <div class="script-info">
+                                            <span class="char-count" id="charCount">0</span> 字符
+                                            <span class="hint">（建议200-1000字）</span>
                                         </div>
                                     </div>
-                                    <textarea id="textInput" class="ppt-textarea" placeholder="请粘贴课文或教案内容...
-
-例如：
-《荷塘月色》朱自清
-这几天心里颇不宁静。今晚在院子里坐着乘凉，忽然想起日日走过的荷塘，在这满月的光里，总该另有一番样子吧..."></textarea>
-                                    <div class="ppt-input-footer">
-                                        <div class="ppt-char-info">
-                                            <span class="ppt-char-count" id="charCount">0</span> 字符
-                                            <span class="ppt-char-hint">（建议200-1000字）</span>
-                                        </div>
-                                        <button class="btn btn-primary ppt-generate-btn" id="generatePptBtn">
-                                            <i class="fas fa-wand-magic-sparkles"></i> 智能生成
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- 教育侧重点选择 -->
-                                <div class="ppt-card ppt-style-card">
-                                    <div class="ppt-card-header">
-                                        <div class="ppt-card-icon"><i class="fas fa-bullseye"></i></div>
-                                        <div class="ppt-card-titles">
-                                            <h3>选择教育侧重点</h3>
-                                            <p>AI将据此调整教学互动建议的输出方向</p>
-                                        </div>
-                                    </div>
-                                    <div class="ppt-style-grid">
-                                        <div class="ppt-style-item active" data-focus="reading">
-                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#eff6ff,#bfdbfe)">
-                                                <i class="fas fa-book-open" style="color:#1e40af"></i>
+                                    
+                                    <div class="template-section">
+                                        <h3 class="section-title">课件风格预设</h3>
+                                        <div class="template-grid">
+                                            <div class="template-card active" data-style="fresh">
+                                                <div class="template-icon">🌿</div>
+                                                <div class="template-info">
+                                                    <h4>清新自然</h4>
+                                                    <p>适合语文/自然课</p>
+                                                </div>
                                             </div>
-                                            <div class="ppt-style-info">
-                                                <h4>阅读理解</h4>
-                                                <p>语文/英语/文综</p>
+                                            <div class="template-card" data-style="strict">
+                                                <div class="template-icon">🧮</div>
+                                                <div class="template-info">
+                                                    <h4>数理严谨</h4>
+                                                    <p>适合数学/科学课</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="ppt-style-item" data-focus="formula">
-                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#f0fdf4,#bbf7d0)">
-                                                <i class="fas fa-square-root-variable" style="color:#166534"></i>
+                                            <div class="template-card" data-style="fun">
+                                                <div class="template-icon">🎨</div>
+                                                <div class="template-info">
+                                                    <h4>活泼童趣</h4>
+                                                    <p>适合低年级</p>
+                                                </div>
                                             </div>
-                                            <div class="ppt-style-info">
-                                                <h4>公式推理</h4>
-                                                <p>数学/物理/化学</p>
-                                            </div>
-                                        </div>
-                                        <div class="ppt-style-item" data-focus="memorize">
-                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fefce8,#fef08a)">
-                                                <i class="fas fa-brain" style="color:#854d0e"></i>
-                                            </div>
-                                            <div class="ppt-style-info">
-                                                <h4>记忆强化</h4>
-                                                <p>历史/地理/生物</p>
-                                            </div>
-                                        </div>
-                                        <div class="ppt-style-item" data-focus="skill">
-                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fdf4ff,#e9d5ff)">
-                                                <i class="fas fa-tools" style="color:#7e22ce"></i>
-                                            </div>
-                                            <div class="ppt-style-info">
-                                                <h4>技能训练</h4>
-                                                <p>信息技术/实操</p>
+                                            <div class="template-card" data-style="classic">
+                                                <div class="template-icon">📜</div>
+                                                <div class="template-info">
+                                                    <h4>古典国风</h4>
+                                                    <p>适合古诗文</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- 右侧两栏并排：PPT预览 + 教学提示 -->
-                            <div class="ppt-preview-col">
-                                <!-- PPT预览 -->
-                                <div class="ppt-card ppt-preview-card">
-                                    <div class="ppt-card-header">
-                                        <div class="ppt-card-icon"><i class="fas fa-presentation"></i></div>
-                                        <div class="ppt-card-titles">
-                                            <h3>PPT大纲梳理</h3>
-                                            <p>点击缩略图或使用箭头切换页面</p>
-                                        </div>
-                                        <div class="ppt-slide-counter" id="slideCount">共 0 页</div>
+                            
+                            <!-- 右侧预览区 -->
+                            <div class="ppt-right">
+                                <div class="preview-section">
+                                    <div class="preview-header">
+                                        <h3 class="section-title">课件预览</h3>
+                                        <div class="slide-count" id="slideCount">共0页</div>
                                     </div>
-                                    <div class="ppt-thumbnails" id="thumbnailScroll">
-                                        <div class="ppt-thumb-placeholder" id="thumbPlaceholder">
-                                            <i class="fas fa-layer-group"></i>
-                                            <p>生成课件后在此预览</p>
+                                    
+                                    <div class="preview-content">
+                                        <!-- 缩略图列表 -->
+                                        <div class="thumbnail-container">
+                                            <div class="thumbnail-scroll" id="thumbnailScroll">
+                                                <div class="thumbnail-placeholder">
+                                                    <i class="fas fa-images"></i>
+                                                    <p>生成课件后显示缩略图</p>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="ppt-preview-main">
-                                        <div class="ppt-preview-nav">
-                                            <button class="ppt-nav-btn" id="prevSlideBtn" disabled>
-                                                <i class="fas fa-chevron-left"></i>
-                                            </button>
-                                            <div class="ppt-preview-stage" id="slidePreview">
-                                                <div class="ppt-slide-bg" id="slideBackground"></div>
-                                                <div class="ppt-slide-content">
-                                                    <div class="ppt-slide-header">
-                                                        <h2 class="ppt-slide-title" id="slideTitle">等待生成课件</h2>
-                                                        <div class="ppt-slide-subtitle" id="slideSubtitle">请先在左侧输入课文内容</div>
+                                        
+                                        <!-- 当前页预览 -->
+                                        <div class="current-slide-view">
+                                            <div class="slide-view-header">
+                                                <h4>当前页预览</h4>
+                                                <div class="slide-nav">
+                                                    <button class="nav-btn prev-slide" id="prevSlideBtn" disabled>
+                                                        <i class="fas fa-chevron-left"></i>
+                                                    </button>
+                                                    <span class="slide-position">第 <span id="currentSlideNum">1</span> 页</span>
+                                                    <button class="nav-btn next-slide" id="nextSlideBtn" disabled>
+                                                        <i class="fas fa-chevron-right"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="slide-preview" id="slidePreview">
+                                                <div class="slide-content">
+                                                    <div class="slide-background" id="slideBackground"></div>
+                                                    <div class="slide-header">
+                                                        <h3 class="slide-title" id="slideTitle">课件标题</h3>
+                                                        <div class="slide-subtitle" id="slideSubtitle">副标题内容</div>
                                                     </div>
-                                                    <div class="ppt-slide-body">
-                                                        <p class="ppt-slide-text" id="slideText">AI将为您分析课文结构，生成条理清晰的PPT课件，帮助学生更好地理解和掌握知识。</p>
+                                                    <div class="slide-body">
+                                                        <div class="slide-text" id="slideText">
+                                                            课件内容将在此显示，支持图文混排和动画效果。
+                                                        </div>
+                                                        <div class="slide-animation" id="slideAnimation">
+                                                            <div class="animation-dot"></div>
+                                                            <div class="animation-dot"></div>
+                                                            <div class="animation-dot"></div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button class="ppt-nav-btn" id="nextSlideBtn" disabled>
-                                                <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 底部操作 -->
+                                    <div class="preview-actions">
+                                        <div class="action-group">
+                                            <button class="btn btn-outline" id="editPptBtn">
+                                                <i class="fas fa-edit"></i> 简易编辑
+                                            </button>
+                                            <button class="btn btn-outline" id="downloadPptBtn">
+                                                <i class="fas fa-download"></i> 下载PPT
+                                            </button>
+                                            <button class="btn btn-primary" id="generate3dBtn">
+                                                <i class="fas fa-cube"></i> 生成3D情景
                                             </button>
                                         </div>
-                                        <div class="ppt-preview-footer">
-                                            <span class="ppt-page-indicator">第 <strong id="currentSlideNum">1</strong> 页</span>
-                                            <div class="ppt-preview-actions">
-                                                <button class="btn btn-sm btn-outline" id="editPptBtn"><i class="fas fa-sliders"></i> 调整</button>
-                                                <button class="btn btn-sm btn-primary" id="copyMarkdownBtn"><i class="fas fa-copy"></i> 复制为Markdown</button>
+                                    </div>
+                                    
+                                    <!-- 编辑面板 -->
+                                    <div class="edit-panel" id="editPanel" style="display: none;">
+                                        <h4 class="panel-title">课件编辑</h4>
+                                        <div class="edit-controls">
+                                            <div class="control-row">
+                                                <div class="control-item">
+                                                    <label>总页数</label>
+                                                    <input type="number" id="editPageCount" min="5" max="30" value="15" class="form-control">
+                                                </div>
+                                                <div class="control-item">
+                                                    <label>标题颜色</label>
+                                                    <input type="color" id="editTitleColor" value="#2563eb" class="color-picker">
+                                                </div>
+                                                <div class="control-item">
+                                                    <label>背景颜色</label>
+                                                    <input type="color" id="editBgColor" value="#ffffff" class="color-picker">
+                                                </div>
+                                            </div>
+                                            <div class="control-actions">
+                                                <button class="btn btn-primary" id="applyEditBtn">应用修改</button>
+                                                <button class="btn btn-outline" id="cancelEditBtn">取消</button>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 右侧：教学提示 -->
-                            <div class="ppt-teaching-col">
-                                <!-- AI教学提示 -->
-                                <div class="ppt-card ppt-teaching-card">
-                                    <div class="ppt-card-header">
-                                        <div class="ppt-card-icon teaching-icon"><i class="fas fa-lightbulb"></i></div>
-                                        <div class="ppt-card-titles">
-                                            <h3>教学互动建议</h3>
-                                            <p>本页的教学引入与互动设计提示</p>
-                                        </div>
-                                    </div>
-                                    <div class="ppt-teaching-content" id="teachingTips">
-                                        <div class="ppt-tip-empty">
-                                            <i class="fas fa-brain"></i>
-                                            <p>生成课件后，AI将为每一页提供教学互动建议</p>
-                                            <span>包括：如何引入话题、提问方式、帮助学生理解的技巧等</span>
-                                        </div>
-                                    </div>
-                                    <div class="ppt-teaching-actions">
-                                        <button class="btn btn-sm btn-outline" id="regenerateTipBtn" disabled>
-                                            <i class="fas fa-rotate"></i> 重新生成提示
-                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
+                        
                         <!-- 进度条容器 -->
                         <div class="progress-container" id="progressContainer" style="display: none;">
                             <div class="progress-header">
@@ -2586,7 +2409,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                         </div>
                     </div>
                 </div>
-
+                
         </div><!-- end ppt-persistent-wrapper inner -->
     </div><!-- end ppt-persistent-wrapper -->
 
@@ -3390,8 +3213,8 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         function getModuleInfo(module) {
             const modules = {
                 'ppt': {
-                    title: '智能PPT备课助手',
-                    subtitle: 'AI分析教案结构，生成教学建议，降低师资不平等'
+                    title: 'PPT课件生成',
+                    subtitle: '基于课文内容智能生成PPT课件，支持一键导出'
                 },
                 '3d': {
                     title: '3D情景生成 (ScriptScene™)',
@@ -4232,45 +4055,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         var _3d_kps = [];
         var _3d_generated = false;   // 全景图是否已加载
         var _3d_placing = null;      // 正在等待定位的 kp id
-        var _3d_editingSceneId = null; // 正在编辑的场景ID，null表示新建
-        // Three.js 全景状态（公共作用域，供 init3DScene 和 renderSceneManager 共用）
-        var _threeAlive = false;
-        var _threeRenderer = null, _threeCamera = null, _threeScene = null;
-        var _lon = 180, _lat = 10, _isDrag = false, _prevMx = 0, _prevMy = 0;
-        var _panoW = 0, _panoH = 0;
-
-        // ── 刷新知识点列表（公共函数，供 init3DScene 和 renderSceneManager 共用）──
-        function _refreshKpList() {
-            var list = document.getElementById('pointsList');
-            if (!list) return;
-            if (_3d_kps.length === 0) {
-                list.innerHTML = '<div style="text-align:center;padding:12px;color:var(--gray-400);font-size:.8rem"><i class="fas fa-map-marker-alt" style="display:block;margin-bottom:4px;opacity:.4"></i>暂无标注点</div>';
-                return;
-            }
-            list.innerHTML = _3d_kps.map(function(kp, i) {
-                var positioned = kp.x != null;
-                return '<div class="s3d-kp-row' + (_3d_placing===kp.id?' active':'') + '" data-id="' + kp.id + '">'
-                    + '<div class="s3d-kp-num">' + (i+1) + '</div>'
-                    + '<span class="s3d-kp-label">' + kp.label + '</span>'
-                    + (positioned
-                        ? '<span class="s3d-kp-pos"><i class="fas fa-check-circle" style="color:var(--green-500)"></i> ' + kp.x + '%, ' + kp.y + '%</span>'
-                        : '<span class="s3d-kp-pos" style="color:var(--amber-500)"><i class="fas fa-clock"></i> 待定位</span>')
-                    + '<button class="s3d-kp-del" data-id="' + kp.id + '" title="删除"><i class="fas fa-times"></i></button>'
-                    + '</div>';
-            }).join('');
-            list.querySelectorAll('.s3d-kp-row').forEach(function(row){
-                row.addEventListener('click', function(e){
-                    if (e.target.closest('.s3d-kp-del')) return;
-                    _enterPinMode(this.dataset.id);
-                });
-            });
-            list.querySelectorAll('.s3d-kp-del').forEach(function(btn){
-                btn.addEventListener('click', function(e){
-                    e.stopPropagation();
-                    _deleteKp(this.dataset.id);
-                });
-            });
-        }
 
         function init3DScene() {
             // 重置状态
@@ -4295,6 +4079,11 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             var panoEmpty   = document.getElementById('s3d-pano-empty');
             var panoBadge   = document.getElementById('s3d-pano-badge');
             var panoHint    = document.getElementById('s3d-pano-hint');
+
+            var _threeAlive = false;
+            var _threeRenderer = null, _threeCamera = null, _threeScene = null;
+            var _lon = 180, _lat = 10, _isDrag = false, _prevMx = 0, _prevMy = 0;
+            var _panoW = 0, _panoH = 0; // canvas display size
 
             // ── 图片上传 ─────────────────────────────────────────────────────
             uploadBtn.addEventListener('click', function(){ imgInput.click(); });
@@ -4358,7 +4147,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             addPointBtn.addEventListener('click', async function() {
                 var pointData = await showPointInputDialog();
                 if (!pointData) return;
-                var kp = { id: 'kp_' + Date.now(), label: pointData.name, detail: pointData.desc, enableAi: pointData.enableAi !== false, x: null, y: null };
+                var kp = { id: 'kp_' + Date.now(), label: pointData.name, detail: pointData.desc, x: null, y: null };
                 _3d_kps.push(kp);
                 _refreshKpList();
                 _enterPinMode(kp.id);
@@ -4464,34 +4253,49 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             // 窗口 resize 时刷新
             window.addEventListener('resize', _refreshAllPins);
 
+            // ── 刷新知识点列表 ───────────────────────────────────────────────
+            function _refreshKpList() {
+                var list = document.getElementById('pointsList');
+                if (!list) return;
+                if (_3d_kps.length === 0) {
+                    list.innerHTML = '<div style="text-align:center;padding:12px;color:var(--gray-400);font-size:.8rem"><i class="fas fa-map-marker-alt" style="display:block;margin-bottom:4px;opacity:.4"></i>暂无标注点</div>';
+                    return;
+                }
+                list.innerHTML = _3d_kps.map(function(kp, i) {
+                    var positioned = kp.x != null;
+                    return '<div class="s3d-kp-row' + (_3d_placing===kp.id?' active':'') + '" data-id="' + kp.id + '">'
+                        + '<div class="s3d-kp-num">' + (i+1) + '</div>'
+                        + '<span class="s3d-kp-label">' + kp.label + '</span>'
+                        + (positioned
+                            ? '<span class="s3d-kp-pos"><i class="fas fa-check-circle" style="color:var(--green-500)"></i> ' + kp.x + '%, ' + kp.y + '%</span>'
+                            : '<span class="s3d-kp-pos" style="color:var(--amber-500)"><i class="fas fa-clock"></i> 待定位</span>')
+                        + '<button class="s3d-kp-del" data-id="' + kp.id + '" title="删除"><i class="fas fa-times"></i></button>'
+                        + '</div>';
+                }).join('');
+
+                list.querySelectorAll('.s3d-kp-row').forEach(function(row){
+                    row.addEventListener('click', function(e){
+                        if (e.target.closest('.s3d-kp-del')) return;
+                        _enterPinMode(this.dataset.id);
+                    });
+                });
+                list.querySelectorAll('.s3d-kp-del').forEach(function(btn){
+                    btn.addEventListener('click', function(e){
+                        e.stopPropagation();
+                        _deleteKp(this.dataset.id);
+                    });
+                });
+            }
+
             // ── 全景 Three.js 渲染 ──────────────────────────────────────────
             function _startPanorama(dataUrl) {
                 // 若已在渲染，先销毁
                 if (_threeAlive) { _threeAlive = false; if (_threeRenderer) _threeRenderer.dispose(); }
-                var pe = document.getElementById('s3d-pano-empty');
-                var ph = document.getElementById('s3d-pano-hint');
-                var pb = document.getElementById('s3d-pano-badge');
-                var pc = document.getElementById('s3d-pano-canvas');
-                var pw = document.getElementById('s3d-pano-wrap');
-                if (!pw || !pc) { console.error('pano elements not found'); return; }
-                if (pe) pe.style.display = 'none';
-                if (ph) ph.style.display = 'block';
-
-                // 标准化 dataUrl：如果是文件名（如 'hetangyuese.jpg'）则转为相对路径
-                var normalizedUrl = dataUrl;
-                if (dataUrl && !dataUrl.startsWith('data:') && !dataUrl.startsWith('http') && !dataUrl.startsWith('blob:') && !dataUrl.startsWith('/')) {
-                    // 去掉开头的 .// if present
-                    normalizedUrl = dataUrl.replace(/^\.\//, '');
-                    if (!normalizedUrl.startsWith('/')) {
-                        normalizedUrl = './' + normalizedUrl;
-                    }
-                }
+                panoEmpty.style.display = 'none';
+                panoHint.style.display = 'block';
 
                 function boot() {
                     var THREE = window.THREE;
-                    var panoWrap = document.getElementById('s3d-pano-wrap');
-                    var panoCanvas = document.getElementById('s3d-pano-canvas');
-                    var panoBadge = document.getElementById('s3d-pano-badge');
                     _panoW = panoWrap.clientWidth;
                     _panoH = panoWrap.clientHeight;
 
@@ -4506,7 +4310,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                     var geo = new THREE.SphereGeometry(500, 64, 40);
                     geo.scale(-1, 1, 1);
                     var loader = new THREE.TextureLoader();
-                    loader.load(normalizedUrl, function(tex) {
+                    loader.load(dataUrl, function(tex) {
                         var mat = new THREE.MeshBasicMaterial({ map: tex });
                         _threeScene.add(new THREE.Mesh(geo, mat));
                         panoBadge.innerHTML = '<i class="fas fa-panorama"></i> 全景图模式';
@@ -4661,7 +4465,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             document.getElementById('resetSceneBtn').addEventListener('click', function() {
                 _3d_kps = []; _3d_generated = false; _3d_placing = null;
                 window._sceneImageData = null;
-                _3d_editingSceneId = null; // 重置编辑状态
                 srcImg.src = ''; srcImg.style.display = 'none';
                 uploadZone.style.display = 'flex';
                 imgArea.classList.add('no-image');
@@ -4687,41 +4490,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             if (!wrap) return;
 
             // 读取数据
-            function getLib() {
-                var stored = localStorage.getItem('scenes_library');
-                if (stored) return JSON.parse(stored);
-                // 预设演示情景
-                var demo = [
-                    {
-                        id: 'demo_scene_1',
-                        name: '荷塘月色',
-                        subject: '语文',
-                        grade: '初中',
-                        desc: '荷塘月色 - 朱自清',
-                        emoji: '📖',
-                        kps: [],
-                        published: true,
-                        createdAt: '2026-04-09',
-                        viewCount: 0,
-                        bgImage: 'hetangyuese.jpg'
-                    },
-                    {
-                        id: 'demo_scene_2',
-                        name: 'At the Farm',
-                        subject: '英语',
-                        grade: '小学',
-                        desc: 'At the Farm 农场景象',
-                        emoji: '🔤',
-                        kps: [],
-                        published: true,
-                        createdAt: '2026-04-09',
-                        viewCount: 0,
-                        bgImage: 'atthefarm.png'
-                    }
-                ];
-                localStorage.setItem('scenes_library', JSON.stringify(demo));
-                return demo;
-            }
+            function getLib() { return JSON.parse(localStorage.getItem('scenes_library') || '[]'); }
             function getFolders() { return JSON.parse(localStorage.getItem('s3d_folders') || '[]'); }
             function saveLib(lib) { localStorage.setItem('scenes_library', JSON.stringify(lib)); updateStorageUsage(); }
             function saveFolders(f) { localStorage.setItem('s3d_folders', JSON.stringify(f)); }
@@ -4879,7 +4648,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                     + '</div>'
                     + '<select class="s3d-mgr-folder-sel" data-sid="' + sc.id + '" style="font-size:.75rem;padding:4px 6px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-600);max-width:110px;cursor:pointer">' + folderOpts + '</select>'
                     + '<div style="display:flex;gap:5px;flex-shrink:0">'
-                    +   '<button class="s3d-mgr-btn-icon" data-action="edit-scene" data-sid="' + sc.id + '" title="编辑" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--primary);cursor:pointer;font-size:.78rem"><i class="fas fa-edit"></i></button>'
                     +   '<button class="s3d-mgr-btn-icon" data-action="toggle-pub" data-sid="' + sc.id + '" title="' + (sc.published?'撤回发布':'发布') + '" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:' + (sc.published?'var(--green-600)':'var(--gray-400)') + ';cursor:pointer;font-size:.78rem"><i class="fas ' + (sc.published?'fa-eye':'fa-eye-slash') + '"></i></button>'
                     +   '<button class="s3d-mgr-btn-icon" data-action="delete-scene" data-sid="' + sc.id + '" title="删除" style="width:28px;height:28px;border:1px solid var(--gray-200);border-radius:7px;background:white;color:var(--gray-400);cursor:pointer;font-size:.78rem"><i class="fas fa-trash-alt"></i></button>'
                     + '</div>'
@@ -4901,180 +4669,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                         saveLib(lib2);
                         showGlobalToast(fid ? '已移入文件夹' : '已移出文件夹', 'success');
                         render();
-                    });
-                });
-
-                // 编辑场景
-                container.querySelectorAll('[data-action="edit-scene"]').forEach(function(btn) {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        var sid = this.dataset.sid;
-                        var lib2 = getLib();
-                        var sc = lib2.find(function(s){ return s.id === sid; });
-                        if (!sc) return;
-                        // 切换到编辑视图
-                        window.s3dSwitchTab('edit');
-                        // 记录正在编辑的场景ID
-                        _3d_editingSceneId = sc.id;
-                        // 设置基本信息
-                        var nameEl = document.getElementById('sceneName');
-                        var subjectEl = document.getElementById('sceneSubject');
-                        var gradeEl = document.getElementById('sceneGrade');
-                        if (nameEl) nameEl.value = sc.name || '';
-                        if (subjectEl) subjectEl.value = sc.subject || '语文';
-                        if (gradeEl) gradeEl.value = sc.grade || '初中';
-                        // 加载知识点
-                        _3d_kps = sc.kps ? JSON.parse(JSON.stringify(sc.kps)) : [];
-                        _3d_generated = false;
-                        _3d_placing = null;
-                        // 加载背景图（支持文件名和 base64）
-                        if (sc.bgImage) {
-                            var resolvedImgUrl = sc.bgImage;
-                            if (!sc.bgImage.startsWith('data:') && !sc.bgImage.startsWith('http') && !sc.bgImage.startsWith('blob:')) {
-                                resolvedImgUrl = './' + sc.bgImage.replace(/^\.\//, '');
-                            }
-                            window._sceneImageData = sc.bgImage;
-                            var img = new Image();
-                            img.onload = function() {
-                                var srcImg = document.getElementById('s3d-src-img');
-                                var uploadZone = document.getElementById('s3d-upload-zone');
-                                if (srcImg) {
-                                    srcImg.src = resolvedImgUrl;
-                                    srcImg.style.display = 'block';
-                                }
-                                if (uploadZone) uploadZone.style.display = 'none';
-                                // 渲染全景预览（使用和学生端相同的内联渲染逻辑）
-                                (function() {
-                                    var pw = document.getElementById('s3d-pano-wrap');
-                                    var pc = document.getElementById('s3d-pano-canvas');
-                                    var pb = document.getElementById('s3d-pano-badge');
-                                    if (!pw || !pc) return;
-                                    document.getElementById('s3d-pano-empty').style.display = 'none';
-                                    document.getElementById('s3d-pano-hint').style.display = 'block';
-
-                                    if (_threeAlive) { _threeAlive = false; if (_threeRenderer) _threeRenderer.dispose(); }
-
-                                    function buildPanoFallback() {
-                                        var fc = document.createElement('canvas');
-                                        fc.width = 2048; fc.height = 1024;
-                                        var ctx = fc.getContext('2d');
-                                        var grd = ctx.createLinearGradient(0,0,0,1024);
-                                        grd.addColorStop(0,'#020818'); grd.addColorStop(0.4,'#0a1628');
-                                        grd.addColorStop(0.6,'#0f2240'); grd.addColorStop(0.75,'#1a3a1a'); grd.addColorStop(1,'#0d1f0d');
-                                        ctx.fillStyle = grd; ctx.fillRect(0,0,2048,1024);
-                                        for (var s=0;s<320;s++){
-                                            ctx.beginPath();
-                                            ctx.arc(Math.random()*2048,Math.random()*512,Math.random()*1.5+0.3,0,Math.PI*2);
-                                            ctx.fillStyle='rgba(255,255,255,'+(Math.random()*.8+.2)+')'; ctx.fill();
-                                        }
-                                        var mx=1024+200, my=180, mr=60;
-                                        var mg=ctx.createRadialGradient(mx,my,5,mx,my,mr);
-                                        mg.addColorStop(0,'rgba(255,250,200,1)'); mg.addColorStop(.5,'rgba(255,240,160,.9)'); mg.addColorStop(1,'rgba(255,220,100,0)');
-                                        ctx.beginPath(); ctx.arc(mx,my,mr,0,Math.PI*2); ctx.fillStyle=mg; ctx.fill();
-                                        var wg=ctx.createLinearGradient(0,620,0,1024);
-                                        wg.addColorStop(0,'rgba(10,30,60,.9)'); wg.addColorStop(1,'rgba(5,15,30,1)');
-                                        ctx.fillStyle=wg; ctx.fillRect(0,620,2048,404);
-                                        return new THREE.CanvasTexture(fc);
-                                    }
-
-                                    if (!window.THREE) {
-                                        var s = document.createElement('script');
-                                        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-                                        s.onload = initPano; document.head.appendChild(s);
-                                    } else { initPano(); }
-
-                                    function initPano() {
-                                        var THREE = window.THREE;
-                                        var W = pw.clientWidth, H = pw.clientHeight;
-                                        _threeRenderer = new THREE.WebGLRenderer({ canvas: pc, antialias: true });
-                                        _threeRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-                                        _threeRenderer.setSize(W, H);
-                                        _threeScene = new THREE.Scene();
-                                        _threeCamera = new THREE.PerspectiveCamera(75, W/H, 0.1, 1000);
-                                        _threeCamera.position.set(0, 0, 0.01);
-                                        var geo = new THREE.SphereGeometry(500, 64, 40);
-                                        geo.scale(-1, 1, 1);
-                                        var mat = new THREE.MeshBasicMaterial({ side: THREE.FrontSide });
-                                        var mesh = new THREE.Mesh(geo, mat);
-                                        _threeScene.add(mesh);
-
-                                        function applyTex(tex) {
-                                            mat.map = tex; mat.needsUpdate = true;
-                                            if (pb) {
-                                                pb.innerHTML = '<i class="fas fa-panorama"></i> 全景图模式';
-                                                pb.style.background = 'rgba(16,185,129,.15)';
-                                                pb.style.color = '#34d399';
-                                            }
-                                        }
-
-                                        var loader = new THREE.TextureLoader();
-                                        loader.load(resolvedImgUrl, applyTex, undefined, function() {
-                                            applyTex(buildPanoFallback());
-                                        });
-
-                                        // 拖拽控制
-                                        pc.addEventListener('mousedown', function(e){ _isDrag=true; _prevMx=e.clientX; _prevMy=e.clientY; });
-                                        pc.addEventListener('mousemove', function(e){
-                                            if (!_isDrag) return;
-                                            _lon -= (e.clientX-_prevMx)*0.22;
-                                            _lat += (e.clientY-_prevMy)*0.22;
-                                            _lat = Math.max(-85,Math.min(85,_lat));
-                                            _prevMx=e.clientX; _prevMy=e.clientY;
-                                        });
-                                        pc.addEventListener('mouseup', function(){ _isDrag=false; });
-                                        pc.addEventListener('mouseleave', function(){ _isDrag=false; });
-                                        pc.addEventListener('touchstart', function(e){ _isDrag=true; _prevMx=e.touches[0].clientX; _prevMy=e.touches[0].clientY; }, {passive:true});
-                                        pc.addEventListener('touchmove', function(e){
-                                            if (!_isDrag) return;
-                                            _lon -= (e.touches[0].clientX-_prevMx)*0.22;
-                                            _lat += (e.touches[0].clientY-_prevMy)*0.22;
-                                            _lat = Math.max(-85,Math.min(85,_lat));
-                                            _prevMx=e.touches[0].clientX; _prevMy=e.touches[0].clientY;
-                                        }, {passive:true});
-                                        pc.addEventListener('touchend', function(){ _isDrag=false; });
-                                        pc.addEventListener('wheel', function(e){
-                                            _threeCamera.fov = Math.max(30,Math.min(100,_threeCamera.fov+e.deltaY*0.05));
-                                            _threeCamera.updateProjectionMatrix();
-                                        }, {passive:true});
-
-                                        // ResizeObserver
-                                        var ro = new ResizeObserver(function(){
-                                            var nW = pw.clientWidth, nH = pw.clientHeight;
-                                            _threeRenderer.setSize(nW, nH);
-                                            _threeCamera.aspect = nW/nH;
-                                            _threeCamera.updateProjectionMatrix();
-                                        });
-                                        ro.observe(pw);
-
-                                        _threeAlive = true;
-                                        _lon = 180; _lat = 0;
-
-                                        (function loop() {
-                                            if (!_threeAlive) { ro.disconnect(); return; }
-                                            requestAnimationFrame(loop);
-                                            var phi = THREE.MathUtils.degToRad(90-_lat);
-                                            var theta = THREE.MathUtils.degToRad(_lon);
-                                            _threeCamera.lookAt(Math.sin(phi)*Math.cos(theta), Math.cos(phi), Math.sin(phi)*Math.sin(theta));
-                                            _threeRenderer.render(_threeScene, _threeCamera);
-                                        })();
-                                    }
-                                })();
-                                _3d_kps.forEach(function(kp) {
-                                    if (kp.x != null && kp.y != null) {
-                                        _renderPinOnImage(kp);
-                                    }
-                                });
-                                _refreshKpList();
-                            };
-                            img.onerror = function() {
-                                showGlobalToast('图片加载失败，请检查图片路径', 'error');
-                            };
-                            img.src = resolvedImgUrl;
-                        } else {
-                            window._sceneImageData = null;
-                        }
-                        _refreshKpList();
-                        showGlobalToast('已加载场景「' + sc.name + '」，可进行修改后再保存', 'success');
                     });
                 });
 
@@ -5119,7 +4713,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             var grade   = document.getElementById('sceneGrade')?.value   || '初中';
             if (!name) { showGlobalToast('请填写场景名称', 'error'); return null; }
             var sceneObj = {
-                id:        _3d_editingSceneId || ('scene_' + Date.now()),
+                id:        'scene_' + Date.now(),
                 name:      name,
                 subject:   subject,
                 grade:     grade,
@@ -5219,30 +4813,24 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         // 幻灯片数据
         let pptSlides = [];
         let pptCurrentIdx = 0;
-        let pptTeachingTips = {}; // 存储每页的教学提示
 
         const styleThemes = {
-            fresh:   { bg:'linear-gradient(135deg,#f0fdf4,#dcfce7)', titleColor:'#166534', accent:'#22c55e', name:'清新自然' },
-            strict:  { bg:'linear-gradient(135deg,#eff6ff,#dbeafe)', titleColor:'#1e40af', accent:'#3b82f6', name:'数理严谨' },
-            fun:     { bg:'linear-gradient(135deg,#fdf4ff,#e9d5ff)', titleColor:'#7e22ce', accent:'#a855f7', name:'活泼童趣' },
-            classic: { bg:'linear-gradient(135deg,#fefce8,#fef9c3)', titleColor:'#854d0e', accent:'#d97706', name:'古典国风' }
+            fresh:   { bg:'#f0fdf4', titleColor:'#166534', accent:'#22c55e', name:'清新自然' },
+            strict:  { bg:'#eff6ff', titleColor:'#1e40af', accent:'#3b82f6', name:'数理严谨' },
+            fun:     { bg:'#fdf4ff', titleColor:'#7e22ce', accent:'#a855f7', name:'活泼童趣' },
+            classic: { bg:'#fefce8', titleColor:'#854d0e', accent:'#d97706', name:'古典国风' }
         };
-        let pptStyle = 'fresh';  // 当前主题（修复：原代码缺少此声明导致 renderThumbnails/renderCurrentSlide 报错）
-        let pptFocus = 'reading';
+        let pptStyle = 'fresh';
 
-        // 教育侧重点卡片选择
-        document.querySelectorAll('.ppt-style-item').forEach(card => {
+        // 风格卡片选择
+        document.querySelectorAll('.template-card').forEach(card => {
             card.addEventListener('click', function() {
-                document.querySelectorAll('.ppt-style-item').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
-                pptFocus = this.dataset.focus;
-                if (pptSlides.length > 0) {
-                    renderThumbnails();
-                    renderCurrentSlide();
-                }
+                pptStyle = this.dataset.style;
+                if (pptSlides.length > 0) renderCurrentSlide();
             });
         });
-
         // 自定义配色编辑器
         setTimeout(injectPptThemeEditor, 100);
 
@@ -5252,9 +4840,9 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 
         // ── DeepSeek API 配置 ─────────────────────────────────────
         const DEEPSEEK_API_KEY = 'sk-ac481fe817df49b19865494c10febd0d';
-        const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top/v1/chat/completions';
+        const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top';
 
-        async function callDeepSeek(messages, maxTokens = 2000) {
+        async function callDeepSeek(userPrompt) {
             const response = await fetch(DEEPSEEK_API_URL, {
                 method: 'POST',
                 headers: {
@@ -5263,9 +4851,18 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 },
                 body: JSON.stringify({
                     model: 'deepseek-chat',
-                    max_tokens: maxTokens,
+                    max_tokens: 2000,
                     temperature: 0.7,
-                    messages: messages
+                    messages: [
+                        {
+                            role: 'system',
+                            content: '你是一位专业的中学语文教师，擅长将课文内容拆解为结构清晰的PPT课件。请严格按照JSON格式输出，不要有任何多余的文字或markdown代码块标记。'
+                        },
+                        {
+                            role: 'user',
+                            content: userPrompt
+                        }
+                    ]
                 })
             });
             if (!response.ok) {
@@ -5274,129 +4871,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             }
             const data = await response.json();
             return data.choices[0].message.content;
-        }
-
-        // 生成教学提示
-        // PPT生成提示词根据侧重点调整
-        function getPptFocusInstructions(focus) {
-            const focusInstructions = {
-                reading: '侧重：文章结构分析、段落大意概括、中心思想提炼、关键词句品析、阅读方法指导',
-                formula: '侧重：概念讲解透彻、公式推导清晰、例题演示规范、变式训练递进、知识框架建构',
-                memorize: '侧重：口诀歌谣归纳、联想记忆方法、知识反复巩固、检测练习设计、复习计划提示',
-                skill: '侧重：操作步骤分解、标准示范演示、分层练习设计、反馈纠错机制、成果展示评价'
-            };
-            return focusInstructions[focus] || focusInstructions.reading;
-        }
-
-        async function generateTeachingTip(slide, index) {
-            try {
-                const focusMap = {
-                    reading: '阅读理解：注重文章结构分析、段落大意概括、中心思想提炼、关键词句品析',
-                    formula: '公式推理：注重概念理解、公式推导过程、例题演示、变式训练',
-                    memorize: '记忆强化：注重口诀歌谣、联想记忆、反复练习、及时复习',
-                    skill: '技能训练：注重步骤分解、示范演示、模仿练习、反馈纠错'
-                };
-                const focusDesc = focusMap[pptFocus] || focusMap.reading;
-                const tipPrompt = `作为教学设计专家，请为以下PPT页面设计教学互动建议。教育侧重点：【${focusDesc}】
-
-页面标题：${slide.title}
-页面内容：${slide.content || '无'}
-页面类型：${slide.type}
-
-请给出3个方面的建议，每方面用中文描述，格式如下（不要使用markdown或特殊符号，直接输出）：
-【引入建议】
-[在这里描述如何引入这个知识点的具体方法，1-2句话]
-【互动设计】
-[在这里描述如何与学生互动的具体方法，1-2句话]
-【理解技巧】
-[在这里描述帮助学生理解的具体技巧，1-2句话]`;
-
-                const rawTip = await callDeepSeek([
-                    { role: 'system', content: '你是一位经验丰富的教学设计专家，擅长帮助教师设计生动有趣的课堂互动环节。' },
-                    { role: 'user', content: tipPrompt }
-                ], 1500);
-
-                // 解析教学提示
-                const tip = parseTeachingTip(rawTip);
-                pptTeachingTips[index] = tip;
-
-                // 如果是当前页，立即更新显示
-                if (index === pptCurrentIdx) {
-                    renderTeachingTips();
-                }
-            } catch (err) {
-                console.error('生成教学提示失败:', err);
-                pptTeachingTips[index] = {
-                    intro: '建议从学生熟悉的生活实例入手，引出本课主题。',
-                    interact: '可以先让学生自由发言，再引导到课文内容。',
-                    tip: '利用多媒体或图片帮助学生建立直观印象。'
-                };
-                if (index === pptCurrentIdx) {
-                    renderTeachingTips();
-                }
-            }
-        }
-
-        // 解析教学提示
-        function parseTeachingTip(raw) {
-            const result = { intro: '', interact: '', tip: '' };
-            const introMatch = raw.match(/【引入建议】\s*([^\n【]+)/);
-            const interactMatch = raw.match(/【互动设计】\s*([^\n【]+)/);
-            const tipMatch = raw.match(/【理解技巧】\s*([^\n【]+)/);
-
-            if (introMatch) result.intro = introMatch[1].trim();
-            if (interactMatch) result.interact = interactMatch[1].trim();
-            if (tipMatch) result.tip = tipMatch[1].trim();
-
-            // 如果解析失败，使用默认提示
-            const defaultTips = {
-                reading: { intro: '可以从课文标题或关键图片入手，激发学生阅读兴趣。', interact: '设置开放性问题，鼓励学生自由表达和讨论。', tip: '引导学生抓住关键词句，分析文章结构和写作手法。' },
-                formula: { intro: '从生活实例或旧知识引入新概念，自然过渡。', interact: '让学生先尝试自己推导，教师再点评补充。', tip: '通过变式练习逐步加深理解，注重公式适用条件。' },
-                memorize: { intro: '用口诀、歌谣或联想方式帮助学生建立记忆锚点。', interact: '采用小组竞赛或抽答形式，保持学生参与度。', tip: '多次重复结合间隔复习，帮助学生形成长期记忆。' },
-                skill: { intro: '先示范完整操作步骤，让学生形成整体印象。', interact: '学生模仿操作，教师巡视指导并及时纠错。', tip: '分步骤练习，从简单到复杂，逐步提升熟练度。' }
-            };
-            const defaults = defaultTips[pptFocus] || defaultTips.reading;
-            if (!result.intro) result.intro = defaults.intro;
-            if (!result.interact) result.interact = defaults.interact;
-            if (!result.tip) result.tip = defaults.tip;
-
-            return result;
-        }
-
-        // 渲染教学提示
-        function renderTeachingTips() {
-            const container = document.getElementById('teachingTips');
-            if (!container) return;
-
-            const tip = pptTeachingTips[pptCurrentIdx];
-
-            if (!tip) {
-                container.innerHTML = `
-                    <div class="ppt-tip-empty">
-                        <i class="fas fa-brain"></i>
-                        <p>正在生成教学建议...</p>
-                        <span>请稍候</span>
-                    </div>`;
-                return;
-            }
-
-            container.innerHTML = `
-                <div class="ppt-tip-section">
-                    <div class="ppt-tip-label intro"><i class="fas fa-play-circle"></i> 引入建议</div>
-                    <p class="ppt-tip-text">${tip.intro}</p>
-                </div>
-                <div class="ppt-tip-section">
-                    <div class="ppt-tip-label interact"><i class="fas fa-comments"></i> 互动设计</div>
-                    <p class="ppt-tip-text">${tip.interact}</p>
-                </div>
-                <div class="ppt-tip-section">
-                    <div class="ppt-tip-label tip"><i class="fas fa-lightbulb"></i> 理解技巧</div>
-                    <p class="ppt-tip-text">${tip.tip}</p>
-                </div>`;
-
-            // 启用重新生成按钮
-            const regenerateBtn = document.getElementById('regenerateTipBtn');
-            if (regenerateBtn) regenerateBtn.disabled = false;
         }
 
         document.getElementById('generatePptBtn')?.addEventListener('click', async function() {
@@ -5416,22 +4890,20 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             let progress = 0;
             const interval = setInterval(() => {
                 progress += Math.random() * 4 + 1;
-                if (progress > 90) progress = 90;
+                if (progress > 90) progress = 90; // 最多到90%，等API完成再到100%
                 if (progressFill) progressFill.style.width = progress + '%';
                 if (progressPercent) progressPercent.textContent = Math.round(progress) + '%';
             }, 200);
 
+            // 更新 apiStatus 状态点为连接中
             const apiStatusDot = document.getElementById('apiStatus');
             if (apiStatusDot) apiStatusDot.className = 'status-dot connecting';
 
             try {
-                const focusInstructions = getPptFocusInstructions(pptFocus);
                 const prompt = `请将以下课文内容拆解为PPT课件结构，生成6到10页幻灯片。
 
 课文内容：
 ${text}
-
-教育侧重点：【${focusInstructions}】
 
 请严格按照以下JSON数组格式输出，不要有任何其他文字：
 [
@@ -5442,18 +4914,13 @@ ${text}
   {"type":"summary","title":"课文小结","content":"总结课文主旨、情感与写作特色"}
 ]`;
 
-                const systemPrompt = `你是一位专业的中学教师，擅长将课文内容拆解为结构清晰的PPT课件。请严格按照JSON格式输出，不要有任何多余的文字或markdown代码块标记。
+                const rawJson = await callDeepSeek(prompt);
 
-教育侧重点参考：【${getPptFocusInstructions(pptFocus)}】`;
-
-                const rawJson = await callDeepSeek([
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: prompt }
-                ]);
-
+                // 解析AI返回的JSON
                 const cleanJson = rawJson.replace(/```json|```/g, '').trim();
                 const slides = JSON.parse(cleanJson);
 
+                // 完成进度条
                 clearInterval(interval);
                 if (progressFill) progressFill.style.width = '100%';
                 if (progressPercent) progressPercent.textContent = '100%';
@@ -5463,7 +4930,7 @@ ${text}
                     if (progressContainer) progressContainer.style.display = 'none';
                     if (progressFill) progressFill.style.width = '0%';
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> 智能生成';
+                    btn.innerHTML = '<i class="fas fa-magic"></i> 一键生成课件';
 
                     buildPptSlidesFromAI(slides);
                     showGlobalToast('AI课件生成成功！共 ' + pptSlides.length + ' 页', 'success');
@@ -5476,10 +4943,11 @@ ${text}
                 if (progressContainer) progressContainer.style.display = 'none';
                 if (progressFill) progressFill.style.width = '0%';
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> 智能生成';
+                btn.innerHTML = '<i class="fas fa-magic"></i> 一键生成课件';
                 if (apiStatusDot) apiStatusDot.className = 'status-dot offline';
                 console.error('DeepSeek API Error:', err);
                 showGlobalToast('AI生成失败：' + err.message + '，已切换为本地生成', 'error');
+                // 降级：使用本地算法生成
                 buildPptSlides(text);
                 showGlobalToast('课件已生成（本地模式），共 ' + pptSlides.length + ' 页', 'info');
             }
@@ -5487,7 +4955,7 @@ ${text}
 
         // AI返回JSON直接构建幻灯片
         function buildPptSlidesFromAI(slides) {
-            pptTeachingTips = {};
+            const theme = styleThemes[pptStyle] || styleThemes.fresh;
             pptSlides = slides.map(s => ({
                 type: s.type || 'content',
                 title: s.title || '',
@@ -5495,24 +4963,16 @@ ${text}
                 content: s.content || ''
             }));
             pptCurrentIdx = 0;
-            renderThumbnails();
+            renderThumbnails(theme);
             renderCurrentSlide();
             document.getElementById('slideCount').textContent = '共 ' + pptSlides.length + ' 页';
             document.getElementById('prevSlideBtn').disabled = true;
             document.getElementById('nextSlideBtn').disabled = pptSlides.length <= 1;
-
-            // 异步生成每页的教学提示
-            pptSlides.forEach((slide, index) => {
-                setTimeout(() => generateTeachingTip(slide, index), index * 300);
-            });
-
-            // 渲染当前页教学提示
-            renderTeachingTips();
         }
 
-        // 本地降级版本
+        // 本地降级版本（API失败时使用）
         function buildPptSlides(text) {
-            pptTeachingTips = {};
+            const theme = styleThemes[pptStyle] || styleThemes.fresh;
             const rawSentences = text.split(/[。！？\n]/).map(s => s.trim()).filter(s => s.length > 2);
             pptSlides = [];
             const title = rawSentences[0] ? rawSentences[0].slice(0, 20) : '课文标题';
@@ -5524,51 +4984,36 @@ ${text}
             }
             pptSlides.push({ type: 'summary', title: '课文小结', content: '请同学们回顾今天所学的内容，思考文章的主题与情感。' });
             pptCurrentIdx = 0;
-            renderThumbnails();
+            renderThumbnails(theme);
             renderCurrentSlide();
             document.getElementById('slideCount').textContent = '共 ' + pptSlides.length + ' 页';
             document.getElementById('prevSlideBtn').disabled = true;
             document.getElementById('nextSlideBtn').disabled = pptSlides.length <= 1;
-
-            // 生成本地默认教学提示
-            const defaultTips = {
-                reading: { intro: '可以从课文标题或关键图片入手，激发学生阅读兴趣。', interact: '设置开放性问题，鼓励学生自由表达和讨论。', tip: '引导学生抓住关键词句，分析文章结构和写作手法。' },
-                formula: { intro: '从生活实例或旧知识引入新概念，自然过渡。', interact: '让学生先尝试自己推导，教师再点评补充。', tip: '通过变式练习逐步加深理解，注重公式适用条件。' },
-                memorize: { intro: '用口诀、歌谣或联想方式帮助学生建立记忆锚点。', interact: '采用小组竞赛或抽答形式，保持学生参与度。', tip: '多次重复结合间隔复习，帮助学生形成长期记忆。' },
-                skill: { intro: '先示范完整操作步骤，让学生形成整体印象。', interact: '学生模仿操作，教师巡视指导并及时纠错。', tip: '分步骤练习，从简单到复杂，逐步提升熟练度。' }
-            };
-            const defaults = defaultTips[pptFocus] || defaultTips.reading;
-            pptSlides.forEach((slide, index) => {
-                pptTeachingTips[index] = { ...defaults };
-            });
-            renderTeachingTips();
         }
 
-        function renderThumbnails() {
+        function renderThumbnails(theme) {
             const scroll = document.getElementById('thumbnailScroll');
-            const placeholder = document.getElementById('thumbPlaceholder');
             if (!scroll) return;
-
-            if (placeholder) placeholder.style.display = 'none';
-
-            const theme = styleThemes[pptStyle] || styleThemes.fresh;
             scroll.innerHTML = pptSlides.map((s, i) => `
-                <div class="ppt-thumb ${i === pptCurrentIdx ? 'active' : ''}" onclick="jumpToSlide(${i})" id="thumb-${i}">
-                    <div class="ppt-thumb-num">${i + 1}</div>
-                    <div class="ppt-thumb-title">${s.title.slice(0, 10)}</div>
+                <div onclick="jumpToSlide(${i})" id="thumb-${i}" style="
+                    min-width:72px;height:50px;border-radius:6px;border:2px solid ${i===0?'var(--primary)':'var(--gray-200)'};
+                    background:${(styleThemes[pptStyle]||styleThemes.fresh).bg};cursor:pointer;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    padding:4px;transition:all .15s;font-size:9px;color:var(--gray-700);text-align:center;overflow:hidden">
+                    <div style="font-weight:700;font-size:8px;color:var(--gray-400);margin-bottom:2px">${i+1}</div>
+                    <div style="font-size:9px;overflow:hidden;max-height:28px;line-height:1.3;word-break:break-all">${s.title.slice(0,12)}</div>
                 </div>`).join('');
         }
 
         function jumpToSlide(idx) {
             pptCurrentIdx = idx;
-            document.querySelectorAll('.ppt-thumb').forEach((t, i) => {
-                t.classList.toggle('active', i === idx);
+            document.querySelectorAll('[id^="thumb-"]').forEach((t, i) => {
+                t.style.borderColor = i === idx ? 'var(--primary)' : 'var(--gray-200)';
             });
             renderCurrentSlide();
             document.getElementById('prevSlideBtn').disabled = idx === 0;
             document.getElementById('nextSlideBtn').disabled = idx >= pptSlides.length - 1;
             document.getElementById('currentSlideNum').textContent = idx + 1;
-            renderTeachingTips();
         }
 
         function renderCurrentSlide() {
@@ -5581,7 +5026,7 @@ ${text}
             const textEl = document.getElementById('slideText');
             if (bg) bg.style.background = theme.bg;
             if (titleEl) { titleEl.textContent = slide.title; titleEl.style.color = theme.titleColor; }
-            if (subtitleEl) subtitleEl.textContent = slide.type === 'title' ? slide.subtitle : ('第 ' + (pptCurrentIdx + 1) + ' 页');
+            if (subtitleEl) subtitleEl.textContent = slide.type === 'title' ? slide.subtitle : ('第 '+(pptCurrentIdx+1)+' 页');
             if (textEl) textEl.textContent = slide.content || '';
         }
 
@@ -5592,45 +5037,33 @@ ${text}
             if (pptCurrentIdx < pptSlides.length - 1) jumpToSlide(pptCurrentIdx + 1);
         });
 
-        // 重新生成教学提示
-        document.getElementById('regenerateTipBtn')?.addEventListener('click', async function() {
-            if (!pptSlides.length) return;
-            this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
-            await generateTeachingTip(pptSlides[pptCurrentIdx], pptCurrentIdx);
-            this.disabled = false;
-            this.innerHTML = '<i class="fas fa-rotate"></i> 重新生成提示';
-            showGlobalToast('教学提示已更新', 'success');
-        });
-
         // 简易编辑面板
         document.getElementById('editPptBtn')?.addEventListener('click', function() {
-            showGlobalToast('简易编辑功能开发中，敬请期待', 'info');
+            const panel = document.getElementById('editPanel');
+            if (!panel) return;
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        });
+        document.getElementById('cancelEditBtn')?.addEventListener('click', () => {
+            const panel = document.getElementById('editPanel');
+            if (panel) panel.style.display = 'none';
+        });
+        document.getElementById('applyEditBtn')?.addEventListener('click', function() {
+            const titleColor = document.getElementById('editTitleColor')?.value;
+            const bgColor = document.getElementById('editBgColor')?.value;
+            if (titleColor) { const el = document.getElementById('slideTitle'); if(el) el.style.color = titleColor; }
+            if (bgColor) { const el = document.getElementById('slideBackground'); if(el) el.style.background = bgColor; }
+            showGlobalToast('样式已应用', 'success');
         });
 
-        // 复制为Markdown格式
-        document.getElementById('copyMarkdownBtn')?.addEventListener('click', function() {
-            if (!pptSlides.length) {
-                showGlobalToast('请先生成PPT课件', 'error');
-                return;
-            }
-            const theme = styleThemes[pptStyle] || styleThemes.fresh;
-            let md = `# ${pptSlides[0]?.title || '课件标题'}\n\n`;
-            pptSlides.forEach((slide, i) => {
-                md += `## 第${i + 1}页：${slide.title}\n\n`;
-                if (slide.content) md += `${slide.content}\n\n`;
-                const tip = pptTeachingTips[i];
-                if (tip) {
-                    md += `> **引入建议**：${tip.intro}\n`;
-                    md += `> **互动设计**：${tip.interact}\n`;
-                    md += `> **理解技巧**：${tip.tip}\n\n`;
-                }
-            });
-            navigator.clipboard.writeText(md).then(() => {
-                showGlobalToast('已复制到剪贴板，可直接粘贴到Markdown编辑器', 'success');
-            }).catch(() => {
-                showGlobalToast('复制失败，请手动复制', 'error');
-            });
+        document.getElementById('downloadPptBtn')?.addEventListener('click', function() {
+            showGlobalToast('PPT导出需要后端支持，敬请期待', 'info');
+        });
+
+        // ── 3D 情景生成：携带课件内容跳转 ──────────────────────────
+        document.getElementById('generate3dBtn')?.addEventListener('click', function() {
+            const text = document.getElementById('textInput')?.value?.trim() || '';
+            window._pptTextForScene = text;
+            loadModule('3d');
         });
 
         // ── 用户下拉菜单 ──────────────────────────────────────────────
@@ -5695,7 +5128,8 @@ ${text}
                         :root[data-theme="dark"] .gp-question-card,
                         :root[data-theme="dark"] .study-tool-card,
                         :root[data-theme="dark"] .chat-interface,
-                        :root[data-theme="dark"] .ppt-card,
+                        :root[data-theme="dark"] .slide-preview,
+                        :root[data-theme="dark"] .template-card,
                         :root[data-theme="dark"] .ana-section,
                         :root[data-theme="dark"] .gp-levelend { background:#1e293b!important; }
                         :root[data-theme="dark"] .header { border-bottom-color:#334155; }
@@ -6035,13 +5469,9 @@ ${text}
                         }
                     }
 
-                    var studentImgUrl = sc.bgImage;
-                    if (studentImgUrl && !studentImgUrl.startsWith('data:') && !studentImgUrl.startsWith('http') && !studentImgUrl.startsWith('blob:')) {
-                        studentImgUrl = './' + studentImgUrl.replace(/^\.\//, '');
-                    }
-                    if (studentImgUrl) {
+                    if (sc.bgImage) {
                         var loader = new THREE.TextureLoader();
-                        loader.load(studentImgUrl, applyTexture, undefined, function() {
+                        loader.load(sc.bgImage, applyTexture, undefined, function() {
                             applyTexture(buildFallbackTexture());
                         });
                     } else {
@@ -6238,73 +5668,52 @@ ${text}
                 var parts    = kp.detail.split(/[。！？\n]/).filter(Boolean);
                 var quote    = parts[0] || kp.detail;
                 var analysis = parts.slice(1).join('。') || kp.detail;
-                // 判断是否有真实简介（排除默认占位文字）
-                var hasRealDesc = kp.detail && kp.detail !== '暂无描述' && kp.detail.trim() !== '';
-                var hasAi = kp.enableAi === true;
 
-                var descSection = hasRealDesc ? `
-  <!-- 板块1：简介 -->
-  <div class="pano-section-label" style="color:#93c5fd"><i class="fas fa-book" style="color:#60a5fa"></i> 知识简介</div>
-  <div class="pano-quote">"${quote}"</div>` : '';
-
-                var aiSection = hasAi ? `
+                popup.innerHTML = `
+<button class="pano-popup-close" id="pano-popup-close-btn"><i class="fas fa-times"></i></button>
+<div style="padding:16px 16px 0">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0">${idx+1}</div>
+    <div style="font-weight:800;font-size:.92rem;color:white">${kp.label}</div>
+  </div>
+  <!-- 板块1：课文摘抄 -->
+  <div class="pano-section-label" style="color:#93c5fd"><i class="fas fa-book" style="color:#60a5fa"></i> 课文摘抄</div>
+  <div class="pano-quote">"${quote}"</div>
+  <!-- 板块2：AI深度解析 -->
   <div class="pano-section-label" style="color:#c4b5fd;margin-top:12px"><i class="fas fa-robot" style="color:#a78bfa"></i> AI 深度解析</div>
   <div id="pano-ai-content" class="pano-ai-loading">
     <div class="pano-ai-spinner"></div>
     <span>AI 正在解析中…</span>
-  </div>` : '';
-
-                // 如果没有简介也没有AI解析，内容区只显示名称（无额外信息区域）
-                var hasContent = hasRealDesc || hasAi;
-
-                popup.innerHTML = `
-<button class="pano-popup-close" id="pano-popup-close-btn"><i class="fas fa-times"></i></button>
-<div style="padding:16px 16px ${hasContent ? '0' : '16px'}">
-  <div style="display:flex;align-items:center;gap:8px;${hasContent ? 'margin-bottom:12px' : ''}">
-    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0">${idx+1}</div>
-    <div style="font-weight:800;font-size:.92rem;color:white">${kp.label}</div>
   </div>
-  ${descSection}
-  ${aiSection}
 </div>
-${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.08);margin-top:14px">
+<div style="display:flex;border-top:1px solid rgba(255,255,255,.08);margin-top:14px">
   <button id="pano-tts-btn" style="flex:1;padding:9px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;border-right:1px solid rgba(255,255,255,.08);transition:.15s">
     <i class="fas fa-volume-up"></i> 朗读
   </button>
   <button id="pano-note-btn" style="flex:1;padding:9px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;transition:.15s">
     <i class="fas fa-pencil-alt"></i> 记笔记
   </button>
-</div>` : `<div style="display:flex;border-top:1px solid rgba(255,255,255,.08)">
-  <button id="pano-note-btn" style="flex:1;padding:9px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;cursor:pointer;transition:.15s">
-    <i class="fas fa-pencil-alt"></i> 记笔记
-  </button>
-</div>`}`;
+</div>`;
 
                 host.appendChild(popup);
 
                 document.getElementById('pano-popup-close-btn').addEventListener('click', function(){
                     popup.remove();
                 });
-                var ttsBtnEl = document.getElementById('pano-tts-btn');
-                if (ttsBtnEl) {
-                    ttsBtnEl.addEventListener('click', function(){
-                        if (window.speechSynthesis) {
-                            var readText = hasRealDesc ? (kp.label + '。' + quote) : kp.label;
-                            var u = new SpeechSynthesisUtterance(readText);
-                            u.lang='zh-CN'; u.rate=0.88;
-                            speechSynthesis.speak(u);
-                            showGlobalToast('正在朗读', 'info');
-                        }
-                    });
-                }
+                document.getElementById('pano-tts-btn').addEventListener('click', function(){
+                    if (window.speechSynthesis) {
+                        var u = new SpeechSynthesisUtterance(kp.label + '。' + quote);
+                        u.lang='zh-CN'; u.rate=0.88;
+                        speechSynthesis.speak(u);
+                        showGlobalToast('正在朗读', 'info');
+                    }
+                });
                 document.getElementById('pano-note-btn').addEventListener('click', function(){
                     _saveNote(kp.id, kp.label);
                 });
 
-                // ── 调用 AI 做深度解析（仅启用时） ──────────────────────────
-                if (hasAi) {
-                    _fetchPanoAI(kp, quote, analysis);
-                }
+                // ── 调用 Claude API 做 AI 深度解析 ──────────────────────────
+                _fetchPanoAI(kp, quote, analysis);
             }
 
             // ── DeepSeek Chat 解析调用 ──────────────────────────────────────
@@ -6909,38 +6318,99 @@ ${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.
                 // 演示数据
                 const demo = [
                     {
-                        id: 'f5', name: '三年级语文知识闯关', created: '2026-04-09',
+                        id: 'f1', name: '语文基础训练', created: '2026-03-10',
                         tests: [
                             {
-                                id: 't7', name: '荷塘月色-课内精读', created: '2026-04-09',
+                                id: 't1', name: '《荷塘月色》精讲测试', created: '2026-03-10',
                                 questions: [
-                                    { id:'q25', type:'fill', stem:'「叶子出水很高，像_______的舞女的裙。」', answer:'亭亭', explanation:'以舞女的裙比喻荷叶，写出其轻盈、舒展的姿态。' },
-                                    { id:'q26', type:'fill', stem:'「月光如_______一般，静静地泻在这一片叶子和花上。」', answer:'流水', explanation:'把月光比作流水，形象写出月光的流动感和柔和之美。' },
-                                    { id:'q27', type:'fill', stem:'「塘中的月色并不均匀；但光与影有着和谐的_______，如梵婀玲上奏着的名曲。」', answer:'旋律', explanation:'这里把光影的和谐比作名曲，是以视觉写听觉，通感的运用。' },
-                                    { id:'q28', type:'judge', stem:'「作者开篇的情感是喜悦的。」', answer:false, explanation:'文章开头「心里颇不宁静」说明作者心情是烦闷不静的。' },
-                                    { id:'q29', type:'judge', stem:'「《荷塘月色》主要描写了荷塘和月色的美景，没有抒发情感。」', answer:false, explanation:'文章情景交融，在写景中流露出作者淡淡的哀愁和难得的自由。' },
-                                    { id:'q30', type:'judge', stem:'「通感是一种修辞手法，把一种感官的感觉移到另一种感官。」', answer:true, explanation:'通感是将视觉、听觉、嗅觉等感觉相互转换，如「微风过处，送来缕缕清香，仿佛远处高楼上渺茫的歌声似的」。' },
-                                    { id:'q31', type:'single', stem:'下列句子中使用了「通感」的是——', options:['A. 叶子出水很高，像亭亭的舞女的裙。','B. 微风过处，送来缕缕清香，仿佛远处高楼上渺茫的歌声似的。','C. 月光如流水一般，静静地泻在这一片叶子和花上。'], answer:1, explanation:'B选项把嗅觉（清香）转化为听觉（歌声），是典型的通感手法。' }
+                                    { id:'q1', type:'single', stem:'《荷塘月色》的作者是谁？',
+                                      options:['鲁迅','朱自清','冰心','郁达夫'], answer:1, explanation:'朱自清（1898-1948），现代散文家、诗人，1927年写于清华园。' },
+                                    { id:'q2', type:'judge', stem:'《荷塘月色》描写的是冬夜景色。',
+                                      answer:false, explanation:'文章描写的是盛夏夜晚荷塘的景色。' },
+                                    { id:'q3', type:'fill', stem:'文中「_______，有羞涩地打着朵儿的」描写荷花形态。',
+                                      answer:'零星地点缀着些白花', explanation:'以拟人手法写荷花姿态，「羞涩」赋予花朵生命感。' },
+                                    { id:'q4', type:'single', stem:'「月光如流水一般，静静地泻在这一片叶子和花上」使用了什么修辞手法？',
+                                      options:['比喻','拟人','排比','夸张'], answer:0, explanation:'把月光比作流水，形象地写出月光流动、柔和的特点，「泻」字极具动态美。' },
+                                    { id:'q5', type:'judge', stem:'文章的写作背景是五四运动高潮时期，作者心情愉悦。',
+                                      answer:false, explanation:'写作于1927年大革命失败后，作者彼时苦闷彷徨，全文笼罩淡淡的哀愁。' },
+                                    { id:'q6', type:'fill', stem:'「_______，_______；远处高楼上渺茫的歌声似乎也没有了。」这句话体现了荷塘环境的静谧。',
+                                      answer:'树缝里也漏着一两点路灯光，没精打采的', explanation:'以「路灯光」的「没精打采」反衬荷塘四周的幽寂。' }
+                                ]
+                            },
+                            {
+                                id: 't2', name: '《背影》专项测试', created: '2026-03-12',
+                                questions: [
+                                    { id:'q7', type:'single', stem:'《背影》中父亲为作者买的是什么？',
+                                      options:['苹果','橘子','香蕉','西瓜'], answer:1, explanation:'父亲穿越铁道，爬上月台，为儿子买橘子，是全文感情最浓烈的场景。' },
+                                    { id:'q8', type:'judge', stem:'《背影》是一篇以父子离别为背景的叙事散文。',
+                                      answer:true, explanation:'文章以浦口车站送行为核心场景，重点刻画父亲买橘子时的背影。' },
+                                    { id:'q9', type:'single', stem:'「背影」在文章中出现了几次？',
+                                      options:['两次','三次','四次','五次'], answer:2, explanation:'背影在文中共出现四次，层层深化父子情感。' },
+                                    { id:'q10', type:'fill', stem:'「他用两手_______着上面，两脚再向上缩；他肥胖的身子向左微_______，显出努力的样子。」',
+                                      answer:'攀、倾', explanation:'「攀」和「倾」两个动词细腻刻画父亲爬月台的动作，笨拙中见深情。' }
                                 ]
                             }
                         ]
                     },
                     {
-                        id: 'f6', name: '小学英语题库', created: '2026-04-09',
+                        id: 'f2', name: '英语语法专项', created: '2026-03-08',
                         tests: [
                             {
-                                id: 't8', name: 'At the Farm 语法练习', created: '2026-04-09',
+                                id: 't3', name: '一般现在时 vs 现在进行时', created: '2026-03-08',
                                 questions: [
-                                    { id:'q32', type:'single', stem:'—What\'s this? —____ a hen. 🐔', options:['A. It\'s','B. They\'re','C. I\'m'], answer:0, explanation:'What\'s this? 询问单数事物，用It\'s回答。' },
-                                    { id:'q33', type:'single', stem:'—Are these cows? —Yes, ____. 🐄🐄', options:['A. it is','B. they are','C. I am'], answer:1, explanation:'these cows是复数，回答用they are。' },
-                                    { id:'q34', type:'single', stem:'It\'s a ____. 🐴', options:['A. horse','B. cow','C. sheep'], answer:0, explanation:'图片是马（horse），horse以辅音音素开头，用a。' },
-                                    { id:'q35', type:'single', stem:'—What are these? —They are ____. 🐔🐔', options:['A. hen','B. hens','C. a hen'], answer:1, explanation:'these表示复数，回答用hens（复数形式）。' },
-                                    { id:'q36', type:'fill', stem:'What\'s ____? It\'s ____ sheep. 🐑', answer:'this; a', explanation:'What\'s this? 这是什么？It\'s a... 这是...（单数名词前用a/an）。' },
-                                    { id:'q37', type:'fill', stem:'Are ____ horses? No, they ____. 🐄🐄', answer:'these; aren\'t', explanation:'Are these...? 这些是...吗？复数疑问句用these；否定回答they aren\'t。' },
-                                    { id:'q38', type:'fill', stem:'They are ____. 🐄🐄', answer:'cows', explanation:'they are后面跟复数名词，cow的复数是cows。' },
-                                    { id:'q39', type:'judge', stem:'It\'s a horse. 🐔', answer:false, explanation:'图片是小鸡（hen），不是马（horse）。' },
-                                    { id:'q40', type:'judge', stem:'Are these sheep? Yes, they are. 🐑🐑', answer:true, explanation:'图片是两只羊（sheep），表述正确。' },
-                                    { id:'q41', type:'judge', stem:'They are cow.', answer:false, explanation:'cow是单数，复数应写成cows。' }
+                                    { id:'q11', type:'single', stem:'选择正确的句子：She _____ English every day.',
+                                      options:['study','studies','is studying','studied'], answer:1, explanation:'主语为第三人称单数she，一般现在时谓语动词需加-s/-es。' },
+                                    { id:'q12', type:'judge', stem:'「Look! The birds are flying in the sky.」使用了一般现在时。',
+                                      answer:false, explanation:'Look暗示正在发生，应使用现在进行时be+doing。' },
+                                    { id:'q13', type:'fill', stem:'把下面的句子改为否定句：He likes basketball.',
+                                      answer:'He does not / does not like basketball.', explanation:'一般现在时否定句：主语+does not+动词原形（第三人称单数）。' },
+                                    { id:'q14', type:'single', stem:'下列句子中，使用现在进行时正确的是？',
+                                      options:['I am go to school now.','They are playing football.','She is like cats.','He are reading.'], answer:1, explanation:'现在进行时结构：be（am/is/are）+ 动词-ing。' }
+                                ]
+                            },
+                            {
+                                id: 't4', name: '冠词 a / an / the 用法', created: '2026-03-09',
+                                questions: [
+                                    { id:'q15', type:'single', stem:'There is _____ apple on the table.',
+                                      options:['a','an','the','×'], answer:1, explanation:'apple以元音音素开头，泛指单数名词用an。' },
+                                    { id:'q16', type:'judge', stem:'「The sun rises in the east」中两个the用法相同。',
+                                      answer:false, explanation:'第一个the表独一无二的事物（太阳），第二个the表特指（东方）。' },
+                                    { id:'q17', type:'fill', stem:'Play _____ piano is her hobby.（填写适当冠词）',
+                                      answer:'the', explanation:'演奏乐器前加the，这是固定搭配。' }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'f3', name: '数学综合练习', created: '2026-03-05',
+                        tests: [
+                            {
+                                id: 't5', name: '一次方程基础', created: '2026-03-05',
+                                questions: [
+                                    { id:'q18', type:'single', stem:'解方程 2x + 6 = 14，x 的值是？',
+                                      options:['2','3','4','5'], answer:2, explanation:'2x = 14 - 6 = 8，x = 4。移项时注意变号。' },
+                                    { id:'q19', type:'judge', stem:'方程 x + 3 = 3 + x 是一次方程。',
+                                      answer:false, explanation:'两边化简后左右相等，变量消去，不是方程（恒等式）。' },
+                                    { id:'q20', type:'fill', stem:'若 3x - 7 = 2，则 x = _______',
+                                      answer:'3', explanation:'3x = 2 + 7 = 9，x = 9 ÷ 3 = 3。' }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'f4', name: '历史知识竞答', created: '2026-03-01',
+                        tests: [
+                            {
+                                id: 't6', name: '中国古代史基础', created: '2026-03-01',
+                                questions: [
+                                    { id:'q21', type:'single', stem:'秦朝统一六国是在哪一年？',
+                                      options:['公元前230年','公元前221年','公元前210年','公元前200年'], answer:1, explanation:'公元前221年，秦始皇统一六国，建立中国历史上第一个统一的中央集权国家。' },
+                                    { id:'q22', type:'judge', stem:'长城最初修建于明朝。',
+                                      answer:false, explanation:'长城最早修建于战国时期，秦始皇将各国长城连接，明朝大规模修缮扩建。' },
+                                    { id:'q23', type:'single', stem:'「丝绸之路」的起点城市是？',
+                                      options:['洛阳','长安（今西安）','开封','北京'], answer:1, explanation:'丝绸之路起点为汉代都城长安，向西经河西走廊通往中亚、西亚乃至欧洲。' },
+                                    { id:'q24', type:'fill', stem:'我国历史上第一个奴隶制王朝是_______。',
+                                      answer:'夏朝', explanation:'夏朝（约前2070—前1600年）是中国历史上第一个有文献记载的朝代。' }
                                 ]
                             }
                         ]
@@ -7670,48 +7140,20 @@ ${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.
                     '<input id="_pd-name" type="text" placeholder="如：月光意象" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;outline:none;box-sizing:border-box"></div>' +
                     '<div><label style="display:block;font-size:.85rem;font-weight:600;color:#374151;margin-bottom:6px">描述说明</label>' +
                     '<textarea id="_pd-desc" rows="3" placeholder="这个知识点的含义或解释..." style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;outline:none;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea></div>' +
-                    '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">' +
-                    '<div><div style="font-size:.85rem;font-weight:600;color:#374151">启用 AI 深度解析</div><div style="font-size:.72rem;color:#64748b;margin-top:2px">关闭后不显示AI解析板块</div></div>' +
-                    '<label id="_pd-ai-toggle" style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">' +
-                    '<input id="_pd-ai" type="checkbox" checked style="opacity:0;width:0;height:0">' +
-                    '<span class="toggle-slider" style="position:absolute;inset:0;background:#2563eb;border-radius:12px;transition:.2s"></span>' +
-                    '<span class="toggle-knob" style="position:absolute;left:22px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span>' +
-                    '</label></div>' +
                     '</div>' +
                     '<div style="padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:10px">' +
                     '<button id="_pd-cancel" style="padding:9px 18px;border:1.5px solid #e2e8f0;border-radius:8px;background:white;color:#475569;cursor:pointer;font-size:.9rem">取消</button>' +
                     '<button id="_pd-ok" style="padding:9px 18px;border:none;border-radius:8px;background:#2563eb;color:white;cursor:pointer;font-size:.9rem;font-weight:600">添加</button>' +
                     '</div></div>';
                 document.body.appendChild(dlg);
-                // 开关交互 - 用自定义div替代label的默认行为
-                var toggle = dlg.querySelector('#_pd-ai-toggle');
-                var checkbox = document.getElementById('_pd-ai');
-                var slider = toggle.querySelector('.toggle-slider');
-                var knob = toggle.querySelector('.toggle-knob');
-                // 初始化开关外观（默认已勾选=启用AI，显示蓝色）
-                slider.style.background = '#2563eb';
-                knob.style.left = '22px';
-                toggle.style.cursor = 'pointer';
-                toggle.addEventListener('click', function() {
-                    var nowChecked = !checkbox.checked;
-                    checkbox.checked = nowChecked;
-                    if (nowChecked) {
-                        slider.style.background = '#2563eb';
-                        knob.style.left = '22px';
-                    } else {
-                        slider.style.background = '#cbd5e1';
-                        knob.style.left = '2px';
-                    }
-                });
                 document.getElementById('_pd-close').onclick = function() { dlg.remove(); resolve(null); };
                 document.getElementById('_pd-cancel').onclick = function() { dlg.remove(); resolve(null); };
                 document.getElementById('_pd-ok').onclick = function() {
                     var name = document.getElementById('_pd-name').value.trim();
                     if (!name) { showGlobalToast('请输入知识点名称', 'error'); return; }
                     var desc = document.getElementById('_pd-desc').value.trim() || '暂无描述';
-                    var enableAi = document.getElementById('_pd-ai').checked;
                     dlg.remove();
-                    resolve({ name: name, desc: desc, enableAi: enableAi });
+                    resolve({ name: name, desc: desc });
                 };
                 dlg.addEventListener('click', function(e) { if (e.target === dlg) { dlg.remove(); resolve(null); } });
             });
@@ -7981,8 +7423,45 @@ ${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.
                                 }).join('')
                             }
                         </div>
-                        <!-- 右：综合评估 + AI评语 -->
+                        <!-- 右：情报栏 + 综合评估 + AI评语 -->
                     <div class="ana-col">
+
+                        <!-- ── 学情情报栏 ── -->
+                        <div class="ana-section" style="margin-bottom:16px">
+                            <div class="ana-section-title" style="display:flex;align-items:center;justify-content:space-between">
+                                <span><i class="fas fa-bell" style="color:#f59e0b"></i> 学情情报</span>
+                                <div style="display:flex;align-items:center;gap:6px">
+                                    <span id="ana-intel-count" style="font-size:.7rem;color:var(--gray-400);font-weight:400"></span>
+                                    <button id="ana-intel-check" style="font-size:.7rem;padding:3px 8px;border-radius:6px;border:1.5px solid var(--gray-200);background:white;color:var(--gray-500);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px;line-height:1.4"><i class="fas fa-sync-alt"></i> 立即检测</button>
+                                    <button id="ana-intel-clear" style="font-size:.7rem;padding:3px 8px;border-radius:6px;border:1.5px solid #fecaca;background:#fff5f5;color:#ef4444;cursor:pointer;font-weight:600;line-height:1.4"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </div>
+                            <div id="ana-intel-list" style="margin-top:10px;max-height:260px;overflow-y:auto">
+                                ${(function(){
+                                    const msgs = JSON.parse(localStorage.getItem('zjwj_ana_messages') || '[]');
+                                    if (msgs.length === 0) return `
+                                        <div style="padding:22px 0;text-align:center;color:var(--gray-400)">
+                                            <i class="fas fa-bell-slash" style="font-size:1.8rem;opacity:.3;display:block;margin-bottom:10px"></i>
+                                            <div style="font-size:.8rem">暂无情报记录</div>
+                                            <div style="font-size:.72rem;margin-top:4px;opacity:.7">点击「立即检测」生成首条情报</div>
+                                        </div>`;
+                                    return msgs.slice(0, 10).map((m, i) => `
+                                        <div style="display:flex;gap:10px;padding:9px 0;${i < msgs.length - 1 ? 'border-bottom:1px solid #f8fafc' : ''}">
+                                            <div style="width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;background:${m.color}15;color:${m.color};margin-top:1px">
+                                                <i class="${m.icon}"></i>
+                                            </div>
+                                            <div style="flex:1;min-width:0">
+                                                <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:2px">
+                                                    <span style="font-size:.78rem;font-weight:700;color:var(--gray-800)">${m.title}</span>
+                                                    <span style="font-size:.66rem;color:var(--gray-400);flex-shrink:0">${m.ts}</span>
+                                                </div>
+                                                <div style="font-size:.73rem;color:var(--gray-500);line-height:1.55">${m.body}</div>
+                                            </div>
+                                        </div>`).join('');
+                                })()}
+                            </div>
+                        </div>
+
                         <div class="ana-section">
                             <div class="ana-section-title"><i class="fas fa-file-alt"></i> 综合学情评估</div>
                             <div class="ana-summary">
@@ -8012,6 +7491,20 @@ ${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.
                     </div>
                 </div>
             `;
+
+            // ── 情报栏按钮绑定（渲染完后立即执行）──────────────────
+            document.getElementById('ana-intel-check')?.addEventListener('click', function() {
+                if (window._anaRunCheck) {
+                    window._anaRunCheck(false);
+                    // 重新渲染整个 analytics 以刷新情报栏
+                    setTimeout(initAnalytics, 150);
+                }
+            });
+            document.getElementById('ana-intel-clear')?.addEventListener('click', function() {
+                localStorage.removeItem('zjwj_ana_messages');
+                if (window._anaUpdateBadge) window._anaUpdateBadge();
+                initAnalytics();
+            });
         }
 
 
@@ -9369,15 +8862,53 @@ ${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.
                 const raw = localStorage.getItem('oral_data');
                 if (raw) return JSON.parse(raw);
                 const demo = [{
-                    id:'of1', name:'At the Farm 口语练习', created:'2026-04-09', lastModified:'2026-04-09',
+                    id:'of1', name:'初中英语词汇', created:'2026-03-01', lastModified:'2026-03-15',
                     books:[
                         {
-                            id:'ob1', name:'At the Farm 单词与句子', created:'2026-04-09',
-                            raw:'horse/hɔːs/马 🐴；cow/kaʊ/牛 🐄；sheep/ʃiːp/羊 🐑；hen/hen/母鸡 🐔；farm/fɑːm/农场 🏡；horses/hɔːsɪz/马（复数）🐴🐴；cows/kaʊz/牛（复数）🐄🐄；sheep/ʃiːp/羊（复数）🐑🐑；hens/henz/母鸡（复数）🐔🐔'
+                            id:'ob1', name:'Unit 1 日常生活词汇', created:'2026-03-01',
+                            raw:'apple/ˈæp.əl/苹果；orange/ˈɒr.ɪndʒ/橘子；banana/bəˈnɑː.nə/香蕉；book/bʊk/书；pen/pen/钢笔；teacher/ˈtiː.tʃər/老师；student/ˈstjuː.dənt/学生；school/skuːl/学校；friend/frend/朋友；family/ˈfæm.ɪ.li/家庭；happy/ˈhæp.i/快乐的；morning/ˈmɔː.nɪŋ/早晨；breakfast/ˈbrek.fəst/早餐；lunch/lʌntʃ/午餐；dinner/ˈdɪn.ər/晚餐'
                         },
                         {
-                            id:'ob2', name:'At the Farm 核心句型', created:'2026-04-09',
-                            raw:"What's this?/wɒts ðɪs/这是什么？；It's a horse./ɪts ə hɔːs/它是一匹马。；It's a cow./ɪts ə kaʊ/它是一头牛。；It's a sheep./ɪts ə ʃiːp/它是一只羊。；It's a hen./ɪts ə hen/它是一只母鸡。；What can you see on the farm?/wɒt kæn juː siː ɒn ðə fɑːm/你在农场上能看到什么？"
+                            id:'ob2', name:'Unit 2 学校场所词汇', created:'2026-03-05',
+                            raw:'classroom/ˈklɑːs.ruːm/教室；library/ˈlaɪ.brər.i/图书馆；playground/ˈpleɪ.ɡraʊnd/操场；canteen/kænˈtiːn/食堂；office/ˈɒf.ɪs/办公室；laboratory/ləˈbɒr.ə.tri/实验室；gym/dʒɪm/体育馆；dormitory/ˈdɔː.mɪ.tər.i/宿舍；gate/ɡeɪt/大门；corridor/ˈkɒr.ɪ.dɔːr/走廊'
+                        },
+                        {
+                            id:'ob3', name:'Unit 3 时间与日期', created:'2026-03-08',
+                            raw:'Monday/ˈmʌn.deɪ/星期一；Tuesday/ˈtjuːz.deɪ/星期二；Wednesday/ˈwenz.deɪ/星期三；Thursday/ˈθɜːz.deɪ/星期四；Friday/ˈfraɪ.deɪ/星期五；Saturday/ˈsæt.ər.deɪ/星期六；Sunday/ˈsʌn.deɪ/星期日；January/ˈdʒæn.ju.ər.i/一月；February/ˈfeb.ru.ər.i/二月；March/mɑːtʃ/三月；April/ˈeɪ.prəl/四月；May/meɪ/五月；June/dʒuːn/六月'
+                        },
+                        {
+                            id:'ob4', name:'Unit 4 动词短语精讲', created:'2026-03-12',
+                            raw:'get up/ˈɡet ʌp/起床；go to school/ɡəʊ tə skuːl/去上学；do homework/duː ˈhəʊm.wɜːk/做作业；watch TV/wɒtʃ ˌtiːˈviː/看电视；play basketball/pleɪ ˈbɑːs.kɪt.bɔːl/打篮球；read books/riːd bʊks/读书；listen to music/ˈlɪs.ən tə ˈmjuː.zɪk/听音乐；have dinner/hæv ˈdɪn.ər/吃晚饭；take a shower/teɪk ə ˈʃaʊ.ər/洗澡；go to bed/ɡəʊ tə bed/上床睡觉'
+                        }
+                    ]
+                },
+                {
+                    id:'of2', name:'高中英语词汇', created:'2026-03-02', lastModified:'2026-03-14',
+                    books:[
+                        {
+                            id:'ob5', name:'必修一重点词汇', created:'2026-03-02',
+                            raw:'achieve/əˈtʃiːv/实现；achieve；adore/əˈdɔːr/崇拜；ambition/æmˈbɪʃ.ən/抱负；anxious/ˈæŋk.ʃəs/焦虑的；appreciate/əˈpriː.ʃi.eɪt/欣赏；approach/əˈprəʊtʃ/方法；arrange/əˈreɪndʒ/安排；assist/əˈsɪst/协助；available/əˈveɪ.lə.bəl/可得到的；avoid/əˈvɔɪd/避免；aware/əˈweər/意识到；challenge/ˈtʃæl.ɪndʒ/挑战；communicate/kəˈmjuː.nɪ.keɪt/沟通；concentrate/ˈkɒn.sən.treɪt/专注；contribute/kənˈtrɪb.juːt/贡献'
+                        },
+                        {
+                            id:'ob6', name:'必修二情感与性格词汇', created:'2026-03-06',
+                            raw:'confident/ˈkɒn.fɪ.dənt/自信的；creative/kriˈeɪ.tɪv/有创造力的；curious/ˈkjʊə.ri.əs/好奇的；determined/dɪˈtɜː.mɪnd/坚定的；enthusiastic/ɪnˌθjuː.ziˈæs.tɪk/热情的；generous/ˈdʒen.ər.əs/慷慨的；honest/ˈɒn.ɪst/诚实的；humble/ˈhʌm.bəl/谦逊的；independent/ˌɪn.dɪˈpen.dənt/独立的；optimistic/ˌɒp.tɪˈmɪs.tɪk/乐观的；patient/ˈpeɪ.ʃənt/耐心的；polite/pəˈlaɪt/礼貌的；responsible/rɪˈspɒn.sɪ.bəl/负责任的；sensitive/ˈsen.sɪ.tɪv/敏感的'
+                        },
+                        {
+                            id:'ob7', name:'大学英语四级高频词', created:'2026-03-10',
+                            raw:'abandon/əˈbæn.dən/放弃；abstract/ˈæb.strækt/抽象的；accommodate/əˈkɒm.ə.deɪt/容纳；accomplish/əˈkʌm.plɪʃ/完成；acknowledge/əkˈnɒl.ɪdʒ/承认；acquire/əˈkwaɪər/获得；adequate/ˈæd.ɪ.kwɪt/足够的；advocate/ˈæd.və.keɪt/倡导；allocate/ˈæl.ə.keɪt/分配；analyze/ˈæn.ə.laɪz/分析；assert/əˈsɜːt/声称；assess/əˈses/评估'
+                        }
+                    ]
+                },
+                {
+                    id:'of3', name:'语文古诗词积累', created:'2026-02-20', lastModified:'2026-03-10',
+                    books:[
+                        {
+                            id:'ob8', name:'必背古诗 · 小学篇', created:'2026-02-20',
+                            raw:'床前明月光/chuáng qián míng yuè guāng/李白《静夜思》第一句；疑是地上霜/yí shì dì shàng shuāng/李白《静夜思》第二句；举头望明月/jǔ tóu wàng míng yuè/李白《静夜思》第三句；低头思故乡/dī tóu sī gù xiāng/李白《静夜思》第四句；春眠不觉晓/chūn mián bù jué xiǎo/孟浩然《春晓》第一句；处处闻啼鸟/chù chù wén tí niǎo/孟浩然《春晓》第二句；夜来风雨声/yè lái fēng yǔ shēng/孟浩然《春晓》第三句；花落知多少/huā luò zhī duō shǎo/孟浩然《春晓》第四句'
+                        },
+                        {
+                            id:'ob9', name:'必背古诗 · 初中篇', created:'2026-02-25',
+                            raw:'会当凌绝顶/huì dāng líng jué dǐng/杜甫《望岳》；一览众山小/yī lǎn zhòng shān xiǎo/杜甫《望岳》；烽火连三月/fēng huǒ lián sān yuè/杜甫《春望》；家书抵万金/jiā shū dǐ wàn jīn/杜甫《春望》；东风不与周郎便/dōng fēng bù yǔ zhōu láng biàn/杜牧《赤壁》；铜雀春深锁二乔/tóng què chūn shēn suǒ èr qiáo/杜牧《赤壁》；山重水复疑无路/shān chóng shuǐ fù yí wú lù/陆游《游山西村》；柳暗花明又一村/liǔ àn huā míng yòu yī cūn/陆游《游山西村》'
                         }
                     ]
                 }];
@@ -9659,29 +9190,10 @@ ${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.
                 if (!raw || !raw.trim()) return [];
                 return raw.split(/[；;]/).map(s=>s.trim()).filter(Boolean).map(entry => {
                     const parts = entry.split('/');
-                    let zh = '';
-                    let en = '';
-                    let ph = '';
-                    let glyph = '';
-                    if (parts.length >= 3) {
-                        en = parts[0].trim();
-                        ph = parts[1].trim();
-                        zh = parts.slice(2).join('/').trim();
-                        // 提取emoji到glyph
-                        const emojiMatch = zh.match(/[\u{1F300}-\u{1F9FF}]/gu);
-                        if (emojiMatch) {
-                            glyph = emojiMatch.join(' ');
-                            zh = zh.replace(glyph, '').trim();
-                        }
-                    } else if (parts.length === 2) {
-                        en = parts[0].trim();
-                        zh = parts[1].trim();
-                    } else {
-                        const m = entry.match(/^([a-zA-Z\s\-\']+)(.*)/);
-                        if (m) { en = m[1].trim(); zh = m[2].trim(); }
-                        else { en = entry; }
-                    }
-                    return { en, ph, zh, glyph };
+                    if (parts.length >= 3) return { en:parts[0].trim(), ph:parts[1].trim(), zh:parts.slice(2).join('/').trim() };
+                    if (parts.length === 2) return { en:parts[0].trim(), ph:'', zh:parts[1].trim() };
+                    const m = entry.match(/^([a-zA-Z\s\-\']+)(.*)/);
+                    return m ? { en:m[1].trim(), ph:'', zh:m[2].trim() } : { en:entry, ph:'', zh:'' };
                 }).filter(w=>w.en);
             }
 
@@ -9814,7 +9326,6 @@ ${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.
                     '<div class="op-word-en">' + w.en + '</div>' +
                     (w.ph ? '<div class="op-word-ph">/' + w.ph + '/</div>' : '') +
                     (w.zh ? '<div class="op-word-zh">' + w.zh + '</div>' : '') +
-                    (w.glyph ? '<div class="op-word-glyph">' + w.glyph + '</div>' : '') +
                     '</div>' +
 
                     '<div class="op-controls">' +
@@ -9920,10 +9431,6 @@ ${hasContent ? `<div style="display:flex;border-top:1px solid rgba(255,255,255,.
                 document.getElementById('op-next')?.addEventListener('click', () => {
                     if (curIdx < total-1) { curIdx++; saveProg(); render(); }
                     else { saveProg(true); state='result'; render(); }
-                });
-                document.getElementById('op-back')?.addEventListener('click', () => {
-                    state = 'select';
-                    render();
                 });
 
                 function saveProg(finished) {
