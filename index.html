@@ -240,6 +240,7 @@ input, textarea, select { font-family: inherit; }
 }
 .sidebar.collapsed .menu-text,
 .sidebar.collapsed .menu-badge,
+.sidebar.collapsed #ana-sidebar-dot,
 .sidebar.collapsed .sidebar-title { display: none; }
 .sidebar.collapsed .menu-item { padding: 12px; justify-content: center; }
 .sidebar.collapsed .menu-item i { width: auto; }
@@ -832,16 +833,22 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .ana-section-title { font-size: 0.875rem; font-weight: 700; color: var(--gray-800); display: flex; align-items: center; gap: 7px; margin-bottom: 14px; padding-bottom: 9px; border-bottom: 1px solid var(--gray-100); }
 .ana-section-title i { color: var(--primary); }
 .ana-empty { text-align: center; color: var(--gray-400); font-size: 0.84rem; padding: 20px 0; }
-.ana-item { margin-bottom: 13px; }
+.ana-item { margin-bottom: 14px; }
 .ana-item:last-child { margin-bottom: 0; }
-.ana-item-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
-.ana-item-name { font-size: 0.84rem; font-weight: 600; color: var(--gray-800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 68%; }
-.ana-item-pct { font-size: 0.84rem; font-weight: 800; flex-shrink: 0; }
-.ana-item-sub { font-size: 0.72rem; color: var(--gray-400); }
-.ana-bar-wrap { display: flex; align-items: center; gap: 9px; }
-.ana-bar-track { flex: 1; height: 5px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+.ana-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; gap: 8px; }
+.ana-item-name { font-size: 0.82rem; font-weight: 600; color: var(--gray-800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+.ana-item-pct { font-size: 0.82rem; font-weight: 800; flex-shrink: 0; }
+.ana-item-sub { font-size: 0.7rem; color: var(--gray-400); margin-top: 3px; }
+.ana-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.ana-bar-track { flex: 1; height: 5px; background: var(--gray-100); border-radius: 3px; overflow: hidden; min-width: 0; }
 .ana-bar-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
+.ana-subject-cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 4px; }
+.ana-subject-col { background: var(--gray-50); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 10px 12px; }
+.ana-subject-col-title { font-size: .72rem; font-weight: 700; color: var(--gray-500); letter-spacing: .04em; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
+.ana-subject-col-pct { font-size: .7rem; font-weight: 800; }
+.ana-toggle-btn { display: inline-flex; align-items: center; gap: 5px; font-size: .72rem; font-weight: 600; color: var(--primary); background: var(--blue-50); border: 1px solid var(--blue-100); border-radius: 6px; padding: 3px 9px; cursor: pointer; margin-left: auto; }
 .ana-bucket { margin-bottom: 13px; }
+
 .ana-bucket-header { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
 .ana-bucket-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 .ana-bucket-label { font-size: 0.82rem; font-weight: 600; color: var(--gray-700); flex: 1; }
@@ -898,67 +905,244 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .study-quick-btn { width: 100%; padding: 7px 11px; text-align: left; background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: var(--r); cursor: pointer; font-size: 0.78rem; color: var(--gray-700); transition: var(--tr); }
 .study-quick-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--blue-50); }
 
-/* ── 13. PPT Module ────────────────────────────────────────── */
-.ppt-container { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
-.ppt-left, .ppt-right { display: flex; flex-direction: column; gap: 18px; }
-.section-title { font-size: 1rem; font-weight: 700; color: var(--gray-800); margin-bottom: 14px; }
-.script-input textarea { width: 100%; height: 160px; padding: 13px; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); font-family: inherit; font-size: 0.9rem; resize: vertical; outline: none; transition: border-color var(--tr); line-height: 1.6; color: var(--gray-800); }
-.script-input textarea:focus { border-color: var(--primary); }
-.script-actions { display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end; }
-.script-info { font-size: 0.78rem; color: var(--gray-400); margin-top: 6px; }
-.char-count { font-weight: 700; color: var(--primary); }
-.template-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.template-card { background: white; border: 2px solid var(--gray-200); border-radius: var(--r-md); padding: 13px; cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 10px; }
-.template-card:hover, .template-card.active { border-color: var(--primary); background: var(--blue-50); }
-.template-icon { font-size: 1.4rem; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--gray-100); border-radius: var(--r); }
-.template-info h4 { margin: 0 0 3px; font-size: 0.9rem; color: var(--gray-800); font-weight: 600; }
-.template-info p  { margin: 0; font-size: 0.76rem; color: var(--gray-500); }
-.preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-.preview-header h3 { margin: 0; font-size: 1rem; font-weight: 700; color: var(--gray-800); }
-.slide-count { font-size: 0.84rem; color: var(--gray-500); background: var(--gray-100); padding: 3px 10px; border-radius: 10px; }
-.thumbnail-container { background: var(--gray-50); border-radius: var(--r-md); padding: 12px; }
-.thumbnail-scroll { display: flex; gap: 7px; overflow-x: auto; padding: 4px 0; }
-.thumbnail-placeholder { text-align: center; padding: 20px; color: var(--gray-400); }
-.thumbnail-placeholder i { font-size: 2rem; margin-bottom: 8px; opacity: .4; display: block; }
-.thumbnail-placeholder p { font-size: 0.82rem; }
-.slide-view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.slide-view-header h4 { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--gray-700); }
-.slide-nav { display: flex; align-items: center; gap: 8px; }
-.nav-btn { width: 28px; height: 28px; border-radius: var(--r-sm); background: var(--gray-100); color: var(--gray-600); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--tr); border: none; }
-.nav-btn:hover:not(:disabled) { background: var(--blue-50); color: var(--primary); }
-.nav-btn:disabled { opacity: .4; cursor: not-allowed; }
-.slide-position { font-size: 0.82rem; color: var(--gray-500); }
-.slide-preview { background: white; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); padding: 18px; min-height: 180px; position: relative; }
-.slide-content { position: relative; }
-.slide-background { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: var(--r); z-index: 1; }
-.slide-header { position: relative; z-index: 2; margin-bottom: 10px; }
-.slide-title { font-size: 1.3rem; font-weight: 700; color: var(--gray-800); margin-bottom: 5px; }
-.slide-subtitle { font-size: 0.875rem; color: var(--gray-500); }
-.slide-body { position: relative; z-index: 2; }
-.slide-text { color: var(--gray-700); line-height: 1.65; font-size: 0.9rem; }
-.slide-animation { display: flex; gap: 5px; margin-top: 10px; }
-.animation-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); opacity: .3; animation: pulse-dot 1.5s infinite; }
-.animation-dot:nth-child(2) { animation-delay: .3s; }
-.animation-dot:nth-child(3) { animation-delay: .6s; }
-@keyframes pulse-dot { 0%,100%{ opacity:.3; transform:scale(1); } 50%{ opacity:.7; transform:scale(1.2); } }
-.preview-actions { display: flex; gap: 9px; justify-content: flex-end; margin-top: 16px; }
-.action-group { display: flex; gap: 9px; flex-wrap: wrap; }
-.progress-container { margin-top: 18px; background: white; border: 1.5px solid var(--gray-200); border-radius: var(--r-md); padding: 16px; }
-.progress-header { display: flex; justify-content: space-between; margin-bottom: 9px; font-size: 0.84rem; }
+/* ── 13. PPT Module (New) ────────────────────────────────────────── */
+/* 左右布局容器 */
+.ppt-new-body { flex: 1; overflow: hidden; padding: 16px 20px; display: flex; flex-direction: column; }
+.ppt-new-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 1fr;
+    gap: 14px;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+}
+.ppt-left-col { display: flex; flex-direction: column; gap: 14px; overflow-y: auto; min-height: 0; }
+.ppt-preview-col { display: flex; flex-direction: column; min-height: 0; }
+.ppt-teaching-col { display: flex; flex-direction: column; min-height: 0; }
+
+/* PPT预览保持3:2比例 */
+.ppt-preview-stage { aspect-ratio: 3/2; min-height: 240px; }
+
+/* 卡片通用样式 */
+.ppt-card {
+    background: white;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-xs);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.ppt-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
+}
+.ppt-card-icon {
+    width: 36px; height: 36px;
+    border-radius: var(--r);
+    background: var(--blue-50);
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.ppt-card-icon.teaching-icon { background: var(--amber-50); color: var(--amber-600); }
+.ppt-card-titles { flex: 1; min-width: 0; }
+.ppt-card-titles h3 { font-size: 0.875rem; font-weight: 700; color: var(--gray-800); margin-bottom: 2px; }
+.ppt-card-titles p { font-size: 0.75rem; color: var(--gray-500); line-height: 1.4; }
+
+/* 输入卡片 */
+.ppt-input-card { flex: 1; display: flex; flex-direction: column; }
+.ppt-textarea {
+    flex: 1;
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--gray-700);
+    outline: none;
+    min-height: 140px;
+    background: var(--gray-50);
+}
+.ppt-textarea:focus { background: white; }
+.ppt-textarea::placeholder { color: var(--gray-400); }
+.ppt-input-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-top: 1px solid var(--gray-100);
+    background: white;
+    flex-shrink: 0;
+}
+.ppt-char-info { font-size: 0.75rem; color: var(--gray-500); }
+.ppt-char-count { font-weight: 700; color: var(--primary); }
+.ppt-char-hint { margin-left: 4px; }
+.ppt-generate-btn { padding: 8px 16px; font-size: 0.82rem; }
+
+/* 风格选择卡片 */
+.ppt-style-card { flex-shrink: 0; }
+.ppt-style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 14px; }
+.ppt-style-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--r);
+    cursor: pointer;
+    transition: var(--tr);
+}
+.ppt-style-item:hover { border-color: var(--primary); background: var(--blue-50); }
+.ppt-style-item.active { border-color: var(--primary); background: var(--blue-50); }
+.ppt-style-preview {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.ppt-style-info h4 { font-size: 0.78rem; font-weight: 600; color: var(--gray-800); margin-bottom: 1px; }
+.ppt-style-info p { font-size: 0.68rem; color: var(--gray-500); }
+
+/* 预览卡片 */
+.ppt-preview-card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.ppt-slide-counter {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    background: var(--gray-100);
+    padding: 3px 10px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+/* 缩略图 */
+.ppt-thumbnails {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
+    min-height: 54px;
+    background: var(--gray-50);
+}
+.ppt-thumb-placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 60px; height: 40px;
+    color: var(--gray-400); font-size: 0.7rem; text-align: center;
+}
+.ppt-thumb-placeholder i { font-size: 1rem; margin-bottom: 3px; opacity: 0.4; }
+.ppt-thumb {
+    min-width: 64px; height: 40px;
+    border-radius: 6px;
+    border: 2px solid var(--gray-200);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 3px; cursor: pointer; transition: var(--tr);
+    font-size: 0.65rem; color: var(--gray-600); text-align: center;
+    background: white;
+}
+.ppt-thumb:hover { border-color: var(--primary); transform: translateY(-2px); }
+.ppt-thumb.active { border-color: var(--primary); background: var(--blue-50); }
+.ppt-thumb-num { font-weight: 700; color: var(--gray-400); margin-bottom: 1px; font-size: 0.6rem; }
+.ppt-thumb-title { overflow: hidden; max-width: 52px; line-height: 1.2; }
+
+/* 大预览区 */
+.ppt-preview-main { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 12px 14px; }
+.ppt-preview-nav { display: flex; align-items: center; gap: 10px; flex: 1; }
+.ppt-nav-btn {
+    width: 32px; height: 32px;
+    border-radius: var(--r);
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-size: 0.8rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: var(--tr);
+    border: none; flex-shrink: 0;
+}
+.ppt-nav-btn:hover:not(:disabled) { background: var(--blue-50); color: var(--primary); }
+.ppt-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ppt-preview-stage {
+    flex: 1;
+    border-radius: var(--r-md);
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+    min-height: 160px;
+    border: 1px solid var(--gray-200);
+}
+.ppt-slide-bg {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1; border-radius: var(--r-md);
+}
+.ppt-slide-content { position: relative; z-index: 2; }
+.ppt-slide-header { margin-bottom: 12px; }
+.ppt-slide-title { font-size: 1.25rem; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; line-height: 1.3; }
+.ppt-slide-subtitle { font-size: 0.8rem; color: var(--gray-500); }
+.ppt-slide-body { }
+.ppt-slide-text { color: var(--gray-700); line-height: 1.7; font-size: 0.875rem; }
+.ppt-preview-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--gray-100);
+    flex-shrink: 0;
+}
+.ppt-page-indicator { font-size: 0.78rem; color: var(--gray-500); }
+.ppt-page-indicator strong { color: var(--primary); }
+.ppt-preview-actions { display: flex; gap: 6px; }
+.btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+
+/* 教学提示卡片 */
+.ppt-teaching-card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.ppt-teaching-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px;
+    min-height: 0;
+}
+.ppt-tip-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 20px 10px;
+    color: var(--gray-500);
+}
+.ppt-tip-empty i { font-size: 2rem; margin-bottom: 10px; opacity: 0.4; color: var(--amber-500); }
+.ppt-tip-empty p { font-size: 0.85rem; margin-bottom: 6px; }
+.ppt-tip-empty span { font-size: 0.72rem; color: var(--gray-400); }
+
+.ppt-tip-section { margin-bottom: 14px; }
+.ppt-tip-section:last-child { margin-bottom: 0; }
+.ppt-tip-label {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.72rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 10px;
+    margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+}
+.ppt-tip-label.intro { background: var(--blue-100); color: var(--blue-700); }
+.ppt-tip-label.interact { background: var(--green-100); color: var(--green-700); }
+.ppt-tip-label.tip { background: var(--amber-100); color: var(--amber-700); }
+.ppt-tip-text { font-size: 0.82rem; color: var(--gray-700); line-height: 1.6; }
+.ppt-teaching-actions {
+    padding: 10px 14px;
+    border-top: 1px solid var(--gray-100);
+    flex-shrink: 0;
+}
+.ppt-teaching-actions .btn { width: 100%; }
+
+/* 进度条 */
+.progress-container { background: white; border: 1px solid var(--gray-200); border-radius: var(--r-md); padding: 14px 16px; margin-top: 12px; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.82rem; }
 .progress-title { color: var(--gray-700); font-weight: 500; }
 .progress-percent { color: var(--primary); font-weight: 700; }
-.progress-bar { height: 8px; background: var(--gray-100); border-radius: 4px; overflow: hidden; margin-bottom: 7px; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--blue-700)); border-radius: 4px; width: 0%; transition: width .3s ease; }
-.progress-text { font-size: 0.78rem; color: var(--gray-500); text-align: center; }
-.edit-panel { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--r-md); padding: 18px; margin-top: 18px; }
-.panel-title { font-size: 0.9rem; font-weight: 700; color: var(--gray-800); margin-bottom: 14px; }
-.control-row { display: flex; gap: 14px; flex-wrap: wrap; }
-.control-item { display: flex; flex-direction: column; gap: 6px; }
-.control-item label { font-size: 0.82rem; font-weight: 600; color: var(--gray-600); }
-.form-control { padding: 7px 10px; border: 1.5px solid var(--gray-200); border-radius: var(--r-sm); font-size: 0.875rem; width: 90px; outline: none; }
-.form-control:focus { border-color: var(--primary); }
-.color-picker { width: 52px; height: 36px; padding: 2px; border: 1.5px solid var(--gray-200); border-radius: var(--r-sm); cursor: pointer; }
-.control-actions { display: flex; gap: 8px; margin-top: 12px; }
+.progress-bar { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--blue-700)); border-radius: 3px; width: 0%; transition: width .3s ease; }
 
 /* 3D Scene */
 .scene-container { display: grid; grid-template-columns: 2fr 3fr; gap: 20px; }
@@ -2136,6 +2320,11 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 <i class="fas fa-shopping-cart"></i>
                 <span>采购咨询</span>
             </button>
+            <!-- 学情消息提醒铃 -->
+            <button class="header-btn" id="globalNotifyBtn" title="学情消息提醒" style="padding:7px 10px;min-width:36px;position:relative;display:none">
+                <i class="fas fa-bell"></i>
+                <span id="globalNotifyBadge" style="position:absolute;top:4px;right:6px;min-width:16px;height:16px;border-radius:8px;background:#ef4444;color:white;font-size:.58rem;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 3px;line-height:1"></span>
+            </button>
             <!-- Dark mode toggle -->
             <button class="header-btn" id="darkModeBtn" title="切换暗色模式" style="padding:7px 10px;min-width:36px">
                 <i class="fas fa-moon" id="darkModeIcon"></i>
@@ -2176,7 +2365,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             <!-- 教师端菜单 - 7大核心功能 -->
             <a href="javascript:void(0)" class="menu-item active" data-module="ppt">
                 <i class="fas fa-file-powerpoint"></i>
-                <span class="menu-text">PPT课件生成</span>
+                <span class="menu-text">智能PPT备课</span>
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="3d">
                 <i class="fas fa-cube"></i>
@@ -2193,6 +2382,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             <a href="javascript:void(0)" class="menu-item" data-module="analytics">
                 <i class="fas fa-chart-pie"></i>
                 <span class="menu-text">学情分析中心</span>
+                <span id="ana-sidebar-dot" style="display:none;min-width:18px;height:18px;border-radius:9px;background:#2563eb;color:white;font-size:.62rem;font-weight:700;align-items:center;justify-content:center;padding:0 5px;box-sizing:border-box;flex-shrink:0;letter-spacing:0;line-height:1"></span>
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="oral">
                 <i class="fas fa-microphone"></i>
@@ -2235,168 +2425,167 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
     </nav>
 
     <!-- PPT持久化容器 - 不放在moduleContent里，避免被innerHTML覆盖 -->
-    <div id="ppt-persistent-wrapper" style="display:none;position:fixed;top:calc(var(--header-h) + 20px);right:20px;bottom:calc(var(--footer-h) + 20px);left:calc(var(--sidebar-width) + 20px);z-index:50;overflow:hidden;transition:left .18s cubic-bezier(.4,0,.2,1);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.07)">
+    <div id="ppt-persistent-wrapper" style="display:none;position:fixed;top:calc(var(--header-h) + 20px);right:20px;bottom:calc(var(--footer-h) + 20px);left:calc(var(--sidebar-width) + 20px);z-index:50;overflow:hidden;transition:left .18s cubic-bezier(.4,0,.2,1);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.10)">
         <div class="module-content" style="height:100%;display:flex;flex-direction:column">
             <!-- PPT课件生成模块内容嵌入这里 -->
                 <div class="content-card mod-fullscreen" id="ppt-generator">
-                    <div class="sp3-topbar"><div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-file-powerpoint"></i> PPT课件生成</span></div><div class="sp3-tb-right"></div></div>
-                    <div class="mod-body">
-                        <div class="ppt-container">
-                            <!-- 左侧操作区 -->
-                            <div class="ppt-left">
-                                <div class="operation-section">
-                                    <h3 class="section-title">输入教案脚本</h3>
-                                    <div class="script-input">
-                                        <textarea id="textInput" placeholder="粘贴或输入课文教案脚本。&#10;&#10;示例：&#10;《荷塘月色》是朱自清1927年写的一篇散文，描写盛夏月夜荷塘的景色，情感含蓄，意境优美。&#10;&#10;支持「描述挑战」「互动提问」等互动环节设计..." rows="10" style="resize:vertical;min-height:120px"></textarea>
-                                        <div class="script-actions">
-                                            <button class="btn btn-outline" id="saveDraftBtn">
-                                                <i class="fas fa-save"></i> 保存草稿
-                                            </button>
-                                            <button class="btn btn-primary" id="generatePptBtn">
-                                                <i class="fas fa-magic"></i> 一键生成课件
-                                            </button>
-                                        </div>
-                                        <div class="script-info">
-                                            <span class="char-count" id="charCount">0</span> 字符
-                                            <span class="hint">（建议200-1000字）</span>
+                    <div class="sp3-topbar"><div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-file-powerpoint"></i> 智能PPT备课助手</span></div><div class="sp3-tb-right"></div></div>
+                    <div class="ppt-new-body">
+                        <!-- 三栏布局：左侧输入 | 右上预览 | 右下教学提示 -->
+                        <div class="ppt-new-grid">
+                            <!-- 左栏：教案输入区 -->
+                            <div class="ppt-left-col">
+                                <div class="ppt-card ppt-input-card">
+                                    <div class="ppt-card-header">
+                                        <div class="ppt-card-icon"><i class="fas fa-pen-fancy"></i></div>
+                                        <div class="ppt-card-titles">
+                                            <h3>输入教案或课文</h3>
+                                            <p>粘贴课文内容，AI将分析结构并生成教学建议</p>
                                         </div>
                                     </div>
-                                    
-                                    <div class="template-section">
-                                        <h3 class="section-title">课件风格预设</h3>
-                                        <div class="template-grid">
-                                            <div class="template-card active" data-style="fresh">
-                                                <div class="template-icon">🌿</div>
-                                                <div class="template-info">
-                                                    <h4>清新自然</h4>
-                                                    <p>适合语文/自然课</p>
-                                                </div>
+                                    <textarea id="textInput" class="ppt-textarea" placeholder="请粘贴课文或教案内容...
+
+例如：
+《荷塘月色》朱自清
+这几天心里颇不宁静。今晚在院子里坐着乘凉，忽然想起日日走过的荷塘，在这满月的光里，总该另有一番样子吧..."></textarea>
+                                    <div class="ppt-input-footer">
+                                        <div class="ppt-char-info">
+                                            <span class="ppt-char-count" id="charCount">0</span> 字符
+                                            <span class="ppt-char-hint">（建议200-1000字）</span>
+                                        </div>
+                                        <button class="btn btn-primary ppt-generate-btn" id="generatePptBtn">
+                                            <i class="fas fa-wand-magic-sparkles"></i> 智能生成
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 教育侧重点选择 -->
+                                <div class="ppt-card ppt-style-card">
+                                    <div class="ppt-card-header">
+                                        <div class="ppt-card-icon"><i class="fas fa-bullseye"></i></div>
+                                        <div class="ppt-card-titles">
+                                            <h3>选择教育侧重点</h3>
+                                            <p>AI将据此调整教学互动建议的输出方向</p>
+                                        </div>
+                                    </div>
+                                    <div class="ppt-style-grid">
+                                        <div class="ppt-style-item active" data-focus="reading">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#eff6ff,#bfdbfe)">
+                                                <i class="fas fa-book-open" style="color:#1e40af"></i>
                                             </div>
-                                            <div class="template-card" data-style="strict">
-                                                <div class="template-icon">🧮</div>
-                                                <div class="template-info">
-                                                    <h4>数理严谨</h4>
-                                                    <p>适合数学/科学课</p>
-                                                </div>
+                                            <div class="ppt-style-info">
+                                                <h4>阅读理解</h4>
+                                                <p>语文/英语/文综</p>
                                             </div>
-                                            <div class="template-card" data-style="fun">
-                                                <div class="template-icon">🎨</div>
-                                                <div class="template-info">
-                                                    <h4>活泼童趣</h4>
-                                                    <p>适合低年级</p>
-                                                </div>
+                                        </div>
+                                        <div class="ppt-style-item" data-focus="formula">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#f0fdf4,#bbf7d0)">
+                                                <i class="fas fa-square-root-variable" style="color:#166534"></i>
                                             </div>
-                                            <div class="template-card" data-style="classic">
-                                                <div class="template-icon">📜</div>
-                                                <div class="template-info">
-                                                    <h4>古典国风</h4>
-                                                    <p>适合古诗文</p>
-                                                </div>
+                                            <div class="ppt-style-info">
+                                                <h4>公式推理</h4>
+                                                <p>数学/物理/化学</p>
+                                            </div>
+                                        </div>
+                                        <div class="ppt-style-item" data-focus="memorize">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fefce8,#fef08a)">
+                                                <i class="fas fa-brain" style="color:#854d0e"></i>
+                                            </div>
+                                            <div class="ppt-style-info">
+                                                <h4>记忆强化</h4>
+                                                <p>历史/地理/生物</p>
+                                            </div>
+                                        </div>
+                                        <div class="ppt-style-item" data-focus="skill">
+                                            <div class="ppt-style-preview" style="background:linear-gradient(135deg,#fdf4ff,#e9d5ff)">
+                                                <i class="fas fa-tools" style="color:#7e22ce"></i>
+                                            </div>
+                                            <div class="ppt-style-info">
+                                                <h4>技能训练</h4>
+                                                <p>信息技术/实操</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- 右侧预览区 -->
-                            <div class="ppt-right">
-                                <div class="preview-section">
-                                    <div class="preview-header">
-                                        <h3 class="section-title">课件预览</h3>
-                                        <div class="slide-count" id="slideCount">共0页</div>
-                                    </div>
-                                    
-                                    <div class="preview-content">
-                                        <!-- 缩略图列表 -->
-                                        <div class="thumbnail-container">
-                                            <div class="thumbnail-scroll" id="thumbnailScroll">
-                                                <div class="thumbnail-placeholder">
-                                                    <i class="fas fa-images"></i>
-                                                    <p>生成课件后显示缩略图</p>
-                                                </div>
-                                            </div>
+
+                            <!-- 右侧两栏并排：PPT预览 + 教学提示 -->
+                            <div class="ppt-preview-col">
+                                <!-- PPT预览 -->
+                                <div class="ppt-card ppt-preview-card">
+                                    <div class="ppt-card-header">
+                                        <div class="ppt-card-icon"><i class="fas fa-presentation"></i></div>
+                                        <div class="ppt-card-titles">
+                                            <h3>PPT大纲梳理</h3>
+                                            <p>点击缩略图或使用箭头切换页面</p>
                                         </div>
-                                        
-                                        <!-- 当前页预览 -->
-                                        <div class="current-slide-view">
-                                            <div class="slide-view-header">
-                                                <h4>当前页预览</h4>
-                                                <div class="slide-nav">
-                                                    <button class="nav-btn prev-slide" id="prevSlideBtn" disabled>
-                                                        <i class="fas fa-chevron-left"></i>
-                                                    </button>
-                                                    <span class="slide-position">第 <span id="currentSlideNum">1</span> 页</span>
-                                                    <button class="nav-btn next-slide" id="nextSlideBtn" disabled>
-                                                        <i class="fas fa-chevron-right"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="slide-preview" id="slidePreview">
-                                                <div class="slide-content">
-                                                    <div class="slide-background" id="slideBackground"></div>
-                                                    <div class="slide-header">
-                                                        <h3 class="slide-title" id="slideTitle">课件标题</h3>
-                                                        <div class="slide-subtitle" id="slideSubtitle">副标题内容</div>
+                                        <div class="ppt-slide-counter" id="slideCount">共 0 页</div>
+                                    </div>
+                                    <div class="ppt-thumbnails" id="thumbnailScroll">
+                                        <div class="ppt-thumb-placeholder" id="thumbPlaceholder">
+                                            <i class="fas fa-layer-group"></i>
+                                            <p>生成课件后在此预览</p>
+                                        </div>
+                                    </div>
+                                    <div class="ppt-preview-main">
+                                        <div class="ppt-preview-nav">
+                                            <button class="ppt-nav-btn" id="prevSlideBtn" disabled>
+                                                <i class="fas fa-chevron-left"></i>
+                                            </button>
+                                            <div class="ppt-preview-stage" id="slidePreview">
+                                                <div class="ppt-slide-bg" id="slideBackground"></div>
+                                                <div class="ppt-slide-content">
+                                                    <div class="ppt-slide-header">
+                                                        <h2 class="ppt-slide-title" id="slideTitle">等待生成课件</h2>
+                                                        <div class="ppt-slide-subtitle" id="slideSubtitle">请先在左侧输入课文内容</div>
                                                     </div>
-                                                    <div class="slide-body">
-                                                        <div class="slide-text" id="slideText">
-                                                            课件内容将在此显示，支持图文混排和动画效果。
-                                                        </div>
-                                                        <div class="slide-animation" id="slideAnimation">
-                                                            <div class="animation-dot"></div>
-                                                            <div class="animation-dot"></div>
-                                                            <div class="animation-dot"></div>
-                                                        </div>
+                                                    <div class="ppt-slide-body">
+                                                        <p class="ppt-slide-text" id="slideText">AI将为您分析课文结构，生成条理清晰的PPT课件，帮助学生更好地理解和掌握知识。</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- 底部操作 -->
-                                    <div class="preview-actions">
-                                        <div class="action-group">
-                                            <button class="btn btn-outline" id="editPptBtn">
-                                                <i class="fas fa-edit"></i> 简易编辑
-                                            </button>
-                                            <button class="btn btn-outline" id="downloadPptBtn">
-                                                <i class="fas fa-download"></i> 下载PPT
-                                            </button>
-                                            <button class="btn btn-primary" id="generate3dBtn">
-                                                <i class="fas fa-cube"></i> 生成3D情景
+                                            <button class="ppt-nav-btn" id="nextSlideBtn" disabled>
+                                                <i class="fas fa-chevron-right"></i>
                                             </button>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- 编辑面板 -->
-                                    <div class="edit-panel" id="editPanel" style="display: none;">
-                                        <h4 class="panel-title">课件编辑</h4>
-                                        <div class="edit-controls">
-                                            <div class="control-row">
-                                                <div class="control-item">
-                                                    <label>总页数</label>
-                                                    <input type="number" id="editPageCount" min="5" max="30" value="15" class="form-control">
-                                                </div>
-                                                <div class="control-item">
-                                                    <label>标题颜色</label>
-                                                    <input type="color" id="editTitleColor" value="#2563eb" class="color-picker">
-                                                </div>
-                                                <div class="control-item">
-                                                    <label>背景颜色</label>
-                                                    <input type="color" id="editBgColor" value="#ffffff" class="color-picker">
-                                                </div>
-                                            </div>
-                                            <div class="control-actions">
-                                                <button class="btn btn-primary" id="applyEditBtn">应用修改</button>
-                                                <button class="btn btn-outline" id="cancelEditBtn">取消</button>
+                                        <div class="ppt-preview-footer">
+                                            <span class="ppt-page-indicator">第 <strong id="currentSlideNum">1</strong> 页</span>
+                                            <div class="ppt-preview-actions">
+                                                <button class="btn btn-sm btn-outline" id="editPptBtn"><i class="fas fa-sliders"></i> 调整</button>
+                                                <button class="btn btn-sm btn-primary" id="copyMarkdownBtn"><i class="fas fa-copy"></i> 复制为Markdown</button>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：教学提示 -->
+                            <div class="ppt-teaching-col">
+                                <!-- AI教学提示 -->
+                                <div class="ppt-card ppt-teaching-card">
+                                    <div class="ppt-card-header">
+                                        <div class="ppt-card-icon teaching-icon"><i class="fas fa-lightbulb"></i></div>
+                                        <div class="ppt-card-titles">
+                                            <h3>教学互动建议</h3>
+                                            <p>本页的教学引入与互动设计提示</p>
+                                        </div>
+                                    </div>
+                                    <div class="ppt-teaching-content" id="teachingTips">
+                                        <div class="ppt-tip-empty">
+                                            <i class="fas fa-brain"></i>
+                                            <p>生成课件后，AI将为每一页提供教学互动建议</p>
+                                            <span>包括：如何引入话题、提问方式、帮助学生理解的技巧等</span>
+                                        </div>
+                                    </div>
+                                    <div class="ppt-teaching-actions">
+                                        <button class="btn btn-sm btn-outline" id="regenerateTipBtn" disabled>
+                                            <i class="fas fa-rotate"></i> 重新生成提示
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- 进度条容器 -->
                         <div class="progress-container" id="progressContainer" style="display: none;">
                             <div class="progress-header">
@@ -2409,7 +2598,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                         </div>
                     </div>
                 </div>
-                
+
         </div><!-- end ppt-persistent-wrapper inner -->
     </div><!-- end ppt-persistent-wrapper -->
 
@@ -3557,12 +3746,15 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
               </select>
             </div>
           </div>
-          <!-- 操作行：上传 + 添加标注 + 提示 -->
+          <!-- 操作行：上传 + AI生成 + 添加标注 + 提示 -->
           <div style="display:flex;align-items:center;gap:7px">
             <button id="s3d-upload-btn" class="btn btn-secondary" style="padding:5px 11px;font-size:.78rem;white-space:nowrap">
               <i class="fas fa-image"></i> 上传全景图
             </button>
             <input type="file" id="s3d-img-input" accept="image/jpeg,image/png,image/webp" style="display:none">
+            <button id="s3d-ai-gen-btn" class="btn btn-outline" style="padding:5px 11px;font-size:.78rem;white-space:nowrap;border-color:var(--purple-500,#8b5cf6);color:var(--purple-600,#7c3aed);background:var(--purple-50,#f5f3ff)">
+              <i class="fas fa-magic"></i> AI 生成全景
+            </button>
             <button id="addKnowledgePointBtn" class="btn btn-secondary" style="padding:5px 11px;font-size:.78rem;white-space:nowrap">
               <i class="fas fa-map-marker-alt"></i> 添加标注点
             </button>
@@ -3710,7 +3902,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             } else if (module === 'analytics') {
                 moduleContent.innerHTML = `
                     <div class="content-card mod-fullscreen" id="learning-analytics">
-                        <div class="sp3-topbar"><div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-chart-pie"></i> 学情分析中心</span></div><div class="sp3-tb-right"><span style="color:rgba(255,255,255,.7);font-size:.8rem">数据来源：班级本地学习记录</span></div></div>
+                        <div class="sp3-topbar"><div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-chart-pie"></i> 学情分析中心</span></div><div class="sp3-tb-right"><span style="color:rgba(255,255,255,.7);font-size:.8rem">数据来源：班级本地学习记录</span><button id="ana-refresh-btn" class="sp3-btn sp3-btn-ghost" title="刷新数据"><i class="fas fa-sync-alt"></i></button><button id="ana-notify-btn" class="sp3-btn sp3-btn-ghost" style="position:relative;padding:6px 12px" title="学情消息提醒"><i class="fas fa-bell"></i><span id="ana-notify-dot" style="display:none;position:absolute;top:5px;right:8px;width:7px;height:7px;border-radius:50%;background:#f59e0b;border:1.5px solid var(--blue-700)"></span></button></div></div>
                         <div class="mod-body" id="analytics-body"></div>
                     </div>
                 `;
@@ -3854,6 +4046,15 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                                             <button class="study-quick-btn" data-placeholder="请给我出3道关于"    "的练习题，要简单一点">🎯 出练习题</button>
                                             <button class="study-quick-btn" data-placeholder="我不理解这句话是什么意思：……">💬 句子理解</button>
                                         </div>
+                                    </div>
+
+                                    <!-- ② 拍照解题 -->
+                                    <div class="study-tool-card" id="photoSolveCard">
+                                        <div class="study-tool-title"><i class="fas fa-camera"></i> 拍照解题</div>
+                                        <p style="font-size:.75rem;color:var(--gray-400);margin:4px 0 10px;line-height:1.5">对准投影仪上的题目拍照，AI 自动识别并解析</p>
+                                        <button class="study-tool-btn" id="photoSolveBtn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px">
+                                            <i class="fas fa-camera"></i> 开始拍题
+                                        </button>
                                     </div>
 
                                     <!-- ③ 本次对话统计 -->
@@ -4813,24 +5014,30 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         // 幻灯片数据
         let pptSlides = [];
         let pptCurrentIdx = 0;
+        let pptTeachingTips = {}; // 存储每页的教学提示
 
         const styleThemes = {
-            fresh:   { bg:'#f0fdf4', titleColor:'#166534', accent:'#22c55e', name:'清新自然' },
-            strict:  { bg:'#eff6ff', titleColor:'#1e40af', accent:'#3b82f6', name:'数理严谨' },
-            fun:     { bg:'#fdf4ff', titleColor:'#7e22ce', accent:'#a855f7', name:'活泼童趣' },
-            classic: { bg:'#fefce8', titleColor:'#854d0e', accent:'#d97706', name:'古典国风' }
+            fresh:   { bg:'linear-gradient(135deg,#f0fdf4,#dcfce7)', titleColor:'#166534', accent:'#22c55e', name:'清新自然' },
+            strict:  { bg:'linear-gradient(135deg,#eff6ff,#dbeafe)', titleColor:'#1e40af', accent:'#3b82f6', name:'数理严谨' },
+            fun:     { bg:'linear-gradient(135deg,#fdf4ff,#e9d5ff)', titleColor:'#7e22ce', accent:'#a855f7', name:'活泼童趣' },
+            classic: { bg:'linear-gradient(135deg,#fefce8,#fef9c3)', titleColor:'#854d0e', accent:'#d97706', name:'古典国风' }
         };
-        let pptStyle = 'fresh';
+        let pptStyle = 'fresh';  // 当前主题（修复：原代码缺少此声明导致 renderThumbnails/renderCurrentSlide 报错）
+        let pptFocus = 'reading';
 
-        // 风格卡片选择
-        document.querySelectorAll('.template-card').forEach(card => {
+        // 教育侧重点卡片选择
+        document.querySelectorAll('.ppt-style-item').forEach(card => {
             card.addEventListener('click', function() {
-                document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.ppt-style-item').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
-                pptStyle = this.dataset.style;
-                if (pptSlides.length > 0) renderCurrentSlide();
+                pptFocus = this.dataset.focus;
+                if (pptSlides.length > 0) {
+                    renderThumbnails();
+                    renderCurrentSlide();
+                }
             });
         });
+
         // 自定义配色编辑器
         setTimeout(injectPptThemeEditor, 100);
 
@@ -4839,30 +5046,26 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         });
 
         // ── DeepSeek API 配置 ─────────────────────────────────────
-        const DEEPSEEK_API_KEY = 'sk-ac481fe817df49b19865494c10febd0d';
-        const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top';
+        const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top/v1/chat/completions';
 
-        async function callDeepSeek(userPrompt) {
+        async function callDeepSeek(messages, maxTokens = 2000) {
+            const _dk = getDeepSeekKey();
+            if (!_dk) {
+                showGlobalToast('请先在右上角「🔑 API 设置」中配置 DeepSeek Key', 'warning');
+                showApiSettingsModal();
+                throw new Error('未配置 API Key');
+            }
             const response = await fetch(DEEPSEEK_API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + DEEPSEEK_API_KEY
+                    'Authorization': 'Bearer ' + _dk
                 },
                 body: JSON.stringify({
                     model: 'deepseek-chat',
-                    max_tokens: 2000,
+                    max_tokens: maxTokens,
                     temperature: 0.7,
-                    messages: [
-                        {
-                            role: 'system',
-                            content: '你是一位专业的中学语文教师，擅长将课文内容拆解为结构清晰的PPT课件。请严格按照JSON格式输出，不要有任何多余的文字或markdown代码块标记。'
-                        },
-                        {
-                            role: 'user',
-                            content: userPrompt
-                        }
-                    ]
+                    messages: messages
                 })
             });
             if (!response.ok) {
@@ -4871,6 +5074,129 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             }
             const data = await response.json();
             return data.choices[0].message.content;
+        }
+
+        // 生成教学提示
+        // PPT生成提示词根据侧重点调整
+        function getPptFocusInstructions(focus) {
+            const focusInstructions = {
+                reading: '侧重：文章结构分析、段落大意概括、中心思想提炼、关键词句品析、阅读方法指导',
+                formula: '侧重：概念讲解透彻、公式推导清晰、例题演示规范、变式训练递进、知识框架建构',
+                memorize: '侧重：口诀歌谣归纳、联想记忆方法、知识反复巩固、检测练习设计、复习计划提示',
+                skill: '侧重：操作步骤分解、标准示范演示、分层练习设计、反馈纠错机制、成果展示评价'
+            };
+            return focusInstructions[focus] || focusInstructions.reading;
+        }
+
+        async function generateTeachingTip(slide, index) {
+            try {
+                const focusMap = {
+                    reading: '阅读理解：注重文章结构分析、段落大意概括、中心思想提炼、关键词句品析',
+                    formula: '公式推理：注重概念理解、公式推导过程、例题演示、变式训练',
+                    memorize: '记忆强化：注重口诀歌谣、联想记忆、反复练习、及时复习',
+                    skill: '技能训练：注重步骤分解、示范演示、模仿练习、反馈纠错'
+                };
+                const focusDesc = focusMap[pptFocus] || focusMap.reading;
+                const tipPrompt = `作为教学设计专家，请为以下PPT页面设计教学互动建议。教育侧重点：【${focusDesc}】
+
+页面标题：${slide.title}
+页面内容：${slide.content || '无'}
+页面类型：${slide.type}
+
+请给出3个方面的建议，每方面用中文描述，格式如下（不要使用markdown或特殊符号，直接输出）：
+【引入建议】
+[在这里描述如何引入这个知识点的具体方法，1-2句话]
+【互动设计】
+[在这里描述如何与学生互动的具体方法，1-2句话]
+【理解技巧】
+[在这里描述帮助学生理解的具体技巧，1-2句话]`;
+
+                const rawTip = await callDeepSeek([
+                    { role: 'system', content: '你是一位经验丰富的教学设计专家，擅长帮助教师设计生动有趣的课堂互动环节。' },
+                    { role: 'user', content: tipPrompt }
+                ], 1500);
+
+                // 解析教学提示
+                const tip = parseTeachingTip(rawTip);
+                pptTeachingTips[index] = tip;
+
+                // 如果是当前页，立即更新显示
+                if (index === pptCurrentIdx) {
+                    renderTeachingTips();
+                }
+            } catch (err) {
+                console.error('生成教学提示失败:', err);
+                pptTeachingTips[index] = {
+                    intro: '建议从学生熟悉的生活实例入手，引出本课主题。',
+                    interact: '可以先让学生自由发言，再引导到课文内容。',
+                    tip: '利用多媒体或图片帮助学生建立直观印象。'
+                };
+                if (index === pptCurrentIdx) {
+                    renderTeachingTips();
+                }
+            }
+        }
+
+        // 解析教学提示
+        function parseTeachingTip(raw) {
+            const result = { intro: '', interact: '', tip: '' };
+            const introMatch = raw.match(/【引入建议】\s*([^\n【]+)/);
+            const interactMatch = raw.match(/【互动设计】\s*([^\n【]+)/);
+            const tipMatch = raw.match(/【理解技巧】\s*([^\n【]+)/);
+
+            if (introMatch) result.intro = introMatch[1].trim();
+            if (interactMatch) result.interact = interactMatch[1].trim();
+            if (tipMatch) result.tip = tipMatch[1].trim();
+
+            // 如果解析失败，使用默认提示
+            const defaultTips = {
+                reading: { intro: '可以从课文标题或关键图片入手，激发学生阅读兴趣。', interact: '设置开放性问题，鼓励学生自由表达和讨论。', tip: '引导学生抓住关键词句，分析文章结构和写作手法。' },
+                formula: { intro: '从生活实例或旧知识引入新概念，自然过渡。', interact: '让学生先尝试自己推导，教师再点评补充。', tip: '通过变式练习逐步加深理解，注重公式适用条件。' },
+                memorize: { intro: '用口诀、歌谣或联想方式帮助学生建立记忆锚点。', interact: '采用小组竞赛或抽答形式，保持学生参与度。', tip: '多次重复结合间隔复习，帮助学生形成长期记忆。' },
+                skill: { intro: '先示范完整操作步骤，让学生形成整体印象。', interact: '学生模仿操作，教师巡视指导并及时纠错。', tip: '分步骤练习，从简单到复杂，逐步提升熟练度。' }
+            };
+            const defaults = defaultTips[pptFocus] || defaultTips.reading;
+            if (!result.intro) result.intro = defaults.intro;
+            if (!result.interact) result.interact = defaults.interact;
+            if (!result.tip) result.tip = defaults.tip;
+
+            return result;
+        }
+
+        // 渲染教学提示
+        function renderTeachingTips() {
+            const container = document.getElementById('teachingTips');
+            if (!container) return;
+
+            const tip = pptTeachingTips[pptCurrentIdx];
+
+            if (!tip) {
+                container.innerHTML = `
+                    <div class="ppt-tip-empty">
+                        <i class="fas fa-brain"></i>
+                        <p>正在生成教学建议...</p>
+                        <span>请稍候</span>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="ppt-tip-section">
+                    <div class="ppt-tip-label intro"><i class="fas fa-play-circle"></i> 引入建议</div>
+                    <p class="ppt-tip-text">${tip.intro}</p>
+                </div>
+                <div class="ppt-tip-section">
+                    <div class="ppt-tip-label interact"><i class="fas fa-comments"></i> 互动设计</div>
+                    <p class="ppt-tip-text">${tip.interact}</p>
+                </div>
+                <div class="ppt-tip-section">
+                    <div class="ppt-tip-label tip"><i class="fas fa-lightbulb"></i> 理解技巧</div>
+                    <p class="ppt-tip-text">${tip.tip}</p>
+                </div>`;
+
+            // 启用重新生成按钮
+            const regenerateBtn = document.getElementById('regenerateTipBtn');
+            if (regenerateBtn) regenerateBtn.disabled = false;
         }
 
         document.getElementById('generatePptBtn')?.addEventListener('click', async function() {
@@ -4890,20 +5216,22 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             let progress = 0;
             const interval = setInterval(() => {
                 progress += Math.random() * 4 + 1;
-                if (progress > 90) progress = 90; // 最多到90%，等API完成再到100%
+                if (progress > 90) progress = 90;
                 if (progressFill) progressFill.style.width = progress + '%';
                 if (progressPercent) progressPercent.textContent = Math.round(progress) + '%';
             }, 200);
 
-            // 更新 apiStatus 状态点为连接中
             const apiStatusDot = document.getElementById('apiStatus');
             if (apiStatusDot) apiStatusDot.className = 'status-dot connecting';
 
             try {
+                const focusInstructions = getPptFocusInstructions(pptFocus);
                 const prompt = `请将以下课文内容拆解为PPT课件结构，生成6到10页幻灯片。
 
 课文内容：
 ${text}
+
+教育侧重点：【${focusInstructions}】
 
 请严格按照以下JSON数组格式输出，不要有任何其他文字：
 [
@@ -4914,13 +5242,18 @@ ${text}
   {"type":"summary","title":"课文小结","content":"总结课文主旨、情感与写作特色"}
 ]`;
 
-                const rawJson = await callDeepSeek(prompt);
+                const systemPrompt = `你是一位专业的中学教师，擅长将课文内容拆解为结构清晰的PPT课件。请严格按照JSON格式输出，不要有任何多余的文字或markdown代码块标记。
 
-                // 解析AI返回的JSON
+教育侧重点参考：【${getPptFocusInstructions(pptFocus)}】`;
+
+                const rawJson = await callDeepSeek([
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: prompt }
+                ]);
+
                 const cleanJson = rawJson.replace(/```json|```/g, '').trim();
                 const slides = JSON.parse(cleanJson);
 
-                // 完成进度条
                 clearInterval(interval);
                 if (progressFill) progressFill.style.width = '100%';
                 if (progressPercent) progressPercent.textContent = '100%';
@@ -4930,7 +5263,7 @@ ${text}
                     if (progressContainer) progressContainer.style.display = 'none';
                     if (progressFill) progressFill.style.width = '0%';
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-magic"></i> 一键生成课件';
+                    btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> 智能生成';
 
                     buildPptSlidesFromAI(slides);
                     showGlobalToast('AI课件生成成功！共 ' + pptSlides.length + ' 页', 'success');
@@ -4943,11 +5276,10 @@ ${text}
                 if (progressContainer) progressContainer.style.display = 'none';
                 if (progressFill) progressFill.style.width = '0%';
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-magic"></i> 一键生成课件';
+                btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> 智能生成';
                 if (apiStatusDot) apiStatusDot.className = 'status-dot offline';
                 console.error('DeepSeek API Error:', err);
                 showGlobalToast('AI生成失败：' + err.message + '，已切换为本地生成', 'error');
-                // 降级：使用本地算法生成
                 buildPptSlides(text);
                 showGlobalToast('课件已生成（本地模式），共 ' + pptSlides.length + ' 页', 'info');
             }
@@ -4955,7 +5287,7 @@ ${text}
 
         // AI返回JSON直接构建幻灯片
         function buildPptSlidesFromAI(slides) {
-            const theme = styleThemes[pptStyle] || styleThemes.fresh;
+            pptTeachingTips = {};
             pptSlides = slides.map(s => ({
                 type: s.type || 'content',
                 title: s.title || '',
@@ -4963,16 +5295,24 @@ ${text}
                 content: s.content || ''
             }));
             pptCurrentIdx = 0;
-            renderThumbnails(theme);
+            renderThumbnails();
             renderCurrentSlide();
             document.getElementById('slideCount').textContent = '共 ' + pptSlides.length + ' 页';
             document.getElementById('prevSlideBtn').disabled = true;
             document.getElementById('nextSlideBtn').disabled = pptSlides.length <= 1;
+
+            // 异步生成每页的教学提示
+            pptSlides.forEach((slide, index) => {
+                setTimeout(() => generateTeachingTip(slide, index), index * 300);
+            });
+
+            // 渲染当前页教学提示
+            renderTeachingTips();
         }
 
-        // 本地降级版本（API失败时使用）
+        // 本地降级版本
         function buildPptSlides(text) {
-            const theme = styleThemes[pptStyle] || styleThemes.fresh;
+            pptTeachingTips = {};
             const rawSentences = text.split(/[。！？\n]/).map(s => s.trim()).filter(s => s.length > 2);
             pptSlides = [];
             const title = rawSentences[0] ? rawSentences[0].slice(0, 20) : '课文标题';
@@ -4984,36 +5324,51 @@ ${text}
             }
             pptSlides.push({ type: 'summary', title: '课文小结', content: '请同学们回顾今天所学的内容，思考文章的主题与情感。' });
             pptCurrentIdx = 0;
-            renderThumbnails(theme);
+            renderThumbnails();
             renderCurrentSlide();
             document.getElementById('slideCount').textContent = '共 ' + pptSlides.length + ' 页';
             document.getElementById('prevSlideBtn').disabled = true;
             document.getElementById('nextSlideBtn').disabled = pptSlides.length <= 1;
+
+            // 生成本地默认教学提示
+            const defaultTips = {
+                reading: { intro: '可以从课文标题或关键图片入手，激发学生阅读兴趣。', interact: '设置开放性问题，鼓励学生自由表达和讨论。', tip: '引导学生抓住关键词句，分析文章结构和写作手法。' },
+                formula: { intro: '从生活实例或旧知识引入新概念，自然过渡。', interact: '让学生先尝试自己推导，教师再点评补充。', tip: '通过变式练习逐步加深理解，注重公式适用条件。' },
+                memorize: { intro: '用口诀、歌谣或联想方式帮助学生建立记忆锚点。', interact: '采用小组竞赛或抽答形式，保持学生参与度。', tip: '多次重复结合间隔复习，帮助学生形成长期记忆。' },
+                skill: { intro: '先示范完整操作步骤，让学生形成整体印象。', interact: '学生模仿操作，教师巡视指导并及时纠错。', tip: '分步骤练习，从简单到复杂，逐步提升熟练度。' }
+            };
+            const defaults = defaultTips[pptFocus] || defaultTips.reading;
+            pptSlides.forEach((slide, index) => {
+                pptTeachingTips[index] = { ...defaults };
+            });
+            renderTeachingTips();
         }
 
-        function renderThumbnails(theme) {
+        function renderThumbnails() {
             const scroll = document.getElementById('thumbnailScroll');
+            const placeholder = document.getElementById('thumbPlaceholder');
             if (!scroll) return;
+
+            if (placeholder) placeholder.style.display = 'none';
+
+            const theme = styleThemes[pptStyle] || styleThemes.fresh;
             scroll.innerHTML = pptSlides.map((s, i) => `
-                <div onclick="jumpToSlide(${i})" id="thumb-${i}" style="
-                    min-width:72px;height:50px;border-radius:6px;border:2px solid ${i===0?'var(--primary)':'var(--gray-200)'};
-                    background:${(styleThemes[pptStyle]||styleThemes.fresh).bg};cursor:pointer;
-                    display:flex;flex-direction:column;align-items:center;justify-content:center;
-                    padding:4px;transition:all .15s;font-size:9px;color:var(--gray-700);text-align:center;overflow:hidden">
-                    <div style="font-weight:700;font-size:8px;color:var(--gray-400);margin-bottom:2px">${i+1}</div>
-                    <div style="font-size:9px;overflow:hidden;max-height:28px;line-height:1.3;word-break:break-all">${s.title.slice(0,12)}</div>
+                <div class="ppt-thumb ${i === pptCurrentIdx ? 'active' : ''}" onclick="jumpToSlide(${i})" id="thumb-${i}">
+                    <div class="ppt-thumb-num">${i + 1}</div>
+                    <div class="ppt-thumb-title">${s.title.slice(0, 10)}</div>
                 </div>`).join('');
         }
 
         function jumpToSlide(idx) {
             pptCurrentIdx = idx;
-            document.querySelectorAll('[id^="thumb-"]').forEach((t, i) => {
-                t.style.borderColor = i === idx ? 'var(--primary)' : 'var(--gray-200)';
+            document.querySelectorAll('.ppt-thumb').forEach((t, i) => {
+                t.classList.toggle('active', i === idx);
             });
             renderCurrentSlide();
             document.getElementById('prevSlideBtn').disabled = idx === 0;
             document.getElementById('nextSlideBtn').disabled = idx >= pptSlides.length - 1;
             document.getElementById('currentSlideNum').textContent = idx + 1;
+            renderTeachingTips();
         }
 
         function renderCurrentSlide() {
@@ -5026,7 +5381,7 @@ ${text}
             const textEl = document.getElementById('slideText');
             if (bg) bg.style.background = theme.bg;
             if (titleEl) { titleEl.textContent = slide.title; titleEl.style.color = theme.titleColor; }
-            if (subtitleEl) subtitleEl.textContent = slide.type === 'title' ? slide.subtitle : ('第 '+(pptCurrentIdx+1)+' 页');
+            if (subtitleEl) subtitleEl.textContent = slide.type === 'title' ? slide.subtitle : ('第 ' + (pptCurrentIdx + 1) + ' 页');
             if (textEl) textEl.textContent = slide.content || '';
         }
 
@@ -5037,33 +5392,45 @@ ${text}
             if (pptCurrentIdx < pptSlides.length - 1) jumpToSlide(pptCurrentIdx + 1);
         });
 
+        // 重新生成教学提示
+        document.getElementById('regenerateTipBtn')?.addEventListener('click', async function() {
+            if (!pptSlides.length) return;
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+            await generateTeachingTip(pptSlides[pptCurrentIdx], pptCurrentIdx);
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-rotate"></i> 重新生成提示';
+            showGlobalToast('教学提示已更新', 'success');
+        });
+
         // 简易编辑面板
         document.getElementById('editPptBtn')?.addEventListener('click', function() {
-            const panel = document.getElementById('editPanel');
-            if (!panel) return;
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        });
-        document.getElementById('cancelEditBtn')?.addEventListener('click', () => {
-            const panel = document.getElementById('editPanel');
-            if (panel) panel.style.display = 'none';
-        });
-        document.getElementById('applyEditBtn')?.addEventListener('click', function() {
-            const titleColor = document.getElementById('editTitleColor')?.value;
-            const bgColor = document.getElementById('editBgColor')?.value;
-            if (titleColor) { const el = document.getElementById('slideTitle'); if(el) el.style.color = titleColor; }
-            if (bgColor) { const el = document.getElementById('slideBackground'); if(el) el.style.background = bgColor; }
-            showGlobalToast('样式已应用', 'success');
+            showGlobalToast('简易编辑功能开发中，敬请期待', 'info');
         });
 
-        document.getElementById('downloadPptBtn')?.addEventListener('click', function() {
-            showGlobalToast('PPT导出需要后端支持，敬请期待', 'info');
-        });
-
-        // ── 3D 情景生成：携带课件内容跳转 ──────────────────────────
-        document.getElementById('generate3dBtn')?.addEventListener('click', function() {
-            const text = document.getElementById('textInput')?.value?.trim() || '';
-            window._pptTextForScene = text;
-            loadModule('3d');
+        // 复制为Markdown格式
+        document.getElementById('copyMarkdownBtn')?.addEventListener('click', function() {
+            if (!pptSlides.length) {
+                showGlobalToast('请先生成PPT课件', 'error');
+                return;
+            }
+            const theme = styleThemes[pptStyle] || styleThemes.fresh;
+            let md = `# ${pptSlides[0]?.title || '课件标题'}\n\n`;
+            pptSlides.forEach((slide, i) => {
+                md += `## 第${i + 1}页：${slide.title}\n\n`;
+                if (slide.content) md += `${slide.content}\n\n`;
+                const tip = pptTeachingTips[i];
+                if (tip) {
+                    md += `> **引入建议**：${tip.intro}\n`;
+                    md += `> **互动设计**：${tip.interact}\n`;
+                    md += `> **理解技巧**：${tip.tip}\n\n`;
+                }
+            });
+            navigator.clipboard.writeText(md).then(() => {
+                showGlobalToast('已复制到剪贴板，可直接粘贴到Markdown编辑器', 'success');
+            }).catch(() => {
+                showGlobalToast('复制失败，请手动复制', 'error');
+            });
         });
 
         // ── 用户下拉菜单 ──────────────────────────────────────────────
@@ -5728,7 +6095,7 @@ ${text}
 
                 fetch(DEEPSEEK_API_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getDeepSeekKey() },
                     body: JSON.stringify({
                         model: 'deepseek-chat',
                         max_tokens: 200,
@@ -7161,351 +7528,978 @@ ${text}
 
         // ── 学生AI自习室 ────────────────────────────────────────────────
         // ── 学情分析中心 ──────────────────────────────────────────────────
-        function initAnalytics() {
+        function initAnalytics(weekOffset) {
             const body = document.getElementById('analytics-body');
             if (!body) return;
+            weekOffset = (weekOffset === undefined ? 0 : weekOffset);
 
-            // ── 读取数据 ────────────────────────────────────────────────
-            const sp3Raw   = JSON.parse(localStorage.getItem('sp3_data') || '[]');
+            // ── 本周日期范围（周一~周日，支持翻页）──────────────────────
+            function getWeekRange(offset) {
+                const now = new Date();
+                const dow = now.getDay() === 0 ? 7 : now.getDay();
+                const mon = new Date(now);
+                mon.setDate(now.getDate() - (dow - 1) + offset * 7);
+                mon.setHours(0,0,0,0);
+                const sun = new Date(mon);
+                sun.setDate(mon.getDate() + 6);
+                sun.setHours(23,59,59,999);
+                return { mon, sun };
+            }
+            const { mon: weekMon, sun: weekSun } = getWeekRange(weekOffset);
+            const isThisWeek = weekOffset === 0;
+
+            // MM/DD (HH:MM) → Date 当年
+            function mmddToDate(str) {
+                if (!str) return null;
+                const p = str.split(' ')[0].split('/');
+                if (p.length < 2) return null;
+                const d = new Date();
+                d.setMonth(parseInt(p[0],10)-1, parseInt(p[1],10));
+                d.setHours(0,0,0,0);
+                return d;
+            }
+            function inWeek(timeStr) {
+                const d = mmddToDate(timeStr);
+                return d ? (d >= weekMon && d <= weekSun) : false;
+            }
+
+            const fmtDate = d => (d.getMonth()+1) + '/' + d.getDate();
+            const DOW_CN  = ['','周一','周二','周三','周四','周五','周六','周日'];
+
+            // 本周 7 天骨架（周一→周日，含周六周日）
+            const weekDays = Array.from({length:7}, (_,i) => {
+                const d = new Date(weekMon); d.setDate(weekMon.getDate()+i);
+                const mm = String(d.getMonth()+1).padStart(2,'0');
+                const dd = String(d.getDate()).padStart(2,'0');
+                return { key: mm+'/'+dd, dow: DOW_CN[i+1] };
+            });
+
+            const weekLabel = fmtDate(weekMon)+'（周一）~ '+fmtDate(weekSun)+'（周日）';
+
+            // ── 读取数据（全部按本周过滤）──────────────────────────────
+            const sp3Raw = JSON.parse(localStorage.getItem('sp3_data') || '[]');
             const allTests = [];
-            sp3Raw.forEach(f => f.tests.forEach(t => allTests.push({...t, questions: t.questions||[]})));
+            sp3Raw.forEach(f => f.tests.forEach(t =>
+                allTests.push(Object.assign({}, t, { questions: t.questions||[], folderName: f.name||'未分类' }))
+            ));
 
-            // 每个测试的答题记录
             let totalAttempts=0, totalCorrect=0, totalQuestions=0;
             const testStats = allTests.map(t => {
-                const p = JSON.parse(localStorage.getItem('gp_progress_' + t.id) || '{}');
-                if (p.lastTotal) {
-                    totalAttempts++;
-                    totalCorrect   += (p.lastCorrect||0);
-                    totalQuestions += (p.lastTotal||0);
-                }
-                return { name:t.name, total:p.lastTotal||0, correct:p.lastCorrect||0,
+                const p = JSON.parse(localStorage.getItem('gp_progress_'+t.id) || '{}');
+                const ok = p.lastTotal && inWeek(p.lastTime);
+                if (ok) { totalAttempts++; totalCorrect+=(p.lastCorrect||0); totalQuestions+=(p.lastTotal||0); }
+                return { name:t.name, folderName:t.folderName,
+                         total:p.lastTotal||0, correct:p.lastCorrect||0,
                          pct: p.lastTotal ? Math.round(p.lastCorrect/p.lastTotal*100) : null,
-                         time:p.lastTime||'' };
-            }).filter(s=>s.total>0).sort((a,b)=>b.pct-a.pct);
+                         time:p.lastTime||'', inWeek: !!ok };
+            }).filter(s => s.inWeek).sort((a,b) => b.pct-a.pct);
+
+            // 按科目分组
+            const subjectMap = {};
+            testStats.forEach(s => {
+                if (!subjectMap[s.folderName])
+                    subjectMap[s.folderName] = {name:s.folderName, items:[], correct:0, total:0};
+                subjectMap[s.folderName].items.push(s);
+                subjectMap[s.folderName].correct += s.correct;
+                subjectMap[s.folderName].total   += s.total;
+            });
+            const subjects = Object.values(subjectMap).map(g =>
+                Object.assign({}, g, { pct: g.total>0 ? Math.round(g.correct/g.total*100) : 0 })
+            );
 
             const avgPct = totalQuestions>0 ? Math.round(totalCorrect/totalQuestions*100) : 0;
 
-            // 口语数据
+            // 口语
             const oralRaw = JSON.parse(localStorage.getItem('oral_data') || '[]');
-            let oralDone=0;
-            const oralStats = [];
-            oralRaw.forEach(f=>f.books.forEach(b=>{
-                const p=JSON.parse(localStorage.getItem('op_progress_'+b.id)||'{}');
-                if(p.done){ oralDone+=p.done; oralStats.push({name:b.name,done:p.done,time:p.lastTime||''}); }
+            let oralDone=0; const oralStats=[];
+            oralRaw.forEach(f => f.books.forEach(b => {
+                const p = JSON.parse(localStorage.getItem('op_progress_'+b.id)||'{}');
+                if (p.done && inWeek(p.lastTime)) { oralDone+=p.done; oralStats.push({name:b.name,done:p.done,time:p.lastTime||''}); }
             }));
 
-            // 对话数据
-            const chatRec  = JSON.parse(localStorage.getItem('ai_chat_records')||'[]');
-            const studyRec = JSON.parse(localStorage.getItem('study_chat_records')||'[]');
-            const totalChat = chatRec.length + studyRec.length;
+            // 对话（按 ts/time/date 字段过滤）
+            function countWeekRecs(key) {
+                return JSON.parse(localStorage.getItem(key)||'[]')
+                    .filter(r => inWeek(r.ts||r.time||r.date||'')).length;
+            }
+            const totalChat = countWeekRecs('ai_chat_records') + countWeekRecs('study_chat_records');
 
-            // 3D情景浏览数据
+            // 3D情景
             const scenesLib = JSON.parse(localStorage.getItem('scenes_library') || '[]');
             const allScenesForAna = [
                 {id:'demo1',name:'荷塘月色'},{id:'demo2',name:'桃花源记'},
-                {id:'demo3',name:'长城'},{id:'demo4',name:'海底世界'},
-                ...scenesLib
-            ];
-            let totalSceneViews = 0;
+                {id:'demo3',name:'长城'},{id:'demo4',name:'海底世界'}
+            ].concat(scenesLib);
+            let totalSceneViews=0;
             const sceneViewStats = allScenesForAna.map(sc => {
-                const rec = JSON.parse(localStorage.getItem('s3d_view_' + sc.id) || '{}');
-                if (rec.count) totalSceneViews += rec.count;
-                return { name: sc.name, count: rec.count||0, lastTime: rec.lastTime||'—' };
-            }).filter(s => s.count > 0).sort((a,b) => b.count - a.count);
+                const rec = JSON.parse(localStorage.getItem('s3d_view_'+sc.id)||'{}');
+                const cnt = inWeek(rec.lastTime) ? (rec.count||0) : 0;
+                if (cnt) totalSceneViews += cnt;
+                return {name:sc.name, count:cnt, lastTime:rec.lastTime||'—'};
+            }).filter(s=>s.count>0).sort((a,b)=>b.count-a.count);
 
-            // 模拟多日趋势（用localStorage里最多5条记录推算，无则生成演示数据）
+            // ── 趋势：固定 7 天骨架，null = 无数据 ─────────────────────
             function buildTrend() {
-                // 从各测试进度的 lastTime 提取日期，构建趋势点
-                const byDate = {};
-                allTests.forEach(t=>{
-                    const p=JSON.parse(localStorage.getItem('gp_progress_'+t.id)||'{}');
-                    if(!p.lastTime || !p.lastTotal) return;
-                    const d = p.lastTime.split(' ')[0]; // MM/DD
-                    if(!byDate[d]) byDate[d]={correct:0,total:0,count:0};
-                    byDate[d].correct+=p.lastCorrect||0;
-                    byDate[d].total+=p.lastTotal||0;
-                    byDate[d].count++;
+                const byDay = {};
+                allTests.forEach(t => {
+                    const p = JSON.parse(localStorage.getItem('gp_progress_'+t.id)||'{}');
+                    if (!p.lastTime || !p.lastTotal || !inWeek(p.lastTime)) return;
+                    const key = p.lastTime.split(' ')[0];
+                    if (!byDay[key]) byDay[key] = {correct:0, total:0};
+                    byDay[key].correct += p.lastCorrect||0;
+                    byDay[key].total   += p.lastTotal||0;
                 });
-                const dates = Object.keys(byDate).sort();
-                if(dates.length<2) {
-                    // 演示趋势
-                    return [
-                        {label:'周一',pct:65,count:2},{label:'周二',pct:70,count:3},
-                        {label:'周三',pct:68,count:2},{label:'周四',pct:78,count:4},
-                        {label:'周五',pct:avgPct||82,count:3}
-                    ];
-                }
-                return dates.map(d=>({
-                    label:d,
-                    pct: Math.round(byDate[d].correct/byDate[d].total*100),
-                    count: byDate[d].count
+                return weekDays.map(wd => ({
+                    label:   wd.dow,
+                    pct:     byDay[wd.key] ? Math.round(byDay[wd.key].correct/byDay[wd.key].total*100) : null,
+                    hasData: !!byDay[wd.key]
                 }));
             }
             const trend = buildTrend();
 
-            // ── AI 评语生成 ─────────────────────────────────────────────
+            // ── AI 评语 ─────────────────────────────────────────────────
             function genAIComment() {
-                if(totalAttempts===0 && oralDone===0 && totalChat===0)
-                    return '班级尚未开始使用本平台，建议教师引导学生完成首次练习。';
-                const parts=[];
-                if(avgPct>=80) parts.push('整体答题正确率优秀（'+avgPct+'%），学生对所学内容掌握扎实。');
-                else if(avgPct>=60) parts.push('整体答题正确率'+avgPct+'%，处于中等水平，部分知识点尚需巩固。');
-                else if(totalAttempts>0) parts.push('答题正确率偏低（'+avgPct+'%），建议教师针对薄弱题库安排复习。');
-                if(oralDone>20) parts.push('口语练习积极，共练习'+oralDone+'个词条。');
-                else if(oralDone>0) parts.push('口语练习有所参与（'+oralDone+'词），可适当增加练习频次。');
-                if(totalChat>15) parts.push('AI互动频繁，学生自主学习意愿较强。');
-                else if(totalChat>0) parts.push('AI对话共'+totalChat+'次，学生逐步适应智能辅助学习。');
-                // 趋势分析
-                if(trend.length>=2){
-                    const first=trend[0].pct, last=trend[trend.length-1].pct;
-                    if(last-first>=8) parts.push('近期正确率呈明显上升趋势（+'+( last-first)+'%），进步显著。');
-                    else if(first-last>=8) parts.push('近期正确率有所下降，建议关注学习状态。');
-                    else parts.push('近期学习表现稳定。');
+                if (!totalAttempts && !oralDone && !totalChat)
+                    return '本周班级尚无学习记录，建议教师引导学生完成首次练习。';
+                const parts = [];
+                if (avgPct>=80) parts.push('本周整体答题正确率优秀（'+avgPct+'%），学生对所学内容掌握扎实。');
+                else if (avgPct>=60) parts.push('本周整体答题正确率'+avgPct+'%，处于中等水平，部分知识点尚需巩固。');
+                else if (totalAttempts) parts.push('本周答题正确率偏低（'+avgPct+'%），建议针对薄弱题库安排复习。');
+                if (oralDone>20) parts.push('口语练习积极，本周共'+oralDone+'个词条。');
+                else if (oralDone) parts.push('口语有所参与（'+oralDone+'词），可适当增加频次。');
+                if (totalChat>15) parts.push('AI互动频繁，学生自主学习意愿较强。');
+                else if (totalChat) parts.push('AI对话共'+totalChat+'次，学生逐步适应智能辅助学习。');
+                const active = trend.filter(d=>d.hasData);
+                if (active.length>=2) {
+                    const diff = active[active.length-1].pct - active[0].pct;
+                    if (diff>=8) parts.push('本周正确率呈明显上升趋势（+'+diff+'%），进步显著。');
+                    else if (diff<=-8) parts.push('本周正确率有所下降，建议关注学习状态。');
+                    else parts.push('本周学习表现稳定。');
                 }
                 return parts.join(' ');
             }
 
-            // ── 折线图 SVG ──────────────────────────────────────────────
+            // ── 折线图：固定 7 列等宽，两端留半格，只连有数据的点 ──────
             function buildLineChart(data) {
-                const W=460, H=120, padL=28, padR=12, padT=10, padB=28;
-                const iW=W-padL-padR, iH=H-padT-padB;
-                const maxPct=100, minPct=0;
-                const n=data.length;
-                if(n<2) return '<div class="ana-chart-empty">数据不足，继续练习后将显示趋势图</div>';
-                const xs=data.map((_,i)=>padL+i/(n-1)*iW);
-                const yOf=v=>padT+iH-(v-minPct)/(maxPct-minPct)*iH;
-                // 网格线
-                let grid='';
-                [0,25,50,75,100].forEach(v=>{
-                    const y=yOf(v);
-                    grid+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#f1f5f9" stroke-width="1"/>`;
-                    grid+=`<text x="${padL-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#94a3b8">${v}</text>`;
+                const W=500, H=130, padL=36, padR=20, padT=18, padB=32;
+                const iW=W-padL-padR, iH=H-padT-padB, n=7;
+                const xs = data.map((_,i) => padL + (i + 0.5) * (iW / n));
+                const yOf = v => padT + iH - (v / 100) * iH;
+                let grid = '';
+                [0,25,50,75,100].forEach(v => {
+                    const y = yOf(v);
+                    grid += '<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="#f1f5f9" stroke-width="1"/>';
+                    grid += '<text x="'+(padL-6)+'" y="'+(y+3.5)+'" text-anchor="end" font-size="9" fill="#cbd5e1">'+v+'</text>';
                 });
-                // 折线
-                const pts=data.map((d,i)=>`${xs[i]},${yOf(d.pct)}`).join(' ');
-                const area=`M ${xs[0]} ${yOf(data[0].pct)} `+data.map((d,i)=>`L ${xs[i]} ${yOf(d.pct)}`).join(' ')+` L ${xs[n-1]} ${H-padB} L ${xs[0]} ${H-padB} Z`;
-                // 数据点
-                let dots='', labels='';
-                data.forEach((d,i)=>{
-                    dots+=`<circle cx="${xs[i]}" cy="${yOf(d.pct)}" r="4" fill="#2563eb" stroke="white" stroke-width="2"/>`;
-                    labels+=`<text x="${xs[i]}" y="${H-padB+12}" text-anchor="middle" font-size="9" fill="#94a3b8">${d.label}</text>`;
-                    labels+=`<text x="${xs[i]}" y="${yOf(d.pct)-8}" text-anchor="middle" font-size="9" fill="#2563eb" font-weight="bold">${d.pct}%</text>`;
+                let xlabels = '';
+                data.forEach((d,i) => {
+                    xlabels += '<text x="'+xs[i]+'" y="'+(H-padB+14)+'" text-anchor="middle" font-size="9" fill="'+(d.hasData?'#64748b':'#cbd5e1')+'">'+d.label+'</text>';
                 });
-                return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
-                    ${grid}
-                    <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563eb" stop-opacity=".15"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></linearGradient></defs>
-                    <path d="${area}" fill="url(#ag)"/>
-                    <polyline points="${pts}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-                    ${dots}${labels}
-                </svg>`;
+                const active = data.map((d,i) => ({x:xs[i], y:d.hasData?yOf(d.pct):null, pct:d.pct})).filter(p=>p.y!==null);
+                if (!active.length)
+                    return '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">'+grid+xlabels+'<text x="'+(W/2)+'" y="'+(padT+iH/2+4)+'" text-anchor="middle" font-size="10" fill="#cbd5e1">本周暂无答题数据</text></svg>';
+                const lineD = active.map((p,i) => (i===0?'M':'L')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+                const areaD = lineD+' L'+active[active.length-1].x.toFixed(1)+','+(H-padB)+' L'+active[0].x.toFixed(1)+','+(H-padB)+' Z';
+                let dots='', pctLbls='';
+                active.forEach(p => {
+                    dots    += '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="4" fill="#2563eb" stroke="white" stroke-width="2"/>';
+                    pctLbls += '<text x="'+p.x.toFixed(1)+'" y="'+(p.y-9).toFixed(1)+'" text-anchor="middle" font-size="9" fill="#2563eb" font-weight="700">'+p.pct+'%</text>';
+                });
+                return '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">'
+                    +'<defs><linearGradient id="ag2" x1="0" y1="0" x2="0" y2="1">'
+                    +'<stop offset="0%" stop-color="#2563eb" stop-opacity=".12"/>'
+                    +'<stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>'
+                    +'</linearGradient></defs>'
+                    +grid
+                    +'<path d="'+areaD+'" fill="url(#ag2)"/>'
+                    +'<path d="'+lineD+'" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'
+                    +dots+pctLbls+xlabels+'</svg>';
             }
 
             // ── 正确率分布 ──────────────────────────────────────────────
             function buildDistribution() {
-                if(testStats.length===0) return '<div class="ana-empty">尚无数据</div>';
-                const buckets=[
-                    {label:'优秀 ≥80%',clr:'#10b981',items:testStats.filter(s=>s.pct>=80)},
-                    {label:'良好 60–79%',clr:'#f59e0b',items:testStats.filter(s=>s.pct>=60&&s.pct<80)},
-                    {label:'待提升 <60%',clr:'#ef4444',items:testStats.filter(s=>s.pct<60)},
-                ];
-                return buckets.map(b=>`
-                    <div class="ana-bucket">
-                        <div class="ana-bucket-header">
-                            <span class="ana-bucket-dot" style="background:${b.clr}"></span>
-                            <span class="ana-bucket-label">${b.label}</span>
-                            <span class="ana-bucket-count">${b.items.length} 项</span>
-                        </div>
-                        ${b.items.map(s=>`<div class="ana-bucket-item">${s.name} <span style="color:${b.clr}">${s.pct}%</span></div>`).join('')}
-                    </div>`).join('');
+                if (!testStats.length) return '<div class="ana-empty">本周暂无数据</div>';
+                return [
+                    {label:'优秀 ≥80%', clr:'#10b981', items:testStats.filter(s=>s.pct>=80)},
+                    {label:'良好 60–79%',clr:'#f59e0b', items:testStats.filter(s=>s.pct>=60&&s.pct<80)},
+                    {label:'待提升 <60%',clr:'#ef4444', items:testStats.filter(s=>s.pct<60)},
+                ].map(b =>
+                    '<div class="ana-bucket">'
+                    +'<div class="ana-bucket-header">'
+                    +'<span class="ana-bucket-dot" style="background:'+b.clr+'"></span>'
+                    +'<span class="ana-bucket-label">'+b.label+'</span>'
+                    +'<span class="ana-bucket-count">'+b.items.length+' 项</span>'
+                    +'</div>'
+                    +b.items.map(s=>'<div class="ana-bucket-item">'+s.name+' <span style="color:'+b.clr+'">'+s.pct+'%</span></div>').join('')
+                    +'</div>'
+                ).join('');
             }
 
             // ── 渲染 ────────────────────────────────────────────────────
-            body.innerHTML = `
-                <div class="ana-kpi-row">
-                    <div class="ana-kpi">
-                        <div class="ana-kpi-icon" style="background:#eff6ff;color:#2563eb"><i class="fas fa-gamepad"></i></div>
-                        <div class="ana-kpi-val">${totalAttempts}</div>
-                        <div class="ana-kpi-label">已完成测试</div>
-                    </div>
-                    <div class="ana-kpi">
-                        <div class="ana-kpi-icon" style="background:#f0fdf4;color:#10b981"><i class="fas fa-check-circle"></i></div>
-                        <div class="ana-kpi-val">${avgPct}<span style="font-size:1rem">%</span></div>
-                        <div class="ana-kpi-label">综合答题正确率</div>
-                    </div>
-                    <div class="ana-kpi">
-                        <div class="ana-kpi-icon" style="background:#fdf4ff;color:#8b5cf6"><i class="fas fa-microphone"></i></div>
-                        <div class="ana-kpi-val">${oralDone}</div>
-                        <div class="ana-kpi-label">口语练习词数</div>
-                    </div>
-                    <div class="ana-kpi">
-                        <div class="ana-kpi-icon" style="background:#fff7ed;color:#f59e0b"><i class="fas fa-comments"></i></div>
-                        <div class="ana-kpi-val">${totalChat}</div>
-                        <div class="ana-kpi-label">AI对话次数</div>
-                    </div>
-                    <div class="ana-kpi">
-                        <div class="ana-kpi-icon" style="background:#eff6ff;color:#2563eb"><i class="fas fa-cube"></i></div>
-                        <div class="ana-kpi-val">${totalSceneViews}</div>
-                        <div class="ana-kpi-label">情景浏览次数</div>
-                    </div>
-                </div>
+            const nextDisabled = isThisWeek ? 'disabled' : '';
+            const nextColor    = isThisWeek ? '#e2e8f0' : 'var(--gray-500)';
 
-                <div class="ana-main-row">
-                    <!-- 左：闯关答题详情（含折线图+分布） -->
-                    <div class="ana-col">
-                        <div class="ana-section">
-                            <div class="ana-section-title"><i class="fas fa-chart-line"></i> 闯关答题详情</div>
+            body.innerHTML =
+                // 周切换栏
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:10px 16px;background:white;border:1.5px solid var(--gray-200);border-radius:12px">'
+                +'<button id="ana-week-prev" style="width:30px;height:30px;border:1.5px solid var(--gray-200);border-radius:8px;background:white;color:var(--gray-500);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center"><i class="fas fa-chevron-left"></i></button>'
+                +'<div style="text-align:center"><div style="font-size:.84rem;font-weight:700;color:var(--gray-800)">'+(isThisWeek?'本周':'前'+Math.abs(weekOffset)+'周')
+                +' <span style="font-weight:400;color:var(--gray-400);font-size:.75rem">· '+weekLabel+'</span></div></div>'
+                +'<button id="ana-week-next" '+nextDisabled+' style="width:30px;height:30px;border:1.5px solid var(--gray-200);border-radius:8px;background:white;color:'+nextColor+';cursor:'+(isThisWeek?'default':'pointer')+';font-size:.85rem;display:flex;align-items:center;justify-content:center"><i class="fas fa-chevron-right"></i></button>'
+                +'</div>'
 
-                            <!-- 折线图 -->
-                            <div class="ana-chart-wrap">${buildLineChart(trend)}</div>
+                // KPI
+                +'<div class="ana-kpi-row">'
+                +'<div class="ana-kpi"><div class="ana-kpi-icon" style="background:#eff6ff;color:#2563eb"><i class="fas fa-gamepad"></i></div><div class="ana-kpi-val">'+totalAttempts+'</div><div class="ana-kpi-label">已完成测试</div></div>'
+                +'<div class="ana-kpi"><div class="ana-kpi-icon" style="background:#f0fdf4;color:#10b981"><i class="fas fa-check-circle"></i></div><div class="ana-kpi-val">'+avgPct+'<span style="font-size:1rem">%</span></div><div class="ana-kpi-label">综合答题正确率</div></div>'
+                +'<div class="ana-kpi"><div class="ana-kpi-icon" style="background:#fdf4ff;color:#8b5cf6"><i class="fas fa-microphone"></i></div><div class="ana-kpi-val">'+oralDone+'</div><div class="ana-kpi-label">口语练习词数</div></div>'
+                +'<div class="ana-kpi"><div class="ana-kpi-icon" style="background:#fff7ed;color:#f59e0b"><i class="fas fa-comments"></i></div><div class="ana-kpi-val">'+totalChat+'</div><div class="ana-kpi-label">AI对话次数</div></div>'
+                +'<div class="ana-kpi"><div class="ana-kpi-icon" style="background:#eff6ff;color:#2563eb"><i class="fas fa-cube"></i></div><div class="ana-kpi-val">'+totalSceneViews+'</div><div class="ana-kpi-label">情景浏览次数</div></div>'
+                +'</div>'
 
-                            <!-- 各测试条目 -->
-                            <div style="margin-top:14px">
-                                ${testStats.length===0
-                                    ? '<div class="ana-empty">尚无答题记录</div>'
-                                    : testStats.map(s=>{
-                                        const clr=s.pct>=80?'#10b981':s.pct>=60?'#f59e0b':'#ef4444';
-                                        return `<div class="ana-item">
-                                            <div class="ana-item-top">
-                                                <span class="ana-item-name">${s.name}</span>
-                                                <span class="ana-item-pct" style="color:${clr}">${s.pct}%</span>
-                                            </div>
-                                            <div class="ana-bar-wrap">
-                                                <div class="ana-bar-track"><div class="ana-bar-fill" style="width:${s.pct}%;background:${clr}"></div></div>
-                                                <span class="ana-item-sub">${s.correct}/${s.total} · ${s.time}</span>
-                                            </div>
-                                        </div>`;
-                                    }).join('')
-                                }
-                            </div>
+                +'<div class="ana-main-row">'
 
-                            <!-- 正确率分布 -->
-                            <div class="ana-section-title" style="margin-top:18px;padding-top:14px;border-top:1px solid #f1f5f9">
-                                <i class="fas fa-chart-pie"></i> 正确率分布
-                            </div>
-                            ${buildDistribution()}
-                        </div>
+                // 左列
+                +'<div class="ana-col"><div class="ana-section">'
+                +'<div class="ana-section-title"><i class="fas fa-chart-line"></i> 闯关答题详情'
+                +(testStats.length>0&&subjects.length>1?'<button class="ana-toggle-btn" id="ana-subject-toggle"><i class="fas fa-th-large"></i> 按科目展开</button>':'')
+                +'</div>'
+                +'<div class="ana-chart-wrap">'+buildLineChart(trend)+'</div>'
+                +'<div id="ana-list-view" style="margin-top:14px">'
+                +(!testStats.length?'<div class="ana-empty">本周暂无答题记录</div>'
+                    :testStats.map(s=>{const clr=s.pct>=80?'#10b981':s.pct>=60?'#f59e0b':'#ef4444';
+                        return '<div class="ana-item"><div class="ana-item-top"><span class="ana-item-name" title="'+s.name+'">'+s.name+'</span><span class="ana-item-pct" style="color:'+clr+'">'+s.pct+'%</span></div>'
+                        +'<div class="ana-bar-wrap"><div class="ana-bar-track"><div class="ana-bar-fill" style="width:'+s.pct+'%;background:'+clr+'"></div></div></div>'
+                        +'<div class="ana-item-sub">'+s.correct+'/'+s.total+' 题正确 · '+s.time+'</div></div>';}).join(''))
+                +'</div>'
+                +'<div id="ana-subject-view" style="display:none;margin-top:14px">'
+                +(!subjects.length?'<div class="ana-empty">本周暂无答题记录</div>'
+                    :'<div class="ana-subject-cols">'+subjects.map(g=>{const gClr=g.pct>=80?'#10b981':g.pct>=60?'#f59e0b':'#ef4444';
+                        return '<div class="ana-subject-col"><div class="ana-subject-col-title"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1" title="'+g.name+'">'+g.name+'</span><span class="ana-subject-col-pct" style="color:'+gClr+';margin-left:6px">'+g.pct+'%</span></div>'
+                        +g.items.map(s=>{const clr=s.pct>=80?'#10b981':s.pct>=60?'#f59e0b':'#ef4444';
+                            return '<div class="ana-item"><div class="ana-item-top"><span class="ana-item-name" title="'+s.name+'">'+s.name+'</span><span class="ana-item-pct" style="color:'+clr+'">'+s.pct+'%</span></div>'
+                            +'<div class="ana-bar-wrap"><div class="ana-bar-track"><div class="ana-bar-fill" style="width:'+s.pct+'%;background:'+clr+'"></div></div></div>'
+                            +'<div class="ana-item-sub">'+s.correct+'/'+s.total+' 题 · '+s.time+'</div></div>';}).join('')
+                        +'</div>';}).join('')+'</div>')
+                +'</div>'
+                +'<div class="ana-section-title" style="margin-top:18px;padding-top:14px;border-top:1px solid #f1f5f9"><i class="fas fa-chart-pie"></i> 正确率分布</div>'
+                +buildDistribution()
+                +'</div>'  // .ana-section
 
-                        <div class="ana-section" style="margin-top:20px">
-                            <div class="ana-section-title"><i class="fas fa-microphone"></i> 口语练习进度</div>
-                            ${oralStats.length===0
-                                ? '<div class="ana-empty">尚无练习记录</div>'
-                                : oralStats.map(s=>`
-                                    <div class="ana-item">
-                                        <div class="ana-item-top">
-                                            <span class="ana-item-name">${s.name}</span>
-                                            <span class="ana-item-sub">${s.done} 词</span>
-                                        </div>
-                                        <div class="ana-item-sub">最近：${s.time}</div>
-                                    </div>`).join('')
-                            }
-                        </div>
-                    </div>
+                // 口语
+                +'<div class="ana-section" style="margin-top:20px"><div class="ana-section-title"><i class="fas fa-microphone"></i> 口语练习进度</div>'
+                +(!oralStats.length?'<div class="ana-empty">本周暂无练习记录</div>'
+                    :oralStats.map(s=>'<div class="ana-item"><div class="ana-item-top"><span class="ana-item-name">'+s.name+'</span><span class="ana-item-pct" style="color:var(--primary)">'+s.done+' 词</span></div><div class="ana-item-sub">最近：'+s.time+'</div></div>').join(''))
+                +'</div>'
+                +'</div>'  // .ana-col 左
 
-                    
-                        <div class="ana-section" style="margin-top:16px">
-                            <div class="ana-section-title"><i class="fas fa-cube"></i> 3D情景浏览记录</div>
-                            ${sceneViewStats.length === 0
-                                ? '<div class="ana-empty">尚无情景浏览记录</div>'
-                                : sceneViewStats.map(s => {
-                                    const barW = Math.min(100, s.count * 20);
-                                    return '<div class="ana-item">' +
-                                        '<div class="ana-item-top">' +
-                                            '<span class="ana-item-name">' + s.name + '</span>' +
-                                            '<span class="ana-item-pct" style="color:var(--primary)">' + s.count + ' 次</span>' +
-                                        '</div>' +
-                                        '<div class="ana-bar-wrap">' +
-                                            '<div class="ana-bar-track">' +
-                                                '<div class="ana-bar-fill" style="width:' + barW + '%;background:var(--primary)"></div>' +
-                                            '</div>' +
-                                            '<span class="ana-item-sub">最近：' + s.lastTime + '</span>' +
-                                        '</div></div>';
-                                }).join('')
-                            }
-                        </div>
-                        <!-- 右：情报栏 + 综合评估 + AI评语 -->
-                    <div class="ana-col">
+                // 3D
+                +'<div class="ana-section" style="margin-top:0"><div class="ana-section-title"><i class="fas fa-cube"></i> 3D情景浏览记录</div>'
+                +(!sceneViewStats.length?'<div class="ana-empty">本周暂无情景浏览记录</div>'
+                    :sceneViewStats.map(s=>{const bw=Math.min(100,s.count*20);
+                        return '<div class="ana-item"><div class="ana-item-top"><span class="ana-item-name">'+s.name+'</span><span class="ana-item-pct" style="color:var(--primary)">'+s.count+' 次</span></div>'
+                        +'<div class="ana-bar-wrap"><div class="ana-bar-track"><div class="ana-bar-fill" style="width:'+bw+'%;background:var(--primary)"></div></div></div>'
+                        +'<div class="ana-item-sub">最近：'+s.lastTime+'</div></div>';}).join(''))
+                +'</div>'
 
-                        <!-- ── 学情情报栏 ── -->
-                        <div class="ana-section" style="margin-bottom:16px">
-                            <div class="ana-section-title" style="display:flex;align-items:center;justify-content:space-between">
-                                <span><i class="fas fa-bell" style="color:#f59e0b"></i> 学情情报</span>
-                                <div style="display:flex;align-items:center;gap:6px">
-                                    <span id="ana-intel-count" style="font-size:.7rem;color:var(--gray-400);font-weight:400"></span>
-                                    <button id="ana-intel-check" style="font-size:.7rem;padding:3px 8px;border-radius:6px;border:1.5px solid var(--gray-200);background:white;color:var(--gray-500);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px;line-height:1.4"><i class="fas fa-sync-alt"></i> 立即检测</button>
-                                    <button id="ana-intel-clear" style="font-size:.7rem;padding:3px 8px;border-radius:6px;border:1.5px solid #fecaca;background:#fff5f5;color:#ef4444;cursor:pointer;font-weight:600;line-height:1.4"><i class="fas fa-trash-alt"></i></button>
-                                </div>
-                            </div>
-                            <div id="ana-intel-list" style="margin-top:10px;max-height:260px;overflow-y:auto">
-                                ${(function(){
-                                    const msgs = JSON.parse(localStorage.getItem('zjwj_ana_messages') || '[]');
-                                    if (msgs.length === 0) return `
-                                        <div style="padding:22px 0;text-align:center;color:var(--gray-400)">
-                                            <i class="fas fa-bell-slash" style="font-size:1.8rem;opacity:.3;display:block;margin-bottom:10px"></i>
-                                            <div style="font-size:.8rem">暂无情报记录</div>
-                                            <div style="font-size:.72rem;margin-top:4px;opacity:.7">点击「立即检测」生成首条情报</div>
-                                        </div>`;
-                                    return msgs.slice(0, 10).map((m, i) => `
-                                        <div style="display:flex;gap:10px;padding:9px 0;${i < msgs.length - 1 ? 'border-bottom:1px solid #f8fafc' : ''}">
-                                            <div style="width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;background:${m.color}15;color:${m.color};margin-top:1px">
-                                                <i class="${m.icon}"></i>
-                                            </div>
-                                            <div style="flex:1;min-width:0">
-                                                <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:2px">
-                                                    <span style="font-size:.78rem;font-weight:700;color:var(--gray-800)">${m.title}</span>
-                                                    <span style="font-size:.66rem;color:var(--gray-400);flex-shrink:0">${m.ts}</span>
-                                                </div>
-                                                <div style="font-size:.73rem;color:var(--gray-500);line-height:1.55">${m.body}</div>
-                                            </div>
-                                        </div>`).join('');
-                                })()}
-                            </div>
-                        </div>
+                // 右列：情报栏 + 综合评估
+                +'<div class="ana-col">'
+                +'<div class="ana-section" style="margin-bottom:16px">'
+                +'<div class="ana-section-title" style="display:flex;align-items:center;justify-content:space-between">'
+                +'<span><i class="fas fa-bell" style="color:#f59e0b"></i> 学情情报</span>'
+                +'<div style="display:flex;align-items:center;gap:6px">'
+                +'<button id="ana-intel-check" style="font-size:.7rem;padding:3px 8px;border-radius:6px;border:1.5px solid var(--gray-200);background:white;color:var(--gray-500);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px;line-height:1.4"><i class="fas fa-sync-alt"></i> 立即检测</button>'
+                +'<button id="ana-intel-clear" style="font-size:.7rem;padding:3px 8px;border-radius:6px;border:1.5px solid #fecaca;background:#fff5f5;color:#ef4444;cursor:pointer;font-weight:600;line-height:1.4" title="清空记录"><i class="fas fa-trash-alt"></i></button>'
+                +'</div></div>'
+                +'<div id="ana-intel-list" style="margin-top:10px;max-height:280px;overflow-y:auto">'
++''                +'</div></div>'
 
-                        <div class="ana-section">
-                            <div class="ana-section-title"><i class="fas fa-file-alt"></i> 综合学情评估</div>
-                            <div class="ana-summary">
-                                ${totalAttempts===0&&oralDone===0&&totalChat===0
-                                    ? '<div class="ana-empty">班级尚未开始使用本平台，数据将在学生完成练习后自动汇总。</div>'
-                                    : `<div class="ana-summary-row"><i class="fas fa-trophy" style="color:#f59e0b"></i>
-                                        <span>已完成 <strong>${totalAttempts}</strong> 个测试，综合正确率 <strong style="color:${avgPct>=80?'#10b981':avgPct>=60?'#f59e0b':'#ef4444'}">${avgPct}%</strong></span>
-                                       </div>
-                                       <div class="ana-summary-row"><i class="fas fa-microphone" style="color:#8b5cf6"></i>
-                                        <span>口语练习共完成 <strong>${oralDone}</strong> 个词条</span>
-                                       </div>
-                                       <div class="ana-summary-row"><i class="fas fa-comments" style="color:#3b82f6"></i>
-                                        <span>AI 对话互动共 <strong>${totalChat}</strong> 次</span>
-                                       </div>`
-                                }
-                            </div>
+                +'<div class="ana-section"><div class="ana-section-title"><i class="fas fa-file-alt"></i> 综合学情评估</div>'
+                +'<div class="ana-summary">'
+                +(!totalAttempts&&!oralDone&&!totalChat
+                    ?'<div class="ana-empty">本周班级尚无学习记录，数据将在学生完成练习后自动汇总。</div>'
+                    :'<div class="ana-summary-row"><i class="fas fa-trophy" style="color:#f59e0b"></i><span>已完成 <strong>'+totalAttempts+'</strong> 个测试，综合正确率 <strong style="color:'+(avgPct>=80?'#10b981':avgPct>=60?'#f59e0b':'#ef4444')+'">'+avgPct+'%</strong></span></div>'
+                    +'<div class="ana-summary-row"><i class="fas fa-microphone" style="color:#8b5cf6"></i><span>口语练习共完成 <strong>'+oralDone+'</strong> 个词条</span></div>'
+                    +'<div class="ana-summary-row"><i class="fas fa-comments" style="color:#3b82f6"></i><span>AI 对话互动共 <strong>'+totalChat+'</strong> 次</span></div>'
+                )
+                +'</div>'
+                +'<div class="ana-ai-comment"><div class="ana-ai-comment-header"><i class="fas fa-robot"></i> AI 智能评语 <span class="ana-ai-tag">综合分析</span></div>'
+                +'<div class="ana-ai-comment-body">'+genAIComment()+'</div>'
+                +'</div></div>'
+                +'</div>'  // .ana-col 右
+                +'</div>'; // .ana-main-row
 
-                            <!-- AI评语 -->
-                            <div class="ana-ai-comment">
-                                <div class="ana-ai-comment-header">
-                                    <i class="fas fa-robot"></i> AI 智能评语
-                                    <span class="ana-ai-tag">综合分析</span>
-                                </div>
-                                <div class="ana-ai-comment-body">${genAIComment()}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // ── 情报栏按钮绑定（渲染完后立即执行）──────────────────
-            document.getElementById('ana-intel-check')?.addEventListener('click', function() {
-                if (window._anaRunCheck) {
-                    window._anaRunCheck(false);
-                    // 重新渲染整个 analytics 以刷新情报栏
-                    setTimeout(initAnalytics, 150);
+            // 情报栏渲染（运行时读 localStorage）
+            (function renderIntel() {
+                const msgs = JSON.parse(localStorage.getItem('zjwj_ana_messages') || '[]');
+                const el   = document.getElementById('ana-intel-list');
+                if (!el) return;
+                if (!msgs.length) {
+                    el.innerHTML = '<div style="padding:24px 0;text-align:center;color:var(--gray-400)">'
+                        +'<i class="fas fa-bell-slash" style="font-size:1.8rem;opacity:.3;display:block;margin-bottom:10px"></i>'
+                        +'<div style="font-size:.8rem">暂无情报记录</div>'
+                        +'<div style="font-size:.72rem;margin-top:4px;opacity:.7">点击「立即检测」生成首条情报</div></div>';
+                } else {
+                    el.innerHTML = msgs.map((m,i) =>
+                        '<div style="display:flex;gap:10px;padding:9px 0;'+(i<msgs.length-1?'border-bottom:1px solid #f8fafc':'')+'">'
+                        +'<div style="width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;background:'+m.color+'15;color:'+m.color+';margin-top:1px"><i class="'+m.icon+'"></i></div>'
+                        +'<div style="flex:1;min-width:0">'
+                        +'<div style="display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:2px">'
+                        +'<span style="font-size:.78rem;font-weight:700;color:var(--gray-800)">'+m.title+'</span>'
+                        +'<span style="font-size:.66rem;color:var(--gray-400);flex-shrink:0">'+m.ts+'</span></div>'
+                        +'<div style="font-size:.73rem;color:var(--gray-500);line-height:1.55">'+m.body+'</div>'
+                        +'</div></div>'
+                    ).join('');
                 }
+            })();
+
+            // 周切换
+            document.getElementById('ana-week-prev').addEventListener('click', () => initAnalytics(weekOffset-1));
+            document.getElementById('ana-week-next').addEventListener('click', () => { if (!isThisWeek) initAnalytics(weekOffset+1); });
+
+            // 情报栏按钮
+            document.getElementById('ana-intel-check')?.addEventListener('click', function() {
+                if (window._anaRunCheck) window._anaRunCheck();
+                setTimeout(initAnalytics, 120);
             });
             document.getElementById('ana-intel-clear')?.addEventListener('click', function() {
                 localStorage.removeItem('zjwj_ana_messages');
-                if (window._anaUpdateBadge) window._anaUpdateBadge();
-                initAnalytics();
+                if (window._anaUpdateSidebarDot) window._anaUpdateSidebarDot();
+                initAnalytics(weekOffset);
+            });
+
+            // 刷新 & 通知按钮（topbar）
+            document.getElementById('ana-refresh-btn')?.addEventListener('click', () => {
+                initAnalytics(weekOffset);
+                showGlobalToast('学情数据已刷新', 'success');
+            });
+            document.getElementById('ana-notify-btn')?.addEventListener('click', () => {
+                if (window._anaShowPanel) window._anaShowPanel();
+            });
+
+            // 科目展开/收起
+            const toggleBtn = document.getElementById('ana-subject-toggle');
+            if (toggleBtn) {
+                let expanded = false;
+                toggleBtn.addEventListener('click', function() {
+                    expanded = !expanded;
+                    document.getElementById('ana-list-view').style.display    = expanded ? 'none'  : 'block';
+                    document.getElementById('ana-subject-view').style.display = expanded ? 'block' : 'none';
+                    toggleBtn.innerHTML = expanded ? '<i class="fas fa-list"></i> 返回汇总列表' : '<i class="fas fa-th-large"></i> 按科目展开';
+                });
+            }
+        }
+
+
+        // ══════════════════════════════════════════════════════════
+        //  学情消息提醒系统
+        // ══════════════════════════════════════════════════════════
+        (function() {
+            var SNAP_KEY = 'zjwj_ana_snapshot';
+            var MSGS_KEY = 'zjwj_ana_messages';
+            var CHECK_MS = 60 * 60 * 1000; // 1 小时
+            var _timer   = null;
+
+            // ── 快照：采集当前所有学情数字 ──────────────────────────
+            function takeSnapshot() {
+                var sp3Raw   = JSON.parse(localStorage.getItem('sp3_data') || '[]');
+                var allTests = [];
+                sp3Raw.forEach(function(f) { (f.tests || []).forEach(function(t) { allTests.push(t); }); });
+                var totalAttempts = 0, totalCorrect = 0, totalQ = 0;
+                allTests.forEach(function(t) {
+                    var p = JSON.parse(localStorage.getItem('gp_progress_' + t.id) || '{}');
+                    if (p.lastTotal) { totalAttempts++; totalCorrect += (p.lastCorrect || 0); totalQ += (p.lastTotal || 0); }
+                });
+                var oralRaw = JSON.parse(localStorage.getItem('oral_data') || '[]');
+                var oralDone = 0;
+                oralRaw.forEach(function(f) {
+                    (f.books || []).forEach(function(b) {
+                        var p = JSON.parse(localStorage.getItem('op_progress_' + b.id) || '{}');
+                        oralDone += (p.done || 0);
+                    });
+                });
+                var chatRec  = JSON.parse(localStorage.getItem('ai_chat_records')    || '[]');
+                var studyRec = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
+                var totalChat = chatRec.length + studyRec.length;
+                var scenesLib = JSON.parse(localStorage.getItem('scenes_library') || '[]');
+                var allScenes = [{id:'demo1'},{id:'demo2'},{id:'demo3'},{id:'demo4'}].concat(scenesLib);
+                var totalViews = 0;
+                allScenes.forEach(function(sc) {
+                    var r = JSON.parse(localStorage.getItem('s3d_view_' + sc.id) || '{}');
+                    totalViews += (r.count || 0);
+                });
+                var avgPct = totalQ > 0 ? Math.round(totalCorrect / totalQ * 100) : 0;
+                return { totalAttempts: totalAttempts, avgPct: avgPct, oralDone: oralDone, totalChat: totalChat, totalViews: totalViews, ts: Date.now() };
+            }
+
+            function loadMsgs()   { return JSON.parse(localStorage.getItem(MSGS_KEY) || '[]'); }
+            function saveMsgs(m)  { localStorage.setItem(MSGS_KEY, JSON.stringify(m.slice(0, 50))); }
+
+            // ── 比对两次快照，生成消息列表 ──────────────────────────
+            function compare(prev, curr) {
+                var msgs = [];
+                var now  = new Date().toLocaleString('zh-CN', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+
+                // 新增测试完成
+                if (curr.totalAttempts > prev.totalAttempts) {
+                    var d = curr.totalAttempts - prev.totalAttempts;
+                    var pctNote = curr.avgPct > prev.avgPct ? '，正确率较上次提升 ↑'
+                                : curr.avgPct < prev.avgPct ? '，正确率较上次下降 ↓' : '，正确率与上次持平';
+                    msgs.push({ icon:'fas fa-gamepad', color:'#2563eb',
+                        title: '新增测试完成',
+                        body: '班级共完成 ' + d + ' 个新测试，当前综合正确率 ' + curr.avgPct + '%' + pctNote + '。',
+                        ts: now, read: false });
+                }
+
+                // 正确率显著变化（同等测试数量下）
+                if (curr.totalAttempts === prev.totalAttempts && curr.avgPct > 0 && Math.abs(curr.avgPct - prev.avgPct) >= 5) {
+                    var diff = curr.avgPct - prev.avgPct;
+                    msgs.push({ icon:'fas fa-chart-line', color: diff > 0 ? '#10b981' : '#ef4444',
+                        title: diff > 0 ? '答题正确率上升' : '答题正确率下降',
+                        body: '综合正确率由 ' + prev.avgPct + '% 变化至 ' + curr.avgPct + '%（' + (diff > 0 ? '+' : '') + diff + '%）。',
+                        ts: now, read: false });
+                }
+
+                // AI 对话活跃（新增 ≥5 条）
+                var chatDelta = curr.totalChat - prev.totalChat;
+                if (chatDelta >= 5) {
+                    msgs.push({ icon:'fas fa-comments', color:'#8b5cf6',
+                        title: 'AI 对话活跃',
+                        body: '近期新增 ' + chatDelta + ' 条 AI 对话记录，学生自主学习意愿活跃。',
+                        ts: now, read: false });
+                }
+
+                // 口语练习进展（新增 ≥10 词）
+                var oralDelta = curr.oralDone - prev.oralDone;
+                if (oralDelta >= 10) {
+                    msgs.push({ icon:'fas fa-microphone', color:'#7c3aed',
+                        title: '口语练习新进展',
+                        body: '班级新增完成 ' + oralDelta + ' 个口语词条练习。',
+                        ts: now, read: false });
+                }
+
+                // 3D 情景浏览增加（新增 ≥3 次）
+                var viewDelta = curr.totalViews - prev.totalViews;
+                if (viewDelta >= 3) {
+                    msgs.push({ icon:'fas fa-cube', color:'#0d9488',
+                        title: '3D 情景浏览增加',
+                        body: '班级 3D 情景浏览新增 ' + viewDelta + ' 次。',
+                        ts: now, read: false });
+                }
+
+                return msgs;
+            }
+
+            // ── 执行一次检测 ────────────────────────────────────────
+            function runCheck(silent) {
+                if (currentMode !== 'teacher') return;
+                var snapRaw = localStorage.getItem(SNAP_KEY);
+                var curr    = takeSnapshot();
+                if (!snapRaw) {
+                    // 首次：仅存基线，不产生消息
+                    localStorage.setItem(SNAP_KEY, JSON.stringify(curr));
+                    return;
+                }
+                var prev    = JSON.parse(snapRaw);
+                var newMsgs = compare(prev, curr);
+                // 更新快照
+                localStorage.setItem(SNAP_KEY, JSON.stringify(curr));
+                if (newMsgs.length === 0) return;
+                saveMsgs(newMsgs.concat(loadMsgs()));
+                updateBadge();
+                if (silent) {
+                    // 后台检测：优先浏览器通知，降级 toast
+                    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                        new Notification('智境无界 · 学情提醒', {
+                            body: newMsgs.map(function(m){ return m.title; }).join('、'),
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="%232563eb"/><text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="18">智</text></svg>'
+                        });
+                    } else {
+                        showGlobalToast('📊 新学情：' + newMsgs[0].title + (newMsgs.length > 1 ? ' 等 ' + newMsgs.length + ' 条' : ''), 'info');
+                    }
+                } else {
+                    showGlobalToast('检测到 ' + newMsgs.length + ' 条新学情动态', 'info');
+                }
+            }
+
+            // ── 更新所有角标/小红点 ─────────────────────────────────
+            function updateBadge() {
+                var unread = loadMsgs().filter(function(m){ return !m.read; }).length;
+                // Header 铃
+                var btn   = document.getElementById('globalNotifyBtn');
+                var badge = document.getElementById('globalNotifyBadge');
+                if (btn) btn.style.display = (currentMode === 'teacher') ? '' : 'none';
+                if (badge) {
+                    if (unread > 0) { badge.textContent = unread > 9 ? '9+' : String(unread); badge.style.display = 'flex'; }
+                    else badge.style.display = 'none';
+                }
+                // 模块内铃小圆点
+                var dot = document.getElementById('ana-notify-dot');
+                if (dot) dot.style.display = unread > 0 ? 'block' : 'none';
+            }
+
+            // ── 消息面板 ────────────────────────────────────────────
+            function showPanel() {
+                document.getElementById('zjwj-notify-panel')?.remove();
+                var msgs = loadMsgs();
+                // 打开即全标已读
+                msgs.forEach(function(m){ m.read = true; });
+                saveMsgs(msgs);
+                updateBadge();
+
+                var panel = document.createElement('div');
+                panel.id  = 'zjwj-notify-panel';
+                panel.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)';
+
+                var emptyHtml = '<div style="padding:44px 0;text-align:center;color:var(--gray-400)">'
+                    + '<i class="fas fa-bell-slash" style="font-size:2.6rem;opacity:.3;display:block;margin-bottom:14px"></i>'
+                    + '<div style="font-size:.88rem;font-weight:600">暂无学情消息</div>'
+                    + '<div style="font-size:.75rem;margin-top:6px;opacity:.7">系统每小时自动检测学情变化</div>'
+                    + '</div>';
+
+                var listHtml = msgs.length === 0 ? emptyHtml : msgs.map(function(m) {
+                    return '<div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid var(--gray-100)">'
+                        + '<div style="width:36px;height:36px;border-radius:10px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background:' + m.color + '18;color:' + m.color + '">'
+                        + '<i class="' + m.icon + '"></i></div>'
+                        + '<div style="flex:1;min-width:0">'
+                        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px">'
+                        + '<span style="font-size:.84rem;font-weight:700;color:var(--gray-800)">' + m.title + '</span>'
+                        + '<span style="font-size:.7rem;color:var(--gray-400);flex-shrink:0">' + m.ts + '</span></div>'
+                        + '<div style="font-size:.78rem;color:var(--gray-500);line-height:1.6">' + m.body + '</div>'
+                        + '</div></div>';
+                }).join('');
+
+                // 计算下次检测倒计时
+                var snap    = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null');
+                var nextMs  = snap ? Math.max(0, snap.ts + CHECK_MS - Date.now()) : CHECK_MS;
+                var nextMin = Math.floor(nextMs / 60000);
+                var nextSec = Math.floor((nextMs % 60000) / 1000);
+
+                panel.innerHTML = '<div style="background:white;border-radius:18px;width:100%;max-width:480px;max-height:76vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(15,23,42,.22);overflow:hidden">'
+                    // 头部
+                    + '<div style="padding:18px 20px 14px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:12px;flex-shrink:0">'
+                    + '<div style="width:36px;height:36px;border-radius:10px;background:#fef3c7;color:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0"><i class="fas fa-bell"></i></div>'
+                    + '<div style="flex:1"><h3 style="margin:0;font-size:.95rem;font-weight:700;color:var(--gray-900)">学情消息提醒</h3>'
+                    + '<p style="margin:2px 0 0;font-size:.72rem;color:var(--gray-400)">每小时自动检测 · 共 ' + msgs.length + ' 条记录</p></div>'
+                    + '<div style="display:flex;align-items:center;gap:6px">'
+                    + '<button id="zjwj-nc-check" style="font-size:.75rem;padding:5px 11px;border-radius:8px;border:1.5px solid var(--gray-200);background:white;color:var(--gray-600);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px"><i class="fas fa-sync-alt"></i> 立即检测</button>'
+                    + '<button id="zjwj-nc-close" style="width:30px;height:30px;border:none;background:var(--gray-100);border-radius:8px;cursor:pointer;color:var(--gray-500);font-size:.82rem"><i class="fas fa-times"></i></button>'
+                    + '</div></div>'
+                    // 消息列表
+                    + '<div style="flex:1;overflow-y:auto;min-height:0">' + listHtml + '</div>'
+                    // 清空行
+                    + (msgs.length > 0
+                        ? '<div style="padding:10px 20px;border-top:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">'
+                          + '<span style="font-size:.72rem;color:var(--gray-400)">保留最近 50 条</span>'
+                          + '<button id="zjwj-nc-clear" style="font-size:.75rem;color:#ef4444;background:none;border:none;cursor:pointer"><i class="fas fa-trash-alt"></i> 清空</button></div>'
+                        : '')
+                    // 底部：倒计时 + 浏览器通知开关
+                    + '<div style="padding:10px 20px 14px;background:var(--gray-50);border-top:1px solid var(--gray-100);flex-shrink:0">'
+                    + '<div style="display:flex;align-items:center;justify-content:space-between">'
+                    + '<span style="font-size:.75rem;color:var(--gray-500)"><i class="fas fa-clock" style="margin-right:4px"></i>下次检测：<span id="zjwj-nc-cd">' + nextMin + '分' + String(nextSec).padStart(2,'0') + '秒后</span></span>'
+                    + '<label style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--gray-500);cursor:pointer">'
+                    + '<input type="checkbox" id="zjwj-nc-browser" style="accent-color:var(--primary)" ' + (typeof Notification !== 'undefined' && Notification.permission === 'granted' ? 'checked' : '') + '>'
+                    + '浏览器通知</label>'
+                    + '</div></div>'
+                    + '</div>';
+
+                document.body.appendChild(panel);
+
+                // 倒计时 ticker
+                (function tick() {
+                    if (!document.getElementById('zjwj-notify-panel')) return;
+                    var s2   = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null');
+                    var left = s2 ? Math.max(0, s2.ts + CHECK_MS - Date.now()) : 0;
+                    var el   = panel.querySelector('#zjwj-nc-cd');
+                    if (el) el.textContent = left > 0
+                        ? Math.floor(left/60000) + '分' + String(Math.floor(left % 60000 / 1000)).padStart(2,'0') + '秒后'
+                        : '即将检测…';
+                    setTimeout(tick, 1000);
+                })();
+
+                // 事件
+                panel.querySelector('#zjwj-nc-close').addEventListener('click', function(){ panel.remove(); });
+                panel.addEventListener('click', function(e){ if (e.target === panel) panel.remove(); });
+                var clearBtn = panel.querySelector('#zjwj-nc-clear');
+                if (clearBtn) clearBtn.addEventListener('click', function(){
+                    saveMsgs([]); updateBadge(); panel.remove(); showGlobalToast('消息记录已清空', 'info');
+                });
+                panel.querySelector('#zjwj-nc-check').addEventListener('click', function(){
+                    panel.remove(); runCheck(false); showGlobalToast('学情检测完成', 'success');
+                });
+                panel.querySelector('#zjwj-nc-browser').addEventListener('change', function(){
+                    if (!this.checked) return;
+                    Notification.requestPermission().then(function(p){
+                        if (p !== 'granted') { document.querySelector('#zjwj-nc-browser').checked = false; showGlobalToast('浏览器未授权通知权限', 'warning'); }
+                        else showGlobalToast('浏览器通知已开启', 'success');
+                    });
+                });
+            }
+
+            // ── 定时调度：计算距上次快照的剩余时间再首次触发 ────────
+            function schedule() {
+                var snap  = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null');
+                var delay = snap ? Math.max(0, snap.ts + CHECK_MS - Date.now()) : 0;
+                setTimeout(function loop() {
+                    runCheck(true);
+                    setTimeout(loop, CHECK_MS);
+                }, delay);
+            }
+
+            // ── 初始化 ──────────────────────────────────────────────
+            // 等页面 JS 就绪后再执行（currentMode 已确定）
+            setTimeout(function() {
+                updateBadge();
+                schedule();
+            }, 900);
+
+            // 全局铃按钮事件（委托，防止按钮尚未渲染）
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('#globalNotifyBtn')) showPanel();
+            });
+
+            // 监听模式切换：更新铃可见性
+            // 用 MutationObserver 监听 userRole 文字变化比拦截函数更安全
+            var roleEl = document.getElementById('userRole');
+            if (roleEl) {
+                new MutationObserver(function(){ updateBadge(); }).observe(roleEl, { childList: true, characterData: true, subtree: true });
+            }
+            // 也直接覆盖 updateMode 做一次保障
+            var _origUM = window.updateMode;
+            if (typeof updateMode === 'function') {
+                var _orig = updateMode;
+                // 注意：updateMode 是局部函数，不在 window 上，用 reassign 无效
+                // 改为在 loadModule 事件链末尾 debounce 一次 updateBadge
+            }
+            // 每 5s 检查一次 badge（保底方案，开销极低）
+            setInterval(updateBadge, 5000);
+
+            // 暴露给 initAnalytics 内的按钮调用
+            window._anaShowPanel   = showPanel;
+            window._anaRunCheck    = runCheck;
+            window._anaUpdateBadge = updateBadge;
+
+            // 侧边栏消息数角标
+            function updateSidebarDot() {
+                const msgs = JSON.parse(localStorage.getItem('zjwj_ana_messages')||'[]');
+                const dot  = document.getElementById('ana-sidebar-dot');
+                if (!dot) return;
+                if (currentMode==='teacher' && msgs.length>0) {
+                    dot.textContent = msgs.length > 99 ? '99+' : msgs.length;
+                    dot.style.display = 'inline-flex';
+                } else {
+                    dot.style.display = 'none';
+                }
+            }
+            window._anaUpdateSidebarDot = updateSidebarDot;
+            setTimeout(updateSidebarDot, 700);
+            // 监听角色切换
+            (function(){
+                var roleEl = document.getElementById('userRole');
+                if (roleEl) new MutationObserver(updateSidebarDot).observe(roleEl, {childList:true,characterData:true,subtree:true});
+            })();
+
+        })();
+
+
+        // ══════════════════════════════════════════════════════════
+        //  AI 全景图生成（Replicate · sdxl-panorama）
+        // ══════════════════════════════════════════════════════════
+        function showAIPanoModal() {
+            document.getElementById('zjwj-pano-gen-modal')?.remove();
+
+            // ── 取 Replicate key ──
+            var rKey = localStorage.getItem('zjwj_replicate_key') || '';
+
+            var modal = document.createElement('div');
+            modal.id  = 'zjwj-pano-gen-modal';
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)';
+            modal.innerHTML = '<div style="background:white;border-radius:18px;width:100%;max-width:500px;box-shadow:0 24px 64px rgba(15,23,42,.22);overflow:hidden">'
+                + '<div style="padding:20px 24px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:12px">'
+                + '<div style="width:36px;height:36px;border-radius:10px;background:#f5f3ff;color:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0"><i class="fas fa-magic"></i></div>'
+                + '<div style="flex:1"><h3 style="margin:0;font-size:.95rem;font-weight:700;color:var(--gray-900)">AI 生成全景图</h3>'
+                + '<p style="margin:2px 0 0;font-size:.75rem;color:var(--gray-400)">基于 Replicate · SDXL-Panorama 模型 · 2048×1024</p></div>'
+                + '<button id="zjwj-pano-close" style="width:30px;height:30px;border:none;background:var(--gray-100);border-radius:8px;cursor:pointer;color:var(--gray-500);font-size:.82rem"><i class="fas fa-times"></i></button>'
+                + '</div>'
+                // body
+                + '<div style="padding:20px 24px">'
+                // Replicate key 输入（若没有则显示）
+                + '<div id="zjwj-pano-key-row" style="' + (rKey ? 'display:none' : '') + 'margin-bottom:14px;padding:12px 14px;background:#fef3c7;border-radius:10px;border:1px solid #fde68a">'
+                + '<div style="font-size:.78rem;font-weight:600;color:#92400e;margin-bottom:6px"><i class="fas fa-key"></i> 请先配置 Replicate API Key</div>'
+                + '<div style="display:flex;gap:6px">'
+                + '<input id="zjwj-pano-rkey" type="password" placeholder="r8_xxxxxxxxxxxxxxxxxxxxxxxx" style="flex:1;padding:7px 10px;border:1.5px solid #fde68a;border-radius:8px;font-size:.82rem;font-family:monospace;outline:none">'
+                + '<button id="zjwj-pano-rkey-save" style="padding:7px 12px;background:#92400e;color:white;border:none;border-radius:8px;cursor:pointer;font-size:.78rem;white-space:nowrap">保存</button>'
+                + '</div>'
+                + '<p style="margin:5px 0 0;font-size:.71rem;color:#92400e">在 <a href="https://replicate.com/account/api-tokens" target="_blank" style="color:#1d4ed8">replicate.com</a> 获取免费 Key</p>'
+                + '</div>'
+                // prompt
+                + '<div style="margin-bottom:14px">'
+                + '<label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">场景描述 <span style="color:#ef4444">*</span></label>'
+                + '<textarea id="zjwj-pano-prompt" rows="3" placeholder="例：A peaceful bamboo forest with warm sunlight, equirectangular panorama" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.85rem;outline:none;resize:vertical;box-sizing:border-box;transition:border-color .15s;line-height:1.6"></textarea>'
+                + '<p style="margin:4px 0 0;font-size:.71rem;color:var(--gray-400)">建议用英文，末尾加 "equirectangular panorama" 效果更佳</p>'
+                + '</div>'
+                + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">'
+                + '<div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">风格</label>'
+                + '<select id="zjwj-pano-style" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.82rem;outline:none;color:var(--gray-700);background:white">'
+                + '<option value="">无</option><option value=", photorealistic, 8k">写实摄影</option>'
+                + '<option value=", watercolor painting">水彩插画</option><option value=", anime style, Studio Ghibli">吉卜力动漫</option>'
+                + '<option value=", oil painting, impressionist">油画印象派</option><option value=", low-poly 3D art">低多边形 3D</option>'
+                + '<option value=", ancient Chinese ink painting">中国水墨画</option></select></div>'
+                + '<div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">采样步数</label>'
+                + '<select id="zjwj-pano-steps" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.82rem;outline:none;color:var(--gray-700);background:white">'
+                + '<option value="20">快速（20步）</option><option value="30" selected>标准（30步）</option><option value="50">精细（50步）</option>'
+                + '</select></div></div>'
+                // 状态
+                + '<div id="zjwj-pano-status" style="display:none;padding:12px 14px;background:#eff6ff;border-radius:10px;font-size:.8rem;color:#1d4ed8;align-items:center;gap:8px">'
+                + '<i class="fas fa-circle-notch fa-spin"></i><span id="zjwj-pano-status-txt">正在生成…</span></div>'
+                // 预览
+                + '<div id="zjwj-pano-preview" style="display:none;margin-top:14px">'
+                + '<div style="font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">生成结果 <span style="font-weight:400;color:var(--gray-400)">· 2048×1024</span></div>'
+                + '<img id="zjwj-pano-img" src="" alt="" style="width:100%;border-radius:10px;border:1.5px solid var(--gray-200);display:block">'
+                + '<button id="zjwj-pano-use" style="width:100%;margin-top:10px;padding:9px;background:#10b981;color:white;border:none;border-radius:10px;cursor:pointer;font-size:.84rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px">'
+                + '<i class="fas fa-check"></i> 使用此图作为全景图</button></div>'
+                + '</div>'
+                // footer
+                + '<div style="padding:14px 24px;border-top:1px solid var(--gray-100);display:flex;justify-content:flex-end;gap:8px">'
+                + '<button id="zjwj-pano-cancel" class="btn btn-secondary" style="padding:7px 16px;font-size:.82rem">关闭</button>'
+                + '<button id="zjwj-pano-gen" style="padding:7px 18px;font-size:.82rem;border:none;border-radius:var(--r);background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px">'
+                + '<i class="fas fa-magic"></i> 开始生成</button>'
+                + '</div></div>';
+
+            document.body.appendChild(modal);
+
+            // 交互：focus 样式
+            var ta = modal.querySelector('#zjwj-pano-prompt');
+            ta.addEventListener('focus', function(){ ta.style.borderColor='#7c3aed'; });
+            ta.addEventListener('blur',  function(){ ta.style.borderColor='var(--gray-200)'; });
+
+            // 保存临时 key
+            var rkeyInput = modal.querySelector('#zjwj-pano-rkey');
+            modal.querySelector('#zjwj-pano-rkey-save')?.addEventListener('click', function(){
+                var v = rkeyInput?.value.trim() || '';
+                if (!v) return;
+                localStorage.setItem('zjwj_replicate_key', v);
+                rKey = v;
+                modal.querySelector('#zjwj-pano-key-row').style.display = 'none';
+                showGlobalToast('Replicate Key 已保存', 'success');
+            });
+
+            // 关闭
+            modal.querySelector('#zjwj-pano-close').addEventListener('click', function(){ modal.remove(); });
+            modal.querySelector('#zjwj-pano-cancel').addEventListener('click', function(){ modal.remove(); });
+            modal.addEventListener('click', function(e){ if (e.target === modal) modal.remove(); });
+
+            // ── 生成 ──────────────────────────────────────────────
+            modal.querySelector('#zjwj-pano-gen').addEventListener('click', async function() {
+                rKey = localStorage.getItem('zjwj_replicate_key') || '';
+                if (!rKey) {
+                    showGlobalToast('请先填写并保存 Replicate API Key', 'warning');
+                    modal.querySelector('#zjwj-pano-key-row').style.display = '';
+                    return;
+                }
+                var prompt = (modal.querySelector('#zjwj-pano-prompt').value || '').trim();
+                if (!prompt) { showGlobalToast('请输入场景描述', 'warning'); return; }
+
+                var style  = modal.querySelector('#zjwj-pano-style').value;
+                var steps  = parseInt(modal.querySelector('#zjwj-pano-steps').value);
+                var full   = prompt + style;
+                var genBtn = modal.querySelector('#zjwj-pano-gen');
+                var statEl = modal.querySelector('#zjwj-pano-status');
+                var statTx = modal.querySelector('#zjwj-pano-status-txt');
+                var prvEl  = modal.querySelector('#zjwj-pano-preview');
+
+                genBtn.disabled = true;
+                genBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> 提交中…';
+                statEl.style.display = 'flex';
+                prvEl.style.display  = 'none';
+                statTx.textContent = '正在提交任务到 Replicate…';
+
+                try {
+                    // 1. 创建 prediction
+                    var createRes = await fetch('https://api.replicate.com/v1/models/lucataco/sdxl-panorama/predictions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Token ' + rKey },
+                        body: JSON.stringify({ input: { prompt: full, num_inference_steps: steps, width: 2048, height: 1024 } })
+                    });
+                    if (!createRes.ok) {
+                        var errData = await createRes.json().catch(function(){ return {}; });
+                        throw new Error(errData.detail || 'API 返回错误 ' + createRes.status);
+                    }
+                    var pred    = await createRes.json();
+                    var pollUrl = (pred.urls && pred.urls.get) || ('https://api.replicate.com/v1/predictions/' + pred.id);
+
+                    // 2. 轮询结果（最多 4 分钟）
+                    statTx.textContent = '生成中，通常需要 30～90 秒…';
+                    var result = null;
+                    for (var i = 0; i < 120; i++) {
+                        await new Promise(function(r){ setTimeout(r, 2000); });
+                        if (!document.getElementById('zjwj-pano-gen-modal')) return; // 用户关闭了
+                        var pollRes  = await fetch(pollUrl, { headers: { 'Authorization': 'Token ' + rKey } });
+                        var pollData = await pollRes.json();
+                        if (pollData.status === 'succeeded') {
+                            result = Array.isArray(pollData.output) ? pollData.output[0] : pollData.output;
+                            break;
+                        }
+                        if (pollData.status === 'failed') throw new Error('生成失败：' + (pollData.error || '未知错误'));
+                        statTx.textContent = '生成中… (' + ((i + 1) * 2) + 's)';
+                    }
+                    if (!result) throw new Error('生成超时，请稍后重试');
+
+                    // 3. 显示预览
+                    statEl.style.display = 'none';
+                    prvEl.style.display  = 'block';
+                    var img = modal.querySelector('#zjwj-pano-img');
+                    img.src = result;
+                    showGlobalToast('全景图生成成功！', 'success');
+
+                    // ── 「使用此图」── 核心：调用 _startPanorama ──────
+                    modal.querySelector('#zjwj-pano-use').onclick = function() {
+                        _loadPanoFromUrl(result, modal);
+                    };
+
+                } catch (err) {
+                    statEl.style.display = 'none';
+                    showGlobalToast('生成失败：' + err.message, 'error');
+                } finally {
+                    genBtn.disabled = false;
+                    genBtn.innerHTML = '<i class="fas fa-magic"></i> 重新生成';
+                }
             });
         }
+
+        // ── 将远程 URL 加载进全景视口（解决 CORS 问题）────────────────────
+        function _loadPanoFromUrl(url, modal) {
+            // 找到当前 3D 情景模块的 DOM 引用
+            var srcImg      = document.getElementById('s3d-src-img');
+            var uploadZone  = document.getElementById('s3d-upload-zone');
+            var imgArea     = document.getElementById('s3d-img-area');
+
+            if (!srcImg) {
+                showGlobalToast('请先打开「3D 情景」模块再使用 AI 全景图', 'warning');
+                return;
+            }
+
+            showGlobalToast('正在加载全景图…', 'info');
+
+            // 尝试 fetch → blob → dataURL（绕过 CORS + 解锁 Three.js TextureLoader）
+            fetch(url)
+                .then(function(r) {
+                    if (!r.ok) throw new Error('fetch ' + r.status);
+                    return r.blob();
+                })
+                .then(function(blob) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var dataUrl = e.target.result;
+                        window._sceneImageData = dataUrl;
+                        // 左侧缩略图
+                        srcImg.src = dataUrl;
+                        srcImg.style.display = 'block';
+                        if (uploadZone) uploadZone.style.display = 'none';
+                        if (imgArea)   imgArea.classList.remove('no-image');
+                        // 右侧 Three.js 全景渲染——直接调用已存在的 _startPanorama
+                        if (typeof _startPanorama === 'function') {
+                            _startPanorama(dataUrl);
+                        }
+                        showGlobalToast('全景图已加载，可拖拽浏览 360°', 'success');
+                        if (modal) modal.remove();
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(function() {
+                    // fetch 失败（CORS）：直接把 URL 喂给 Three.js，
+                    // Three.js TextureLoader 内部用 <img> 加载，crossOrigin 设为 anonymous
+                    // 同时左侧缩略图也设为 URL
+                    window._sceneImageData = url;
+                    srcImg.src = url;
+                    srcImg.style.display = 'block';
+                    if (uploadZone) uploadZone.style.display = 'none';
+                    if (imgArea)   imgArea.classList.remove('no-image');
+                    if (typeof _startPanorama === 'function') {
+                        // 让 Three.js TextureLoader 支持跨域图片
+                        var origLoad = null;
+                        if (window.THREE && window.THREE.TextureLoader) {
+                            var _origBoot = _startPanorama;
+                            // 注入 crossOrigin 设置后再渲染
+                            window.THREE.DefaultLoadingManager.onStart = null;
+                        }
+                        _startPanoramaURL(url);
+                    }
+                    showGlobalToast('已加载（跨域模式），如显示异常请保存图片后手动上传', 'info');
+                    if (modal) modal.remove();
+                });
+        }
+
+        // ── 直接用 URL（非 dataURL）启动全景——Three.js 跨域方案 ──────────
+        function _startPanoramaURL(url) {
+            var panoWrap   = document.getElementById('s3d-pano-wrap');
+            var panoCanvas = document.getElementById('s3d-pano-canvas');
+            var panoEmpty  = document.getElementById('s3d-pano-empty');
+            var panoHint   = document.getElementById('s3d-pano-hint');
+            var panoBadge  = document.getElementById('s3d-pano-badge');
+            if (!panoCanvas) return;
+
+            function boot() {
+                var THREE = window.THREE;
+                var W = panoWrap.clientWidth, H = panoWrap.clientHeight;
+                if (panoEmpty) panoEmpty.style.display = 'none';
+                if (panoHint)  panoHint.style.display  = 'block';
+
+                var renderer = new THREE.WebGLRenderer({ canvas: panoCanvas, antialias: true });
+                renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+                renderer.setSize(W, H);
+
+                var scene  = new THREE.Scene();
+                var camera = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
+                camera.position.set(0, 0, 0.01);
+
+                var geo = new THREE.SphereGeometry(500, 64, 40);
+                geo.scale(-1, 1, 1);
+
+                var loader = new THREE.TextureLoader();
+                loader.crossOrigin = 'anonymous';
+                loader.load(url, function(tex) {
+                    scene.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex })));
+                    if (panoBadge) {
+                        panoBadge.innerHTML = '<i class="fas fa-panorama"></i> 全景图模式';
+                        panoBadge.style.background = 'rgba(16,185,129,.15)';
+                        panoBadge.style.color = '#34d399';
+                    }
+                }, undefined, function(err) {
+                    showGlobalToast('跨域加载失败，请手动保存图片后上传', 'error');
+                });
+
+                var lon = 180, lat = 10, isDrag = false, prevX = 0, prevY = 0;
+                panoCanvas.addEventListener('mousedown',  function(e){ isDrag=true; prevX=e.clientX; prevY=e.clientY; });
+                panoCanvas.addEventListener('mousemove',  function(e){ if(!isDrag) return; lon-=(e.clientX-prevX)*.22; lat+=(e.clientY-prevY)*.22; lat=Math.max(-85,Math.min(85,lat)); prevX=e.clientX; prevY=e.clientY; });
+                panoCanvas.addEventListener('mouseup',    function(){ isDrag=false; });
+                panoCanvas.addEventListener('mouseleave', function(){ isDrag=false; });
+                panoCanvas.addEventListener('wheel', function(e){ camera.fov=Math.max(30,Math.min(100,camera.fov+e.deltaY*.05)); camera.updateProjectionMatrix(); }, {passive:true});
+
+                var ro = new ResizeObserver(function(){ W=panoWrap.clientWidth; H=panoWrap.clientHeight; renderer.setSize(W,H); camera.aspect=W/H; camera.updateProjectionMatrix(); });
+                ro.observe(panoWrap);
+
+                (function loop() {
+                    requestAnimationFrame(loop);
+                    var phi=THREE.MathUtils.degToRad(90-lat), theta=THREE.MathUtils.degToRad(lon);
+                    camera.lookAt(Math.sin(phi)*Math.cos(theta), Math.cos(phi), Math.sin(phi)*Math.sin(theta));
+                    renderer.render(scene, camera);
+                })();
+            }
+
+            if (window.THREE) { boot(); }
+            else {
+                var s = document.createElement('script');
+                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+                s.onload = boot;
+                document.head.appendChild(s);
+            }
+        }
+
+        // ── AI 全景按钮委托绑定 ───────────────────────────────────────────
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('#s3d-ai-gen-btn')) showAIPanoModal();
+        });
 
 
         // ── AI模块：教师端显示聊天记录，学生端显示对话界面 ─────────────────
@@ -7667,7 +8661,7 @@ ${text}
                             '请给教师写2-3句专业的教学建议（不超过80字），指出学生学习规律和具体可操作的教学改进方向。直接输出建议，不需要标题和称呼。';
                         fetch(DEEPSEEK_API_URL, {
                             method: 'POST',
-                            headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+DEEPSEEK_API_KEY },
+                            headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+getDeepSeekKey() },
                             body: JSON.stringify({
                                 model: 'deepseek-chat', max_tokens: 200, temperature: 0.8,
                                 messages: [{ role:'user', content: prompt }]
@@ -8778,7 +9772,7 @@ ${text}
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + DEEPSEEK_API_KEY
+                            'Authorization': 'Bearer ' + getDeepSeekKey()
                         },
                         body: JSON.stringify({
                             model: 'deepseek-chat',
@@ -9923,6 +10917,445 @@ ${text}
             }
 
             render();
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  API Key 设置（DeepSeek + Replicate）
+        // ══════════════════════════════════════════════════════════
+        function showApiSettingsModal() {
+            document.getElementById('zjwj-api-modal')?.remove();
+            var dKey = localStorage.getItem('zjwj_deepseek_key') || '';
+            var rKey = localStorage.getItem('zjwj_replicate_key') || '';
+            var mKey = localStorage.getItem('zjwj_minimax_key') || '';
+            var m = document.createElement('div');
+            m.id  = 'zjwj-api-modal';
+            m.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:9100;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)';
+            m.innerHTML = '<div style="background:white;border-radius:18px;width:100%;max-width:460px;box-shadow:0 24px 64px rgba(15,23,42,.22);overflow:hidden">'
+                + '<div style="padding:20px 24px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:12px">'
+                + '<div style="width:36px;height:36px;border-radius:10px;background:#eff6ff;color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0"><i class="fas fa-key"></i></div>'
+                + '<div style="flex:1"><h3 style="margin:0;font-size:.95rem;font-weight:700;color:var(--gray-900)">AI 接口设置</h3>'
+                + '<p style="margin:2px 0 0;font-size:.75rem;color:var(--gray-400)">密钥仅保存在本地浏览器，不会上传</p></div>'
+                + '<button id="zjwj-api-close" style="width:30px;height:30px;border:none;background:var(--gray-100);border-radius:8px;cursor:pointer;color:var(--gray-500);font-size:.82rem"><i class="fas fa-times"></i></button>'
+                + '</div>'
+                + '<div style="padding:22px 24px;display:flex;flex-direction:column;gap:16px">'
+                + '<div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">DeepSeek API Key <span style="font-weight:400;color:var(--gray-400)">· PPT生成 / AI评语</span></label>'
+                + '<div style="position:relative"><input id="zjwj-api-dk" type="password" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" value="' + dKey + '" style="width:100%;padding:10px 42px 10px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.875rem;font-family:monospace;outline:none;box-sizing:border-box;transition:border-color .15s;color:var(--gray-800)">'
+                + '<button id="zjwj-api-dk-eye" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);border:none;background:none;color:var(--gray-400);cursor:pointer;font-size:.85rem;padding:4px"><i class="fas fa-eye"></i></button></div>'
+                + '<p style="margin:5px 0 0;font-size:.71rem;color:var(--gray-400)">在 <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:var(--primary)">platform.deepseek.com</a> 获取</p></div>'
+                + '<div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">MiniMax API Key <span style="font-weight:400;color:var(--gray-400)">· 拍照解题识图</span></label>'
+                + '<input id="zjwj-api-mk" type="password" placeholder="eyJhbGciOiJ..." value="' + mKey + '" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.875rem;font-family:monospace;outline:none;box-sizing:border-box;transition:border-color .15s;color:var(--gray-800)">'
+                + '<p style="margin:5px 0 0;font-size:.71rem;color:var(--gray-400)">在 <a href="https://platform.minimaxi.com/user-center/basic-information/interface-key" target="_blank" style="color:var(--primary)">platform.minimaxi.com</a> 获取</p></div>'
+                + '<div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">Replicate API Key <span style="font-weight:400;color:var(--gray-400)">· AI 全景图生成</span></label>'
+                + '<input id="zjwj-api-rk" type="password" placeholder="r8_xxxxxxxxxxxxxxxxxxxxxxxx" value="' + rKey + '" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.875rem;font-family:monospace;outline:none;box-sizing:border-box;transition:border-color .15s;color:var(--gray-800)">'
+                + '<p style="margin:5px 0 0;font-size:.71rem;color:var(--gray-400)">在 <a href="https://replicate.com/account/api-tokens" target="_blank" style="color:var(--primary)">replicate.com</a> 获取 · 有免费额度</p></div>'
+                + '</div>'
+                + '<div style="padding:14px 24px;border-top:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;gap:10px">'
+                + '<button id="zjwj-api-clear" style="font-size:.78rem;color:#ef4444;background:none;border:none;cursor:pointer"><i class="fas fa-trash-alt"></i> 清除所有密钥</button>'
+                + '<div style="display:flex;gap:8px">'
+                + '<button id="zjwj-api-cancel" class="btn btn-secondary" style="padding:7px 16px;font-size:.82rem">取消</button>'
+                + '<button id="zjwj-api-save" class="btn btn-primary" style="padding:7px 18px;font-size:.82rem"><i class="fas fa-check"></i> 保存</button>'
+                + '</div></div></div>';
+            document.body.appendChild(m);
+            setTimeout(function(){ m.querySelector('#zjwj-api-dk')?.focus(); }, 60);
+            ['zjwj-api-dk','zjwj-api-mk','zjwj-api-rk'].forEach(function(id){
+                var el = m.querySelector('#' + id);
+                if (!el) return;
+                el.addEventListener('focus', function(){ el.style.borderColor='var(--primary)'; });
+                el.addEventListener('blur',  function(){ el.style.borderColor='var(--gray-200)'; });
+            });
+            m.querySelector('#zjwj-api-dk-eye').addEventListener('click', function(){
+                var inp = m.querySelector('#zjwj-api-dk');
+                var hidden = inp.type === 'password';
+                inp.type = hidden ? 'text' : 'password';
+                this.innerHTML = hidden ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+            });
+            m.querySelector('#zjwj-api-save').addEventListener('click', function(){
+                var dk = (m.querySelector('#zjwj-api-dk').value || '').trim();
+                var mk = (m.querySelector('#zjwj-api-mk').value || '').trim();
+                var rk = (m.querySelector('#zjwj-api-rk').value || '').trim();
+                if (dk) localStorage.setItem('zjwj_deepseek_key', dk); else localStorage.removeItem('zjwj_deepseek_key');
+                if (mk) localStorage.setItem('zjwj_minimax_key',  mk); else localStorage.removeItem('zjwj_minimax_key');
+                if (rk) localStorage.setItem('zjwj_replicate_key',rk); else localStorage.removeItem('zjwj_replicate_key');
+                m.remove();
+                showGlobalToast('API Key 已保存', 'success');
+            });
+            m.querySelector('#zjwj-api-clear').addEventListener('click', function(){
+                m.querySelector('#zjwj-api-dk').value = '';
+                m.querySelector('#zjwj-api-mk').value = '';
+                m.querySelector('#zjwj-api-rk').value = '';
+                localStorage.removeItem('zjwj_deepseek_key');
+                localStorage.removeItem('zjwj_minimax_key');
+                localStorage.removeItem('zjwj_replicate_key');
+                showGlobalToast('密钥已清除', 'info');
+            });
+            m.querySelector('#zjwj-api-close').addEventListener('click', function(){ m.remove(); });
+            m.querySelector('#zjwj-api-cancel').addEventListener('click', function(){ m.remove(); });
+            m.addEventListener('click', function(e){ if (e.target === m) m.remove(); });
+        }
+
+        // ── Header 🔑 按钮注入 + 绑定 ──────────────────────────────────────
+        (function() {
+            var darkBtn = document.getElementById('darkModeBtn');
+            if (!darkBtn) return;
+            var apiBtn = document.createElement('button');
+            apiBtn.className = 'header-btn';
+            apiBtn.id        = 'apiSettingsBtn';
+            apiBtn.title     = 'AI 接口设置';
+            apiBtn.style.cssText = 'padding:7px 10px;min-width:36px';
+            apiBtn.innerHTML = '<i class="fas fa-key"></i>';
+            darkBtn.parentNode.insertBefore(apiBtn, darkBtn);
+            apiBtn.addEventListener('click', showApiSettingsModal);
+        })();
+
+        // ══════════════════════════════════════════════════════════
+        //  拍照解题系统（MiniMax 视觉识图）
+        // ══════════════════════════════════════════════════════════
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('#photoSolveBtn')) openPhotoSolve();
+        });
+
+        function openPhotoSolve() {
+            document.getElementById('zjwj-photo-solve')?.remove();
+
+            var panel = document.createElement('div');
+            panel.id  = 'zjwj-photo-solve';
+            panel.style.cssText = 'position:fixed;inset:0;background:rgba(10,15,30,.88);z-index:9500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0';
+
+            panel.innerHTML = `
+                <div style="width:100%;max-width:680px;display:flex;flex-direction:column;height:100%;max-height:100vh;padding:0">
+
+                    <!-- 顶部工具栏 -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;flex-shrink:0">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <div style="width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:white;font-size:.9rem"><i class="fas fa-camera"></i></div>
+                            <div>
+                                <div style="color:white;font-weight:700;font-size:.92rem">拍照解题</div>
+                                <div id="ps-hint" style="color:rgba(255,255,255,.5);font-size:.72rem">对准投影仪上的题目</div>
+                            </div>
+                        </div>
+                        <button id="ps-close" style="width:32px;height:32px;border:none;background:rgba(255,255,255,.12);border-radius:8px;color:white;cursor:pointer;font-size:.88rem;display:flex;align-items:center;justify-content:center"><i class="fas fa-times"></i></button>
+                    </div>
+
+                    <!-- 相机/预览区域 -->
+                    <div id="ps-viewport" style="flex:1;position:relative;overflow:hidden;background:#000;min-height:0">
+                        <!-- 相机实时画面 -->
+                        <video id="ps-video" style="width:100%;height:100%;object-fit:contain;display:block" autoplay playsinline muted></video>
+                        <!-- 拍摄后静态帧 -->
+                        <canvas id="ps-canvas" style="width:100%;height:100%;object-fit:contain;display:none;position:absolute;inset:0"></canvas>
+                        <!-- 框题选区遮罩 -->
+                        <canvas id="ps-crop-canvas" style="position:absolute;inset:0;width:100%;height:100%;display:none;cursor:crosshair"></canvas>
+                        <!-- 取景框角线 -->
+                        <div id="ps-viewfinder" style="position:absolute;inset:14%;pointer-events:none;display:block">
+                            <div style="position:absolute;top:0;left:0;width:22px;height:22px;border-top:2.5px solid rgba(255,255,255,.7);border-left:2.5px solid rgba(255,255,255,.7);border-radius:3px 0 0 0"></div>
+                            <div style="position:absolute;top:0;right:0;width:22px;height:22px;border-top:2.5px solid rgba(255,255,255,.7);border-right:2.5px solid rgba(255,255,255,.7);border-radius:0 3px 0 0"></div>
+                            <div style="position:absolute;bottom:0;left:0;width:22px;height:22px;border-bottom:2.5px solid rgba(255,255,255,.7);border-left:2.5px solid rgba(255,255,255,.7);border-radius:0 0 0 3px"></div>
+                            <div style="position:absolute;bottom:0;right:0;width:22px;height:22px;border-bottom:2.5px solid rgba(255,255,255,.7);border-right:2.5px solid rgba(255,255,255,.7);border-radius:0 0 3px 0"></div>
+                        </div>
+                        <!-- 解析中遮罩 -->
+                        <div id="ps-analyzing" style="display:none;position:absolute;inset:0;background:rgba(10,15,30,.75);align-items:center;justify-content:center;flex-direction:column;gap:12px;color:white">
+                            <i class="fas fa-circle-notch fa-spin" style="font-size:2rem;color:#60a5fa"></i>
+                            <div style="font-size:.88rem;font-weight:600">AI 正在识别题目…</div>
+                        </div>
+                    </div>
+
+                    <!-- 底部操作栏 -->
+                    <div id="ps-bar-camera" style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;flex-shrink:0;gap:12px">
+                        <!-- 旋转 -->
+                        <button id="ps-rotate" style="width:44px;height:44px;border:1.5px solid rgba(255,255,255,.2);border-radius:12px;background:rgba(255,255,255,.08);color:white;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center" title="旋转画面"><i class="fas fa-rotate-right"></i></button>
+                        <!-- 拍摄 -->
+                        <button id="ps-shoot" style="width:66px;height:66px;border:none;border-radius:50%;background:white;color:#1e293b;cursor:pointer;font-size:1.3rem;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(255,255,255,.25)"><i class="fas fa-camera"></i></button>
+                        <!-- 切换摄像头 -->
+                        <button id="ps-flip" style="width:44px;height:44px;border:1.5px solid rgba(255,255,255,.2);border-radius:12px;background:rgba(255,255,255,.08);color:white;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center" title="切换摄像头"><i class="fas fa-camera-rotate"></i></button>
+                    </div>
+
+                    <!-- 拍摄后操作栏 -->
+                    <div id="ps-bar-shot" style="display:none;align-items:center;justify-content:space-between;padding:18px 24px;flex-shrink:0;gap:10px">
+                        <button id="ps-retake" style="flex:1;padding:11px;border:1.5px solid rgba(255,255,255,.25);border-radius:12px;background:rgba(255,255,255,.08);color:white;cursor:pointer;font-size:.84rem;font-weight:600"><i class="fas fa-redo"></i> 重拍</button>
+                        <button id="ps-crop-toggle" style="flex:1;padding:11px;border:1.5px solid rgba(255,255,255,.25);border-radius:12px;background:rgba(255,255,255,.08);color:white;cursor:pointer;font-size:.84rem;font-weight:600"><i class="fas fa-crop"></i> 框题</button>
+                        <button id="ps-solve" style="flex:1.6;padding:11px;border:none;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;cursor:pointer;font-size:.84rem;font-weight:700"><i class="fas fa-magic"></i> AI 解题</button>
+                    </div>
+
+                    <!-- 框题确认栏 -->
+                    <div id="ps-bar-crop" style="display:none;align-items:center;justify-content:space-between;padding:18px 24px;flex-shrink:0;gap:10px">
+                        <div style="color:rgba(255,255,255,.6);font-size:.8rem;flex:1">拖动选取题目区域</div>
+                        <button id="ps-crop-cancel" style="padding:10px 16px;border:1.5px solid rgba(255,255,255,.25);border-radius:12px;background:rgba(255,255,255,.08);color:white;cursor:pointer;font-size:.82rem">取消</button>
+                        <button id="ps-crop-confirm" style="padding:10px 18px;border:none;border-radius:12px;background:#2563eb;color:white;cursor:pointer;font-size:.82rem;font-weight:700">确认框选</button>
+                    </div>
+                </div>`;
+
+            document.body.appendChild(panel);
+
+            // ── 状态 ────────────────────────────────────────────────
+            var stream      = null;
+            var rotation    = 0;      // 0/90/180/270
+            var facingMode  = 'environment';
+            var shotDataUrl = null;   // 拍下的完整帧
+            var cropDataUrl = null;   // 框题裁剪后的帧
+            var cropActive  = false;
+            var cropStart   = null;
+            var cropRect    = null;
+
+            var video      = panel.querySelector('#ps-video');
+            var canvas     = panel.querySelector('#ps-canvas');
+            var cropCanvas = panel.querySelector('#ps-crop-canvas');
+            var viewfinder = panel.querySelector('#ps-viewfinder');
+            var analyzing  = panel.querySelector('#ps-analyzing');
+            var hint       = panel.querySelector('#ps-hint');
+            var barCamera  = panel.querySelector('#ps-bar-camera');
+            var barShot    = panel.querySelector('#ps-bar-shot');
+            var barCrop    = panel.querySelector('#ps-bar-crop');
+
+            // ── 启动相机 ────────────────────────────────────────────
+            async function startCamera() {
+                if (stream) stream.getTracks().forEach(t => t.stop());
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
+                        audio: false
+                    });
+                    video.srcObject = stream;
+                    applyRotation();
+                } catch(err) {
+                    showGlobalToast('无法访问摄像头：' + err.message, 'error');
+                    panel.remove();
+                }
+            }
+
+            function applyRotation() {
+                // 旋转 video 元素自身
+                video.style.transform = 'rotate(' + rotation + 'deg)';
+                // 90°/270° 时宽高互换，需要额外 scale 让画面充满容器
+                var swap = rotation === 90 || rotation === 270;
+                var vp   = panel.querySelector('#ps-viewport');
+                var ratio = swap ? (vp.clientHeight / vp.clientWidth) : 1;
+                video.style.transform = 'rotate(' + rotation + 'deg) scale(' + (swap ? ratio : 1) + ')';
+            }
+
+            // ── 拍摄 ────────────────────────────────────────────────
+            panel.querySelector('#ps-shoot').addEventListener('click', function() {
+                var vp = panel.querySelector('#ps-viewport');
+                canvas.width  = video.videoWidth  || vp.clientWidth;
+                canvas.height = video.videoHeight || vp.clientHeight;
+                var ctx = canvas.getContext('2d');
+                // 应用旋转后绘制
+                ctx.save();
+                ctx.translate(canvas.width/2, canvas.height/2);
+                ctx.rotate(rotation * Math.PI / 180);
+                if (rotation === 90 || rotation === 270)
+                    ctx.drawImage(video, -canvas.height/2, -canvas.width/2, canvas.height, canvas.width);
+                else
+                    ctx.drawImage(video, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+                ctx.restore();
+
+                shotDataUrl = canvas.toDataURL('image/jpeg', .92);
+                cropDataUrl = null;
+
+                video.style.display  = 'none';
+                canvas.style.display = 'block';
+                viewfinder.style.display = 'none';
+                barCamera.style.display  = 'none';
+                barShot.style.display    = 'flex';
+                hint.textContent = '可框选题目区域，或直接 AI 解题';
+            });
+
+            // ── 旋转 ────────────────────────────────────────────────
+            panel.querySelector('#ps-rotate').addEventListener('click', function() {
+                rotation = (rotation + 90) % 360;
+                applyRotation();
+            });
+
+            // ── 切换摄像头 ──────────────────────────────────────────
+            panel.querySelector('#ps-flip').addEventListener('click', function() {
+                facingMode = facingMode === 'environment' ? 'user' : 'environment';
+                startCamera();
+            });
+
+            // ── 重拍 ────────────────────────────────────────────────
+            panel.querySelector('#ps-retake').addEventListener('click', function() {
+                canvas.style.display     = 'none';
+                cropCanvas.style.display = 'none';
+                video.style.display      = 'block';
+                viewfinder.style.display = 'block';
+                barShot.style.display    = 'none';
+                barCamera.style.display  = 'flex';
+                barCrop.style.display    = 'none';
+                cropActive = false; cropDataUrl = null; cropRect = null;
+                hint.textContent = '对准投影仪上的题目';
+            });
+
+            // ── 框题（拖拽选区）───────────────────────────────────
+            panel.querySelector('#ps-crop-toggle').addEventListener('click', function() {
+                cropActive = true;
+                cropCanvas.style.display = 'block';
+                cropCanvas.width  = canvas.width;
+                cropCanvas.height = canvas.height;
+                barShot.style.display = 'none';
+                barCrop.style.display = 'flex';
+                hint.textContent = '拖动鼠标/手指框选题目';
+
+                // 清空旧选区
+                var cctx = cropCanvas.getContext('2d');
+                cctx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+                cropRect = null;
+
+                function getPos(e) {
+                    var r = cropCanvas.getBoundingClientRect();
+                    var scaleX = cropCanvas.width  / r.width;
+                    var scaleY = cropCanvas.height / r.height;
+                    var src = e.touches ? e.touches[0] : e;
+                    return { x: (src.clientX - r.left) * scaleX, y: (src.clientY - r.top) * scaleY };
+                }
+                function drawRect(s, e2) {
+                    var cctx2 = cropCanvas.getContext('2d');
+                    cctx2.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+                    // 半透明遮罩
+                    cctx2.fillStyle = 'rgba(0,0,0,.45)';
+                    cctx2.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+                    // 镂空选区
+                    var x=Math.min(s.x,e2.x), y=Math.min(s.y,e2.y), w=Math.abs(e2.x-s.x), h=Math.abs(e2.y-s.y);
+                    cctx2.clearRect(x, y, w, h);
+                    // 选区边框
+                    cctx2.strokeStyle = '#60a5fa';
+                    cctx2.lineWidth   = 2.5;
+                    cctx2.strokeRect(x, y, w, h);
+                    // 四角标记
+                    var cs = 14;
+                    [[ x,y],[x+w,y],[x,y+h],[x+w,y+h]].forEach(function(pt) {
+                        cctx2.strokeStyle = 'white';
+                        cctx2.lineWidth = 3;
+                        cctx2.beginPath(); cctx2.moveTo(pt[0]-cs*(pt[0]===x?-1:1), pt[1]); cctx2.lineTo(pt[0], pt[1]); cctx2.lineTo(pt[0], pt[1]-cs*(pt[1]===y?-1:1)); cctx2.stroke();
+                    });
+                    cropRect = {x,y,w,h};
+                }
+
+                cropCanvas.onmousedown = cropCanvas.ontouchstart = function(ev) {
+                    ev.preventDefault();
+                    cropStart = getPos(ev);
+                    var mm = function(ev2) { ev2.preventDefault(); drawRect(cropStart, getPos(ev2)); };
+                    var mu = function()    { cropCanvas.onmousemove = cropCanvas.ontouchmove = null; };
+                    cropCanvas.onmousemove = cropCanvas.ontouchmove = mm;
+                    cropCanvas.onmouseup = cropCanvas.ontouchend = mu;
+                };
+            });
+
+            panel.querySelector('#ps-crop-cancel').addEventListener('click', function() {
+                cropCanvas.style.display = 'none';
+                cropActive = false; cropRect = null;
+                barCrop.style.display = 'none';
+                barShot.style.display = 'flex';
+                hint.textContent = '可框选题目区域，或直接 AI 解题';
+            });
+
+            panel.querySelector('#ps-crop-confirm').addEventListener('click', function() {
+                if (!cropRect || cropRect.w < 10 || cropRect.h < 10) {
+                    showGlobalToast('请先框选题目区域', 'warning'); return;
+                }
+                // 裁剪到新 canvas
+                var tmp = document.createElement('canvas');
+                tmp.width = cropRect.w; tmp.height = cropRect.h;
+                tmp.getContext('2d').drawImage(canvas,
+                    cropRect.x, cropRect.y, cropRect.w, cropRect.h,
+                    0, 0, cropRect.w, cropRect.h);
+                cropDataUrl = tmp.toDataURL('image/jpeg', .92);
+                // 把裁剪结果显示在主 canvas
+                canvas.width = tmp.width; canvas.height = tmp.height;
+                canvas.getContext('2d').drawImage(tmp, 0, 0);
+
+                cropCanvas.style.display = 'none';
+                barCrop.style.display    = 'none';
+                barShot.style.display    = 'flex';
+                hint.textContent = '框选完成，点击 AI 解题';
+            });
+
+            // ── AI 解题（MiniMax VL）──────────────────────────────
+            panel.querySelector('#ps-solve').addEventListener('click', async function() {
+                var mmKey = localStorage.getItem('zjwj_minimax_key') || '';
+                if (!mmKey) {
+                    showGlobalToast('请先在「🔑 API 设置」中配置 MiniMax Key', 'warning');
+                    panel.remove();
+                    showApiSettingsModal();
+                    return;
+                }
+                var imgData = cropDataUrl || shotDataUrl;
+                if (!imgData) { showGlobalToast('请先拍照', 'warning'); return; }
+
+                analyzing.style.display = 'flex';
+                panel.querySelector('#ps-solve').disabled = true;
+
+                try {
+                    // MiniMax abab6.5s-chat 视觉模型
+                    var b64 = imgData.split(',')[1];
+                    var resp = await fetch('https://api.minimaxi.chat/v1/text/chatcompletion_v2', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + mmKey
+                        },
+                        body: JSON.stringify({
+                            model: 'abab6.5s-chat',
+                            messages: [{
+                                role: 'user',
+                                content: [
+                                    { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + b64 } },
+                                    { type: 'text', text: '这是一道题目的照片，请仔细识别图中的文字和内容，然后给出完整的解题过程和答案。请用清晰的步骤说明，适合中学生理解。如果题目不清晰，请说明哪些部分看不清。' }
+                                ]
+                            }],
+                            max_tokens: 1000
+                        })
+                    });
+
+                    if (!resp.ok) {
+                        var errJson = await resp.json().catch(() => ({}));
+                        throw new Error(errJson.error?.message || 'MiniMax API 错误 ' + resp.status);
+                    }
+                    var data    = await resp.json();
+                    var answer  = data.choices?.[0]?.message?.content || '未获取到解析结果';
+
+                    // 关闭面板，把结果发送到自习室对话
+                    panel.remove();
+                    stopCamera();
+
+                    // 在对话区插入题目图片 + AI解析
+                    var msgs  = document.getElementById('studyMessages');
+                    if (msgs) {
+                        var now = new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+                        // 学生消息（带题目图片）
+                        var uDiv = document.createElement('div');
+                        uDiv.className = 'study-msg study-msg-user';
+                        uDiv.innerHTML = '<div class="study-msg-bubble">'
+                            + '<img src="'+(cropDataUrl||shotDataUrl)+'" style="max-width:220px;border-radius:8px;display:block;margin-bottom:6px">'
+                            + '<div class="study-msg-text">📷 拍照解题</div>'
+                            + '<div class="study-msg-time">'+now+'</div></div>';
+                        msgs.appendChild(uDiv);
+                        // AI 回答
+                        var aDiv = document.createElement('div');
+                        aDiv.className = 'study-msg study-msg-ai';
+                        var formatted = answer.replace(/\n/g, '<br>');
+                        aDiv.innerHTML = '<div class="study-msg-avatar"><i class="fas fa-robot"></i></div>'
+                            + '<div class="study-msg-bubble"><div class="study-msg-text">'+formatted+'</div>'
+                            + '<div class="study-msg-time">'+now+'</div></div>';
+                        msgs.appendChild(aDiv);
+                        msgs.scrollTop = msgs.scrollHeight;
+                    }
+                    showGlobalToast('解题完成，结果已发送到对话', 'success');
+
+                } catch(err) {
+                    analyzing.style.display = 'none';
+                    panel.querySelector('#ps-solve').disabled = false;
+                    showGlobalToast('解析失败：' + err.message, 'error');
+                }
+            });
+
+            // ── 关闭 ────────────────────────────────────────────────
+            function stopCamera() {
+                if (stream) stream.getTracks().forEach(t => t.stop());
+                stream = null;
+            }
+            panel.querySelector('#ps-close').addEventListener('click', function() {
+                stopCamera(); panel.remove();
+            });
+
+            startCamera();
         }
 
     </script>
