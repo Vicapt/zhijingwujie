@@ -2824,7 +2824,9 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 if (editArea) editArea.style.display = 'none';
             }
 
-            backdrop.addEventListener('click', closeDrawer);
+            backdrop._mousedownOnBackdrop = false;
+            backdrop.addEventListener('mousedown', function(e){ backdrop._mousedownOnBackdrop = (e.target === backdrop); });
+            backdrop.addEventListener('click', function(e){ if (backdrop._mousedownOnBackdrop) closeDrawer(); });
             closeBtn.addEventListener('click', closeDrawer);
 
             hintBtn && hintBtn.addEventListener('click', function() {
@@ -7361,7 +7363,9 @@ ${text}
                 document.body.appendChild(m);
                 m.querySelector('.sp3-modal-close')?.addEventListener('click',  () => closeSp3Modal(m));
                 m.querySelector('.sp3-modal-cancel')?.addEventListener('click', () => closeSp3Modal(m));
-                m.addEventListener('click', e => { if (e.target===m) closeSp3Modal(m); });
+                m._mdOnBg = false;
+                m.addEventListener('mousedown', e => { m._mdOnBg = (e.target === m); });
+                m.addEventListener('click', e => { if (e.target===m && m._mdOnBg) closeSp3Modal(m); });
                 // Enter 确认
                 m.querySelector('input')?.addEventListener('keydown', e => { if(e.key==='Enter') m.querySelector('.sp3-modal-ok').click(); });
                 setTimeout(() => m.querySelector('input')?.focus(), 50);
@@ -8160,7 +8164,9 @@ ${text}
 
                 // 事件
                 panel.querySelector('#zjwj-nc-close').addEventListener('click', function(){ panel.remove(); });
-                panel.addEventListener('click', function(e){ if (e.target === panel) panel.remove(); });
+                panel._mousedownOnBackdrop = false;
+                panel.addEventListener('mousedown', function(e){ panel._mousedownOnBackdrop = (e.target === panel); });
+                panel.addEventListener('click', function(e){ if (e.target === panel && panel._mousedownOnBackdrop) panel.remove(); });
                 var clearBtn = panel.querySelector('#zjwj-nc-clear');
                 if (clearBtn) clearBtn.addEventListener('click', function(){
                     saveMsgs([]); updateBadge(); panel.remove(); showGlobalToast('消息记录已清空', 'info');
@@ -8389,7 +8395,9 @@ ${text}
             // 关闭
             modal.querySelector('#zjwj-pano-close').addEventListener('click', function(){ modal.remove(); });
             modal.querySelector('#zjwj-pano-cancel').addEventListener('click', function(){ modal.remove(); });
-            modal.addEventListener('click', function(e){ if (e.target === modal) modal.remove(); });
+            modal._mousedownOnBackdrop = false;
+            modal.addEventListener('mousedown', function(e){ modal._mousedownOnBackdrop = (e.target === modal); });
+            modal.addEventListener('click', function(e){ if (e.target === modal && modal._mousedownOnBackdrop) modal.remove(); });
 
             // ── 生成 ──────────────────────────────────────────────
             modal.querySelector('#zjwj-pano-gen').addEventListener('click', async function() {
@@ -10140,7 +10148,9 @@ ${text}
                 m.querySelector('#_om-ok').onclick = () => { if (onOk()) close(); };
                 m.querySelector('input')?.addEventListener('keydown', e => { if(e.key==='Enter') m.querySelector('#_om-ok').click(); });
                 setTimeout(() => m.querySelector('input')?.focus(), 50);
-                m.addEventListener('click', e => { if(e.target===m) close(); });
+                m._mdOnBg = false;
+                m.addEventListener('mousedown', e => { m._mdOnBg = (e.target === m); });
+                m.addEventListener('click', e => { if(e.target===m && m._mdOnBg) close(); });
             }
 
             // ── 右键菜单 ──────────────────────────────────────────────────
