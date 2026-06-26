@@ -5065,7 +5065,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         });
 
         // ── DeepSeek API 配置 ─────────────────────────────────────
-        const DEEPSEEK_API_URL = 'https://zhijingwujie.vicapt.workers.dev/v1/chat/completions';
+        const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top/v1/chat/completions';
 
         function getDeepSeekKey() {
             return localStorage.getItem('zjwj_deepseek_key') || '';
@@ -8316,8 +8316,7 @@ ${text}
         function showAIPanoModal() {
             document.getElementById('zjwj-pano-gen-modal')?.remove();
 
-            // ── 取 Replicate key ──
-            var rKey = localStorage.getItem('zjwj_replicate_key') || '';
+            var mmKey = localStorage.getItem('zjwj_minimax_key') || '';
 
             var modal = document.createElement('div');
             modal.id  = 'zjwj-pano-gen-modal';
@@ -8326,48 +8325,37 @@ ${text}
                 + '<div style="padding:20px 24px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:12px">'
                 + '<div style="width:36px;height:36px;border-radius:10px;background:#f5f3ff;color:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0"><i class="fas fa-magic"></i></div>'
                 + '<div style="flex:1"><h3 style="margin:0;font-size:.95rem;font-weight:700;color:var(--gray-900)">AI 生成全景图</h3>'
-                + '<p style="margin:2px 0 0;font-size:.75rem;color:var(--gray-400)">基于 Replicate · SDXL-Panorama 模型 · 2048×1024</p></div>'
+                + '<p style="margin:2px 0 0;font-size:.75rem;color:var(--gray-400)">基于 MiniMax image-01 模型</p></div>'
                 + '<button id="zjwj-pano-close" style="width:30px;height:30px;border:none;background:var(--gray-100);border-radius:8px;cursor:pointer;color:var(--gray-500);font-size:.82rem"><i class="fas fa-times"></i></button>'
                 + '</div>'
-                // body
                 + '<div style="padding:20px 24px">'
-                // Replicate key 输入（若没有则显示）
-                + '<div id="zjwj-pano-key-row" style="' + (rKey ? 'display:none' : '') + 'margin-bottom:14px;padding:12px 14px;background:#fef3c7;border-radius:10px;border:1px solid #fde68a">'
-                + '<div style="font-size:.78rem;font-weight:600;color:#92400e;margin-bottom:6px"><i class="fas fa-key"></i> 请先配置 Replicate API Key</div>'
-                + '<div style="display:flex;gap:6px">'
-                + '<input id="zjwj-pano-rkey" type="password" placeholder="r8_xxxxxxxxxxxxxxxxxxxxxxxx" style="flex:1;padding:7px 10px;border:1.5px solid #fde68a;border-radius:8px;font-size:.82rem;font-family:monospace;outline:none">'
-                + '<button id="zjwj-pano-rkey-save" style="padding:7px 12px;background:#92400e;color:white;border:none;border-radius:8px;cursor:pointer;font-size:.78rem;white-space:nowrap">保存</button>'
-                + '</div>'
-                + '<p style="margin:5px 0 0;font-size:.71rem;color:#92400e">在 <a href="https://replicate.com/account/api-tokens" target="_blank" style="color:#1d4ed8">replicate.com</a> 获取免费 Key</p>'
+                // MiniMax key 提示（若没有则显示）
+                + '<div id="zjwj-pano-key-row" style="' + (mmKey ? 'display:none;' : '') + 'margin-bottom:14px;padding:12px 14px;background:#fef3c7;border-radius:10px;border:1px solid #fde68a">'
+                + '<div style="font-size:.78rem;font-weight:600;color:#92400e;margin-bottom:4px"><i class="fas fa-key"></i> 请先在「API 设置」中配置 MiniMax Key</div>'
+                + '<p style="margin:0;font-size:.71rem;color:#92400e">点击右上角 🔑 按钮配置</p>'
                 + '</div>'
                 // prompt
                 + '<div style="margin-bottom:14px">'
                 + '<label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">场景描述 <span style="color:#ef4444">*</span></label>'
-                + '<textarea id="zjwj-pano-prompt" rows="3" placeholder="例：A peaceful bamboo forest with warm sunlight, equirectangular panorama" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.85rem;outline:none;resize:vertical;box-sizing:border-box;transition:border-color .15s;line-height:1.6"></textarea>'
-                + '<p style="margin:4px 0 0;font-size:.71rem;color:var(--gray-400)">建议用英文，末尾加 "equirectangular panorama" 效果更佳</p>'
+                + '<textarea id="zjwj-pano-prompt" rows="3" placeholder="例：A peaceful bamboo forest with warm golden sunlight, wide angle panorama view" style="width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.85rem;outline:none;resize:vertical;box-sizing:border-box;transition:border-color .15s;line-height:1.6"></textarea>'
+                + '<p style="margin:4px 0 0;font-size:.71rem;color:var(--gray-400)">建议用英文描述，效果更佳</p>'
                 + '</div>'
-                + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">'
-                + '<div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">风格</label>'
+                + '<div style="margin-bottom:14px"><label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">风格</label>'
                 + '<select id="zjwj-pano-style" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.82rem;outline:none;color:var(--gray-700);background:white">'
                 + '<option value="">无</option><option value=", photorealistic, 8k">写实摄影</option>'
                 + '<option value=", watercolor painting">水彩插画</option><option value=", anime style, Studio Ghibli">吉卜力动漫</option>'
                 + '<option value=", oil painting, impressionist">油画印象派</option><option value=", low-poly 3D art">低多边形 3D</option>'
                 + '<option value=", ancient Chinese ink painting">中国水墨画</option></select></div>'
-                + '<div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">采样步数</label>'
-                + '<select id="zjwj-pano-steps" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.82rem;outline:none;color:var(--gray-700);background:white">'
-                + '<option value="20">快速（20步）</option><option value="30" selected>标准（30步）</option><option value="50">精细（50步）</option>'
-                + '</select></div></div>'
                 // 状态
                 + '<div id="zjwj-pano-status" style="display:none;padding:12px 14px;background:#eff6ff;border-radius:10px;font-size:.8rem;color:#1d4ed8;align-items:center;gap:8px">'
                 + '<i class="fas fa-circle-notch fa-spin"></i><span id="zjwj-pano-status-txt">正在生成…</span></div>'
                 // 预览
                 + '<div id="zjwj-pano-preview" style="display:none;margin-top:14px">'
-                + '<div style="font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">生成结果 <span style="font-weight:400;color:var(--gray-400)">· 2048×1024</span></div>'
+                + '<div style="font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">生成结果</div>'
                 + '<img id="zjwj-pano-img" src="" alt="" style="width:100%;border-radius:10px;border:1.5px solid var(--gray-200);display:block">'
                 + '<button id="zjwj-pano-use" style="width:100%;margin-top:10px;padding:9px;background:#10b981;color:white;border:none;border-radius:10px;cursor:pointer;font-size:.84rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px">'
                 + '<i class="fas fa-check"></i> 使用此图作为全景图</button></div>'
                 + '</div>'
-                // footer
                 + '<div style="padding:14px 24px;border-top:1px solid var(--gray-100);display:flex;justify-content:flex-end;gap:8px">'
                 + '<button id="zjwj-pano-cancel" class="btn btn-secondary" style="padding:7px 16px;font-size:.82rem">关闭</button>'
                 + '<button id="zjwj-pano-gen" style="padding:7px 18px;font-size:.82rem;border:none;border-radius:var(--r);background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px">'
@@ -8376,21 +8364,10 @@ ${text}
 
             document.body.appendChild(modal);
 
-            // 交互：focus 样式
+            // focus 样式
             var ta = modal.querySelector('#zjwj-pano-prompt');
-            ta.addEventListener('focus', function(){ ta.style.borderColor='#7c3aed'; });
-            ta.addEventListener('blur',  function(){ ta.style.borderColor='var(--gray-200)'; });
-
-            // 保存临时 key
-            var rkeyInput = modal.querySelector('#zjwj-pano-rkey');
-            modal.querySelector('#zjwj-pano-rkey-save')?.addEventListener('click', function(){
-                var v = rkeyInput?.value.trim() || '';
-                if (!v) return;
-                localStorage.setItem('zjwj_replicate_key', v);
-                rKey = v;
-                modal.querySelector('#zjwj-pano-key-row').style.display = 'none';
-                showGlobalToast('Replicate Key 已保存', 'success');
-            });
+            ta && ta.addEventListener('focus', function(){ ta.style.borderColor = 'var(--primary)'; });
+            ta && ta.addEventListener('blur',  function(){ ta.style.borderColor = 'var(--gray-200)'; });
 
             // 关闭
             modal.querySelector('#zjwj-pano-close').addEventListener('click', function(){ modal.remove(); });
@@ -8401,17 +8378,16 @@ ${text}
 
             // ── 生成 ──────────────────────────────────────────────
             modal.querySelector('#zjwj-pano-gen').addEventListener('click', async function() {
-                rKey = localStorage.getItem('zjwj_replicate_key') || '';
-                if (!rKey) {
-                    showGlobalToast('请先填写并保存 Replicate API Key', 'warning');
+                mmKey = localStorage.getItem('zjwj_minimax_key') || '';
+                if (!mmKey) {
                     modal.querySelector('#zjwj-pano-key-row').style.display = '';
+                    showGlobalToast('请先配置 MiniMax API Key', 'warning');
                     return;
                 }
                 var prompt = (modal.querySelector('#zjwj-pano-prompt').value || '').trim();
                 if (!prompt) { showGlobalToast('请输入场景描述', 'warning'); return; }
 
                 var style  = modal.querySelector('#zjwj-pano-style').value;
-                var steps  = parseInt(modal.querySelector('#zjwj-pano-steps').value);
                 var full   = prompt + style;
                 var genBtn = modal.querySelector('#zjwj-pano-gen');
                 var statEl = modal.querySelector('#zjwj-pano-status');
@@ -8419,52 +8395,43 @@ ${text}
                 var prvEl  = modal.querySelector('#zjwj-pano-preview');
 
                 genBtn.disabled = true;
-                genBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> 提交中…';
+                genBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> 生成中…';
                 statEl.style.display = 'flex';
                 prvEl.style.display  = 'none';
-                statTx.textContent = '正在提交任务到 Replicate…';
+                statTx.textContent = '正在调用 MiniMax 生成图像，请稍候…';
 
                 try {
-                    // 1. 创建 prediction
-                    var createRes = await fetch('https://api.replicate.com/v1/models/lucataco/sdxl-panorama/predictions', {
+                    var resp = await fetch('https://api.minimaxi.chat/v1/image_generation', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Token ' + rKey },
-                        body: JSON.stringify({ input: { prompt: full, num_inference_steps: steps, width: 2048, height: 1024 } })
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + mmKey
+                        },
+                        body: JSON.stringify({
+                            model: 'image-01',
+                            prompt: full,
+                            aspect_ratio: '16:9',
+                            response_format: 'base64',
+                            n: 1
+                        })
                     });
-                    if (!createRes.ok) {
-                        var errData = await createRes.json().catch(function(){ return {}; });
-                        throw new Error(errData.detail || 'API 返回错误 ' + createRes.status);
+                    if (!resp.ok) {
+                        var errData = await resp.json().catch(function(){ return {}; });
+                        throw new Error((errData.error && errData.error.message) || 'MiniMax API 错误 ' + resp.status);
                     }
-                    var pred    = await createRes.json();
-                    var pollUrl = (pred.urls && pred.urls.get) || ('https://api.replicate.com/v1/predictions/' + pred.id);
+                    var data = await resp.json();
+                    var b64List = data.data && data.data.image_base64;
+                    if (!b64List || !b64List.length) throw new Error('未获取到图像数据');
+                    var dataUrl = 'data:image/jpeg;base64,' + b64List[0];
 
-                    // 2. 轮询结果（最多 4 分钟）
-                    statTx.textContent = '生成中，通常需要 30～90 秒…';
-                    var result = null;
-                    for (var i = 0; i < 120; i++) {
-                        await new Promise(function(r){ setTimeout(r, 2000); });
-                        if (!document.getElementById('zjwj-pano-gen-modal')) return; // 用户关闭了
-                        var pollRes  = await fetch(pollUrl, { headers: { 'Authorization': 'Token ' + rKey } });
-                        var pollData = await pollRes.json();
-                        if (pollData.status === 'succeeded') {
-                            result = Array.isArray(pollData.output) ? pollData.output[0] : pollData.output;
-                            break;
-                        }
-                        if (pollData.status === 'failed') throw new Error('生成失败：' + (pollData.error || '未知错误'));
-                        statTx.textContent = '生成中… (' + ((i + 1) * 2) + 's)';
-                    }
-                    if (!result) throw new Error('生成超时，请稍后重试');
-
-                    // 3. 显示预览
                     statEl.style.display = 'none';
                     prvEl.style.display  = 'block';
                     var img = modal.querySelector('#zjwj-pano-img');
-                    img.src = result;
+                    img.src = dataUrl;
                     showGlobalToast('全景图生成成功！', 'success');
 
-                    // ── 「使用此图」── 核心：调用 _startPanorama ──────
                     modal.querySelector('#zjwj-pano-use').onclick = function() {
-                        _loadPanoFromUrl(result, modal);
+                        _loadPanoFromDataUrl(dataUrl, modal);
                     };
 
                 } catch (err) {
@@ -8477,7 +8444,30 @@ ${text}
             });
         }
 
-        // ── 将远程 URL 加载进全景视口（解决 CORS 问题）────────────────────
+                // ── 将 base64 dataUrl 加载进全景视口（MiniMax 文生图专用）───────────────
+        function _loadPanoFromDataUrl(dataUrl, modal) {
+            var srcImg     = document.getElementById('s3d-src-img');
+            var uploadZone = document.getElementById('s3d-upload-zone');
+            var imgArea    = document.getElementById('s3d-img-area');
+            if (!srcImg) {
+                showGlobalToast('请先打开「3D 情景」模块再使用 AI 全景图', 'warning');
+                return;
+            }
+            showGlobalToast('正在加载全景图…', 'info');
+            srcImg.onload = function() {
+                if (uploadZone) uploadZone.style.display = 'none';
+                if (imgArea)    imgArea.style.display    = '';
+                if (modal)      modal.remove();
+                showGlobalToast('全景图已加载，点击图片可放置标注', 'success');
+                if (window._startPanorama) window._startPanorama(dataUrl);
+            };
+            srcImg.onerror = function() {
+                showGlobalToast('图像加载失败', 'error');
+            };
+            srcImg.src = dataUrl;
+        }
+
+                // ── 将远程 URL 加载进全景视口（解决 CORS 问题）────────────────────
         function _loadPanoFromUrl(url, modal) {
             // 找到当前 3D 情景模块的 DOM 引用
             var srcImg      = document.getElementById('s3d-src-img');
