@@ -1203,15 +1203,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .chat-status .status-dot.online { background: var(--green-500); }
 .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
 .message { display: flex; gap: 10px; max-width: 84%; }
-.ai-message { align-self: flex-start; flex-direction: row; }
-.user-message { align-self: flex-end; flex-direction: row-reverse; }
-.message-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.9rem; }
-.ai-message   .message-avatar { background: linear-gradient(135deg, var(--amber-100), var(--amber-50)); color: var(--amber-600); }
-.user-message .message-avatar { background: linear-gradient(135deg, var(--blue-100), var(--blue-50)); color: var(--primary); }
-.message-content { display: flex; flex-direction: column; gap: 3px; }
-.message-text { padding: 10px 14px; border-radius: 13px; font-size: 0.875rem; line-height: 1.65; }
-.ai-message   .message-text { background: white; border: 1.5px solid var(--gray-200); border-top-left-radius: 4px; color: var(--gray-800); }
-.user-message .message-text { background: linear-gradient(135deg, var(--primary), var(--blue-700)); color: white; border-top-right-radius: 4px; }
+
 .message-time { font-size: 0.68rem; color: var(--gray-400); padding: 0 3px; }
 .user-message .message-time { text-align: right; color: rgba(255,255,255,.7); }
 .chat-input { border-top: 1px solid var(--gray-100); flex-shrink: 0; }
@@ -2320,11 +2312,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 <i class="fas fa-shopping-cart"></i>
                 <span>采购咨询</span>
             </button>
-            <!-- 学情消息提醒铃 -->
-            <button class="header-btn" id="globalNotifyBtn" title="学情消息提醒" style="padding:7px 10px;min-width:36px;position:relative;display:none">
-                <i class="fas fa-bell"></i>
-                <span id="globalNotifyBadge" style="position:absolute;top:4px;right:6px;min-width:16px;height:16px;border-radius:8px;background:#ef4444;color:white;font-size:.58rem;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 3px;line-height:1"></span>
-            </button>
             <!-- Dark mode toggle -->
             <button class="header-btn" id="darkModeBtn" title="切换暗色模式" style="padding:7px 10px;min-width:36px">
                 <i class="fas fa-moon" id="darkModeIcon"></i>
@@ -2379,7 +2366,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                 <i class="fas fa-gamepad"></i>
                 <span class="menu-text">游戏化闯关 <span class="menu-badge">SmartPath™</span></span>
             </a>
-            <a href="javascript:void(0)" class="menu-item" data-module="analytics">
+            <a href="javascript:void(0)" class="menu-item" data-module="analytics" id="ana-sidebar-link" style="position:relative">
                 <i class="fas fa-chart-pie"></i>
                 <span class="menu-text">学情分析中心</span>
                 <span id="ana-sidebar-dot" style="display:none;min-width:18px;height:18px;border-radius:9px;background:#2563eb;color:white;font-size:.62rem;font-weight:700;align-items:center;justify-content:center;padding:0 5px;box-sizing:border-box;flex-shrink:0;letter-spacing:0;line-height:1"></span>
@@ -2387,6 +2374,10 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             <a href="javascript:void(0)" class="menu-item" data-module="oral">
                 <i class="fas fa-microphone"></i>
                 <span class="menu-text">AI口语题库</span>
+            </a>
+            <a href="javascript:void(0)" class="menu-item" data-module="syllabus">
+                <i class="fas fa-book-open"></i>
+                <span class="menu-text">教学大纲</span>
             </a>
             <a href="javascript:void(0)" class="menu-item" data-module="classmanage">
                 <i class="fas fa-users-cog"></i>
@@ -2616,7 +2607,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
     <footer class="footer">
         <div class="footer-left">
             <div class="status-item">
-                <span class="status-dot" id="networkStatus"></span>
                 <span>网络连接</span>
             </div>
             <div class="status-item">
@@ -2642,9 +2632,9 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         // 登录系统 — 所有函数在外层作用域，无闭包依赖，退出重登无状态残留
         // ══════════════════════════════════════════════════════════════
         var ACCOUNTS = [
-            { username:'admin',    password:'admin123', name:'管理员', role:'admin',    avatar:'管' },
-            { username:'teacher1', password:'teach123', name:'张老师',  role:'teacher', avatar:'张' },
-            { username:'student1', password:'stu123',   name:'三年2班', role:'student', avatar:'班' },
+            { username:'admin',    password:'admin123', name:'管理员', role:'admin',    avatar:'管', subject:'语文' },
+            { username:'teacher1', password:'teach123', name:'张老师',  role:'teacher', avatar:'张', subject:'语文' },
+            { username:'student1', password:'stu123',   name:'三年2班', role:'student', avatar:'班', subject:'' },
         ];
         var currentUser = null;
 
@@ -3916,6 +3906,20 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                                 <span class="sp3-title"><i class="fas fa-robot"></i> AI自习室 SmartTalk™</span>
                             </div>
                             <div class="sp3-tb-right" style="display:flex;align-items:center;gap:10px">
+                                <!-- 当前章节选择器（有大纲时显示） -->
+                                <div id="study-chapter-wrap" style="display:none;align-items:center;gap:8px">
+                                    <span style="font-size:.72rem;color:rgba(255,255,255,.6)">当前章节</span>
+                                    <select id="study-chapter-sel" style="font-size:.75rem;padding:3px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12);color:white;max-width:200px;cursor:pointer">
+                                        <option value="">选择章节…</option>
+                                    </select>
+                                    <!-- 进度条 -->
+                                    <div style="display:flex;align-items:center;gap:5px">
+                                        <div style="width:80px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden">
+                                            <div id="study-progress-bar" style="height:100%;background:#60a5fa;border-radius:2px;width:0%;transition:width .4s"></div>
+                                        </div>
+                                        <span id="study-progress-text" style="font-size:.7rem;color:rgba(255,255,255,.6)">0%</span>
+                                    </div>
+                                </div>
                                 <span class="study-clock" id="studyClock" style="font-size:.82rem;opacity:.8"></span>
                                 <button id="studyFullscreenBtn" title="全屏专注模式" style="width:30px;height:30px;border:1.5px solid rgba(255,255,255,.3);border-radius:7px;background:rgba(255,255,255,.1);color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseenter="this.style.background='rgba(255,255,255,.25)'" onmouseleave="this.style.background='rgba(255,255,255,.1)'">
                                     <i class="fas fa-expand" id="studyFsIcon"></i>
@@ -4231,6 +4235,20 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                         <div class="mod-body" id="cm-body"></div>
                     </div>`;
                 initClassManage();
+            } else if (module === 'syllabus') {
+                moduleContent.style.display = 'flex';
+                moduleContent.innerHTML = `
+                    <div class="content-card mod-fullscreen" id="syllabus-module">
+                        <div class="sp3-topbar">
+                            <div class="sp3-tb-left"><span class="sp3-title"><i class="fas fa-book-open"></i> 教学大纲</span></div>
+                            <div class="sp3-tb-right">
+                                <span id="syllabus-current-tag" style="font-size:.75rem;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);margin-right:6px"></span>
+                                <span style="color:rgba(255,255,255,.7);font-size:.8rem">按年级和学科管理教学大纲</span>
+                            </div>
+                        </div>
+                        <div class="mod-body" id="syllabus-body" style="padding:0;overflow:hidden"></div>
+                    </div>`;
+                initSyllabus();
             } else {
                 // 显示模块占位符
                 moduleContent.innerHTML = `
@@ -4965,7 +4983,6 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             showGlobalToast('已删除知识点', 'info');
         }
 
-        function deletePoint(pointId) { _deleteKp(pointId); }
 
         function getModuleIcon(module) {
             const icons = {
@@ -5046,7 +5063,11 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         });
 
         // ── DeepSeek API 配置 ─────────────────────────────────────
-        const DEEPSEEK_API_URL = 'https://zjwj.vicapt.top/v1/chat/completions';
+        const DEEPSEEK_API_URL = 'https://zhijingwujie.vicapt.workers.dev/v1/chat/completions';
+
+        function getDeepSeekKey() {
+            return localStorage.getItem('zjwj_deepseek_key') || '';
+        }
 
         async function callDeepSeek(messages, maxTokens = 2000) {
             const _dk = getDeepSeekKey();
@@ -6119,10 +6140,6 @@ ${text}
                 });
             }
 
-            function _showKp(id, kps) {
-                var kp = kps.find(function(k){ return k.id===id; });
-                if (kp) _showPanoKp(kp, kps, kps.indexOf(kp));
-            }
 
             // ── 记录浏览 ──────────────────────────────────────────────────
             function _recordSceneView(sceneId) {
@@ -6378,72 +6395,11 @@ ${text}
             tick();
         }
 
-        function sendMessage() {
-            const chatInput = document.getElementById('chatInput');
-            const chatMessages = document.getElementById('chatMessages');
-            if (!chatInput || !chatMessages) return;
-            const messageText = chatInput.value.trim();
-            if (!messageText) { showGlobalToast('请输入消息内容','error'); return; }
-
-            // User bubble
-            const userEl = document.createElement('div');
-            userEl.className = 'message user-message';
-            userEl.innerHTML = `<div class="message-avatar"><i class="fas fa-user"></i></div>
-              <div class="message-content">
-                <div class="message-text">${messageText}</div>
-                <div class="message-time">${new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}</div>
-              </div>`;
-            chatMessages.appendChild(userEl);
-            chatInput.value = '';
-            chatMessages.scrollTop = 99999;
-
-            // Thinking dots
-            const thinkEl = document.createElement('div');
-            thinkEl.className = 'message ai-message';
-            thinkEl.innerHTML = `<div class="message-avatar"><i class="fas fa-robot"></i></div>
-              <div class="message-content"><div class="message-text" style="display:flex;gap:5px;align-items:center;padding:6px 0">
-                <span style="width:7px;height:7px;border-radius:50%;background:var(--gray-400);animation:study-bounce .9s ease infinite;display:inline-block"></span>
-                <span style="width:7px;height:7px;border-radius:50%;background:var(--gray-400);animation:study-bounce .9s .2s ease infinite;display:inline-block"></span>
-                <span style="width:7px;height:7px;border-radius:50%;background:var(--gray-400);animation:study-bounce .9s .4s ease infinite;display:inline-block"></span>
-              </div></div>`;
-            chatMessages.appendChild(thinkEl);
-            chatMessages.scrollTop = 99999;
-
-            setTimeout(() => {
-                thinkEl.remove();
-                const aiReply = generateAIResponse(messageText);
-                const aiEl = document.createElement('div');
-                aiEl.className = 'message ai-message';
-                const textDiv = document.createElement('div');
-                textDiv.className = 'message-text';
-                const timeDiv = document.createElement('div');
-                timeDiv.className = 'message-time';
-                timeDiv.textContent = new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'message-content';
-                contentDiv.appendChild(textDiv);
-                contentDiv.appendChild(timeDiv);
-                const avatarDiv = document.createElement('div');
-                avatarDiv.className = 'message-avatar';
-                avatarDiv.innerHTML = '<i class="fas fa-robot"></i>';
-                aiEl.appendChild(avatarDiv);
-                aiEl.appendChild(contentDiv);
-                chatMessages.appendChild(aiEl);
-                typewriterAppend(textDiv, aiReply, () => saveChatToLocalStorage(messageText, aiReply));
-            }, 800 + Math.random()*600);
-        }
 
         function saveToLocalStorage(key, value) {
             try { localStorage.setItem(key, value); return true; }
             catch(e) { showGlobalToast('本地存储空间不足','error'); return false; }
         }
-        function checkNetworkStatus() {
-            const s = document.getElementById('networkStatus');
-            if(s) s.className = 'status-dot'+(navigator.onLine?'':' offline');
-        }
-        window.addEventListener('online', checkNetworkStatus);
-        window.addEventListener('offline', checkNetworkStatus);
-        checkNetworkStatus();
         const _apiS = document.getElementById('apiStatus');
         if (_apiS) _apiS.className = 'status-dot';
         document.getElementById('saveDraftBtn')?.addEventListener('click', function() {
@@ -7241,6 +7197,17 @@ ${text}
 
             // ── 新建测试弹窗 ──────────────────────────────────────────
             function showNewTestModal(folder) {
+                const leaves = window._getSyllabusLeaves ? window._getSyllabusLeaves() : [];
+                const syllabusRow = leaves.length
+                    ? `<div class="sp3-form-group" style="margin-top:14px">
+                         <label>关联大纲章节</label>
+                         <select id="sp3-test-sylnode" style="width:100%;padding:7px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;outline:none;color:#374151">
+                           <option value="">不关联章节</option>
+                           ${leaves.map(l => `<option value="${l}">${l}</option>`).join('')}
+                         </select>
+                       </div>`
+                    : `<div style="margin-top:10px;font-size:.75rem;color:#94a3b8"><i class="fas fa-info-circle"></i> 在「教学大纲」模块应用大纲后可关联章节</div>`;
+
                 const m = createSp3Modal('新建测试',
                     `<div class="sp3-form-group">
                         <label>测试名称 <span class="sp3-req">*</span></label>
@@ -7259,10 +7226,10 @@ ${text}
                                 <input type="radio" name="sp3-diff" value="进阶"> 进阶
                             </label>
                         </div>
-                     </div>`,
+                     </div>
+                     ${syllabusRow}`,
                     '创建');
 
-                // 难度选项切换高亮
                 m.querySelectorAll('input[name="sp3-diff"]').forEach(r => {
                     r.addEventListener('change', () => {
                         m.querySelectorAll('.sp3-diff-opt').forEach(o => o.classList.remove('active'));
@@ -7273,8 +7240,9 @@ ${text}
                 m.querySelector('.sp3-modal-ok').addEventListener('click', () => {
                     const name = m.querySelector('#sp3-test-name').value.trim();
                     if (!name) { showGlobalToast('请输入名称', 'error'); return; }
-                    const difficulty = m.querySelector('input[name="sp3-diff"]:checked')?.value || '基础';
-                    folder.tests.push({ id:'t'+Date.now(), name, difficulty, created:today(), questions:[] });
+                    const difficulty  = m.querySelector('input[name="sp3-diff"]:checked')?.value || '基础';
+                    const syllabusNode = m.querySelector('#sp3-test-sylnode')?.value || '';
+                    folder.tests.push({ id:'t'+Date.now(), name, difficulty, created:today(), questions:[], syllabusNode });
                     saveData(data);
                     closeSp3Modal(m);
                     render();
@@ -7429,65 +7397,8 @@ ${text}
             setTimeout(function(){ t.style.cssText += ';opacity:0;transform:translateX(20px);transition:all .3s'; setTimeout(function(){ t.remove(); }, 300); }, 3200);
         }
 
-        function generateAIResponse(userMessage) {
-            const responses = [
-                `这是一个很好的问题！让我为你详细解答：${userMessage} 涉及到多个知识点，我们可以从不同角度来分析。`,
-                `关于"${userMessage}"，我可以为你提供以下信息：首先，这是课文中的重要概念；其次，它在实际应用中有多种表现形式；最后，我们可以通过练习来巩固理解。`,
-                `我理解你对"${userMessage}"的疑问。让我用更简单的方式解释：这就像...（此处为具体解释）`,
-                `这个问题很有深度！"${userMessage}"在课文中扮演着重要角色，它体现了作者的思想感情和写作技巧。`,
-                `让我为你分析"${userMessage}"：从字面意思看...；从深层含义看...；从教学角度建议...`
-            ];
-            
-            // 根据关键词选择回复
-            if (userMessage.includes('荷塘月色')) {
-                return `《荷塘月色》是朱自清先生的散文名篇，描写了作者在清华园荷塘边的所见所感。文章通过细腻的景物描写，表达了作者对自然美的热爱和对现实的不满。主要特点包括：<br>
-                1. 情景交融：景物描写与情感表达紧密结合<br>
-                2. 语言优美：运用大量比喻、拟人等修辞手法<br>
-                3. 意境深远：通过荷塘月色营造宁静深远的意境<br>
-                教学建议：可以引导学生分析文章的结构、语言特点和思想感情。`;
-            } else if (userMessage.includes('数学') || userMessage.includes('公式')) {
-                return `数学问题的解决需要逻辑思维和严谨推理。对于你提到的内容，我建议：<br>
-                1. 先理解基本概念和定义<br>
-                2. 掌握相关公式和定理<br>
-                3. 通过例题练习巩固理解<br>
-                4. 总结解题方法和技巧<br>
-                需要我为你详细讲解某个具体数学问题吗？`;
-            } else if (userMessage.includes('英语') || userMessage.includes('语法')) {
-                return `英语学习需要多听、多说、多读、多写。关于语法问题：<br>
-                1. 理解基本句型结构<br>
-                2. 掌握时态和语态的用法<br>
-                3. 注意主谓一致和词性搭配<br>
-                4. 通过阅读和写作实践应用<br>
-                我可以为你提供更多英语学习资源和建议。`;
-            }
-            
-            return responses[Math.floor(Math.random() * responses.length)];
-        }
+
         
-        function saveChatToLocalStorage(userMessage, aiResponse) {
-            const chatRecord = {
-                user: userMessage,
-                ai: aiResponse,
-                timestamp: new Date().toISOString()
-            };
-            
-            const history = JSON.parse(localStorage.getItem('ai_chat_records') || '[]');
-            history.push(chatRecord);
-            
-            // 只保留最近50条记录
-            if (history.length > 50) {
-                history.shift();
-            }
-            
-            localStorage.setItem('ai_chat_records', JSON.stringify(history));
-            updateStorageUsage();
-        }
-        
-        function loadChatHistory() {
-            const history = JSON.parse(localStorage.getItem('ai_chat_records') || '[]');
-            // 可以在这里实现历史对话加载功能
-            return history;
-        }
 
         // ── 3D 知识点输入对话框（替代 prompt）─────────────────────────
         function showPointInputDialog() {
@@ -7497,32 +7408,46 @@ ${text}
                 var dlg = document.createElement('div');
                 dlg.id = '_point-dialog';
                 dlg.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px';
-                dlg.innerHTML = '<div style="background:white;border-radius:16px;width:100%;max-width:420px;box-shadow:0 24px 48px rgba(0,0,0,.2);overflow:hidden">' +
-                    '<div style="padding:20px 24px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center">' +
-                    '<h3 style="margin:0;font-size:1.1rem;color:#0f172a">添加知识点标注</h3>' +
-                    '<button id="_pd-close" style="width:32px;height:32px;border:none;background:#f1f5f9;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center"><i class="fas fa-times"></i></button>' +
-                    '</div>' +
-                    '<div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">' +
-                    '<div><label style="display:block;font-size:.85rem;font-weight:600;color:#374151;margin-bottom:6px">知识点名称 <span style="color:#ef4444">*</span></label>' +
-                    '<input id="_pd-name" type="text" placeholder="如：月光意象" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;outline:none;box-sizing:border-box"></div>' +
-                    '<div><label style="display:block;font-size:.85rem;font-weight:600;color:#374151;margin-bottom:6px">描述说明</label>' +
-                    '<textarea id="_pd-desc" rows="3" placeholder="这个知识点的含义或解释..." style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.9rem;outline:none;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea></div>' +
-                    '</div>' +
-                    '<div style="padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:10px">' +
-                    '<button id="_pd-cancel" style="padding:9px 18px;border:1.5px solid #e2e8f0;border-radius:8px;background:white;color:#475569;cursor:pointer;font-size:.9rem">取消</button>' +
-                    '<button id="_pd-ok" style="padding:9px 18px;border:none;border-radius:8px;background:#2563eb;color:white;cursor:pointer;font-size:.9rem;font-weight:600">添加</button>' +
-                    '</div></div>';
+
+                // 大纲节点选项
+                var leaves = window._getSyllabusLeaves ? window._getSyllabusLeaves() : [];
+                var syllabusRow = leaves.length
+                    ? '<div style="margin-top:14px"><label style="display:block;font-size:.85rem;font-weight:600;color:#374151;margin-bottom:6px">关联大纲章节</label>'
+                      + '<select id="_pd-syllabus" style="width:100%;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;outline:none;color:#374151">'
+                      + '<option value="">不关联章节</option>'
+                      + leaves.map(function(l){ return '<option value="'+l+'">'+l+'</option>'; }).join('')
+                      + '</select></div>'
+                    : '<div style="margin-top:10px;font-size:.75rem;color:#94a3b8"><i class="fas fa-info-circle"></i> 在「教学大纲」模块应用大纲后可关联章节</div>';
+
+                dlg.innerHTML = '<div style="background:white;border-radius:16px;width:100%;max-width:440px;box-shadow:0 24px 48px rgba(0,0,0,.2);overflow:hidden">'
+                    + '<div style="padding:18px 24px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center">'
+                    + '<h3 style="margin:0;font-size:1rem;color:#0f172a"><i class="fas fa-map-marker-alt" style="color:#2563eb;margin-right:8px"></i>添加知识点标注</h3>'
+                    + '<button id="_pd-close" style="width:30px;height:30px;border:none;background:#f1f5f9;border-radius:8px;cursor:pointer;font-size:.85rem"><i class="fas fa-times"></i></button>'
+                    + '</div>'
+                    + '<div style="padding:18px 24px;display:flex;flex-direction:column;gap:0">'
+                    + '<div><label style="display:block;font-size:.85rem;font-weight:600;color:#374151;margin-bottom:6px">知识点名称 <span style="color:#ef4444">*</span></label>'
+                    + '<input id="_pd-name" type="text" placeholder="如：月光意象" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.875rem;outline:none;box-sizing:border-box"></div>'
+                    + '<div style="margin-top:12px"><label style="display:block;font-size:.85rem;font-weight:600;color:#374151;margin-bottom:6px">描述说明</label>'
+                    + '<textarea id="_pd-desc" rows="2" placeholder="这个知识点的含义或解释…" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.875rem;outline:none;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea></div>'
+                    + syllabusRow
+                    + '</div>'
+                    + '<div style="padding:14px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:10px">'
+                    + '<button id="_pd-cancel" style="padding:8px 16px;border:1.5px solid #e2e8f0;border-radius:8px;background:white;color:#475569;cursor:pointer;font-size:.875rem">取消</button>'
+                    + '<button id="_pd-ok" style="padding:8px 16px;border:none;border-radius:8px;background:#2563eb;color:white;cursor:pointer;font-size:.875rem;font-weight:600">添加</button>'
+                    + '</div></div>';
                 document.body.appendChild(dlg);
-                document.getElementById('_pd-close').onclick = function() { dlg.remove(); resolve(null); };
-                document.getElementById('_pd-cancel').onclick = function() { dlg.remove(); resolve(null); };
-                document.getElementById('_pd-ok').onclick = function() {
-                    var name = document.getElementById('_pd-name').value.trim();
+                setTimeout(function(){ dlg.querySelector('#_pd-name') && dlg.querySelector('#_pd-name').focus(); }, 60);
+                dlg.querySelector('#_pd-close').onclick  = function() { dlg.remove(); resolve(null); };
+                dlg.querySelector('#_pd-cancel').onclick = function() { dlg.remove(); resolve(null); };
+                dlg.querySelector('#_pd-ok').onclick = function() {
+                    var name = dlg.querySelector('#_pd-name').value.trim();
                     if (!name) { showGlobalToast('请输入知识点名称', 'error'); return; }
-                    var desc = document.getElementById('_pd-desc').value.trim() || '暂无描述';
+                    var desc = dlg.querySelector('#_pd-desc').value.trim() || '暂无描述';
+                    var sylNode = dlg.querySelector('#_pd-syllabus') ? dlg.querySelector('#_pd-syllabus').value : '';
                     dlg.remove();
-                    resolve({ name: name, desc: desc });
+                    resolve({ name: name, desc: desc, syllabusNode: sylNode });
                 };
-                dlg.addEventListener('click', function(e) { if (e.target === dlg) { dlg.remove(); resolve(null); } });
+                dlg.addEventListener('click', function(e){ if (e.target===dlg){ dlg.remove(); resolve(null); } });
             });
         }
 
@@ -7826,6 +7751,56 @@ ${text}
                 +'<div class="ana-ai-comment"><div class="ana-ai-comment-header"><i class="fas fa-robot"></i> AI 智能评语 <span class="ana-ai-tag">综合分析</span></div>'
                 +'<div class="ana-ai-comment-body">'+genAIComment()+'</div>'
                 +'</div></div>'
+
+                // 大纲推进进度板块
+                +(function(){
+                    var applied = window._getActiveSyllabus ? window._getActiveSyllabus() : null;
+                    if (!applied) return '<div class="ana-section" style="margin-top:14px"><div class="ana-section-title"><i class="fas fa-book-open"></i> 大纲推进进度</div><div class="ana-empty">请先在「教学大纲」模块应用大纲</div></div>';
+                    var tree = _parseSyllabus(applied.content||'');
+                    var sp3 = JSON.parse(localStorage.getItem('sp3_data')||'[]');
+                    var rows = [];
+                    var totalDone = 0, totalSec = 0;
+                    tree.forEach(function(l1){
+                        (l1.children||[]).forEach(function(l2){
+                            totalSec++;
+                            var linked = [];
+                            sp3.forEach(function(f){ (f.tests||[]).forEach(function(t){
+                                if (t.syllabusNode && t.syllabusNode.indexOf(l2.title)>=0) linked.push(t);
+                            }); });
+                            // 计算对话数关联本节
+                            var studyRecs = JSON.parse(localStorage.getItem('study_chat_records')||'[]');
+                            var chatCnt = studyRecs.filter(function(r){ return r.syllabusNode && r.syllabusNode.indexOf(l2.title)>=0 && inWeek(r.t||''); }).length;
+                            var testsDone = 0;
+                            linked.forEach(function(t){
+                                var p = JSON.parse(localStorage.getItem('gp_progress_'+t.id)||'{}');
+                                if (p.lastTotal>0 && Math.round(p.lastCorrect/p.lastTotal*100)>=60) testsDone++;
+                            });
+                            var pct = linked.length ? Math.round(testsDone/linked.length*100) : (chatCnt>0?10:0);
+                            if (pct>=60) totalDone++;
+                            var clr = pct>=80?'#10b981':pct>=40?'#f59e0b':'#e2e8f0';
+                            var textClr = pct>=80?'#10b981':pct>=40?'#f59e0b':'#94a3b8';
+                            rows.push('<div class="ana-item">'
+                                +'<div class="ana-item-top"><span class="ana-item-name" title="'+l1.title+' › '+l2.title+'"><span style="color:var(--gray-400);font-size:.7rem">'+l1.title+' › </span>'+l2.title+'</span>'
+                                +'<span class="ana-item-pct" style="color:'+textClr+'">'+pct+'%</span></div>'
+                                +'<div class="ana-bar-wrap"><div class="ana-bar-track"><div class="ana-bar-fill" style="width:'+pct+'%;background:'+clr+'"></div></div></div>'
+                                +(linked.length||chatCnt ? '<div class="ana-item-sub">'+( linked.length?'测试 '+testsDone+'/'+linked.length+' ':'')+(chatCnt?'对话 '+chatCnt+' 次':'')+'</div>' : '')
+                                +'</div>');
+                        });
+                    });
+                    var overallPct = totalSec ? Math.round(totalDone/totalSec*100) : 0;
+                    return '<div class="ana-section" style="margin-top:14px">'
+                        +'<div class="ana-section-title" style="display:flex;align-items:center;justify-content:space-between">'
+                        +'<span><i class="fas fa-book-open"></i> 大纲推进进度</span>'
+                        +'<span style="font-size:.72rem;font-weight:400;color:var(--gray-400)">'+applied.title+'</span>'
+                        +'</div>'
+                        +'<div style="height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden;margin-bottom:8px">'
+                        +'<div style="height:100%;background:var(--primary);border-radius:3px;width:'+overallPct+'%;transition:width .4s"></div>'
+                        +'</div>'
+                        +'<div style="font-size:.72rem;color:var(--gray-500);margin-bottom:10px">总进度 '+totalDone+' / '+totalSec+' 节（'+overallPct+'%）</div>'
+                        +(rows.length ? '<div style="max-height:240px;overflow-y:auto">'+rows.join('')+'</div>' : '<div class="ana-empty">大纲章节暂无关联学情数据</div>')
+                        +'</div>';
+                })()
+
                 +'</div>'  // .ana-col 右
                 +'</div>'; // .ana-main-row
 
@@ -7897,7 +7872,9 @@ ${text}
         (function() {
             var SNAP_KEY = 'zjwj_ana_snapshot';
             var MSGS_KEY = 'zjwj_ana_messages';
-            var CHECK_MS = 60 * 60 * 1000; // 1 小时
+            var CHECK_MS = 60 * 60 * 1000; // 1 小时（其余学情指标的检测周期）
+            var CHAT_COOLDOWN_MS = 20 * 60 * 1000; // 20 分钟：聊天会话冷却期
+            var CHAT_PENDING_KEY = 'zjwj_chat_pending'; // 记录待结算的聊天会话状态
             var _timer   = null;
 
             // ── 快照：采集当前所有学情数字 ──────────────────────────
@@ -7960,15 +7937,6 @@ ${text}
                         ts: now, read: false });
                 }
 
-                // AI 对话活跃（新增 ≥5 条）
-                var chatDelta = curr.totalChat - prev.totalChat;
-                if (chatDelta >= 5) {
-                    msgs.push({ icon:'fas fa-comments', color:'#8b5cf6',
-                        title: 'AI 对话活跃',
-                        body: '近期新增 ' + chatDelta + ' 条 AI 对话记录，学生自主学习意愿活跃。',
-                        ts: now, read: false });
-                }
-
                 // 口语练习进展（新增 ≥10 词）
                 var oralDelta = curr.oralDone - prev.oralDone;
                 if (oralDelta >= 10) {
@@ -7989,6 +7957,87 @@ ${text}
 
                 return msgs;
             }
+
+            // ── 聊天会话冷却检测（20分钟无新消息才算一次会话结束）──
+            // 合并两个聊天记录源，按时间解析出最新时刻
+            function getAllChatRecords() {
+                var chatRec  = JSON.parse(localStorage.getItem('ai_chat_records')    || '[]');
+                var studyRec = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
+                return chatRec.concat(studyRec);
+            }
+            function parseRecTime(r) {
+                // 兼容 t:'MM/DD HH:MM' 与旧版 timestamp: ISOString
+                if (r.t) {
+                    var p = r.t.split(' ');
+                    var md = (p[0]||'').split('/');
+                    var hm = (p[1]||'00:00').split(':');
+                    if (md.length === 2) {
+                        var d = new Date();
+                        d.setMonth(parseInt(md[0],10)-1, parseInt(md[1],10));
+                        d.setHours(parseInt(hm[0],10)||0, parseInt(hm[1],10)||0, 0, 0);
+                        return d.getTime();
+                    }
+                }
+                if (r.timestamp) { var t = new Date(r.timestamp).getTime(); if (!isNaN(t)) return t; }
+                return 0;
+            }
+
+            var chatCooldownTimer = null;
+
+            // 安排（或重新安排）一次 20 分钟后的会话结算检查
+            function scheduleChatCooldownCheck() {
+                if (currentMode !== 'teacher') return;
+                clearTimeout(chatCooldownTimer);
+                chatCooldownTimer = setTimeout(checkChatCooldown, CHAT_COOLDOWN_MS);
+            }
+
+            // 结算检查：若距最新一条聊天记录已超过20分钟，则生成一条情报
+            function checkChatCooldown() {
+                var all = getAllChatRecords();
+                if (!all.length) return;
+
+                var pending = JSON.parse(localStorage.getItem(CHAT_PENDING_KEY) || 'null') || { settledCount: 0 };
+
+                // 只关注「上次结算之后」新增的记录
+                var newRecords = all.slice(pending.settledCount);
+                if (!newRecords.length) return;
+
+                // 找出这批新记录里最新的时间
+                var latestTime = 0;
+                newRecords.forEach(function(r) {
+                    var t = parseRecTime(r);
+                    if (t > latestTime) latestTime = t;
+                });
+
+                var elapsed = Date.now() - latestTime;
+                if (elapsed < CHAT_COOLDOWN_MS) {
+                    // 这20分钟内又有新消息了，说明还在聊，重新排定下一次检查
+                    scheduleChatCooldownCheck();
+                    return;
+                }
+
+                // 冷却期已过，结算为一次新消息推送
+                var now = new Date().toLocaleString('zh-CN', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+                var msg = { icon:'fas fa-comments', color:'#8b5cf6',
+                    title: 'AI 对话活跃',
+                    body: '本轮互动新增 ' + newRecords.length + ' 条 AI 对话记录，学生自主学习意愿活跃。',
+                    ts: now, read: false };
+                saveMsgs([msg].concat(loadMsgs()));
+                pending.settledCount = all.length;
+                localStorage.setItem(CHAT_PENDING_KEY, JSON.stringify(pending));
+                updateBadge();
+            }
+
+            // 监听 storage 事件：其他标签页/同页内写入聊天记录时重置冷却计时
+            // （同页内写入不会触发 storage 事件，因此额外提供主动调用入口）
+            window._anaNotifyNewChat = function() {
+                scheduleChatCooldownCheck();
+            };
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'ai_chat_records' || e.key === 'study_chat_records') {
+                    scheduleChatCooldownCheck();
+                }
+            });
 
             // ── 执行一次检测 ────────────────────────────────────────
             function runCheck(silent) {
@@ -8025,14 +8074,6 @@ ${text}
             // ── 更新所有角标/小红点 ─────────────────────────────────
             function updateBadge() {
                 var unread = loadMsgs().filter(function(m){ return !m.read; }).length;
-                // Header 铃
-                var btn   = document.getElementById('globalNotifyBtn');
-                var badge = document.getElementById('globalNotifyBadge');
-                if (btn) btn.style.display = (currentMode === 'teacher') ? '' : 'none';
-                if (badge) {
-                    if (unread > 0) { badge.textContent = unread > 9 ? '9+' : String(unread); badge.style.display = 'flex'; }
-                    else badge.style.display = 'none';
-                }
                 // 模块内铃小圆点
                 var dot = document.getElementById('ana-notify-dot');
                 if (dot) dot.style.display = unread > 0 ? 'block' : 'none';
@@ -8151,12 +8192,9 @@ ${text}
             setTimeout(function() {
                 updateBadge();
                 schedule();
+                checkChatCooldown();       // 立即结算已冷却但未推送的聊天会话
+                scheduleChatCooldownCheck(); // 并安排下一次冷却检查（应对仍在进行的会话）
             }, 900);
-
-            // 全局铃按钮事件（委托，防止按钮尚未渲染）
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('#globalNotifyBtn')) showPanel();
-            });
 
             // 监听模式切换：更新铃可见性
             // 用 MutationObserver 监听 userRole 文字变化比拦截函数更安全
@@ -8197,6 +8235,70 @@ ${text}
             (function(){
                 var roleEl = document.getElementById('userRole');
                 if (roleEl) new MutationObserver(updateSidebarDot).observe(roleEl, {childList:true,characterData:true,subtree:true});
+            })();
+
+            // ── 侧边栏悬浮消息预览 ─────────────────────────────────
+            (function() {
+                var link = document.getElementById('ana-sidebar-link');
+                if (!link) return;
+                var popup = null, hideTimer = null;
+
+                function buildPopup() {
+                    var msgs = loadMsgs().slice(0, 5);
+                    var p = document.createElement('div');
+                    p.id = 'ana-sidebar-popup';
+                    p.style.cssText = 'position:fixed;z-index:8000;width:300px;max-height:360px;overflow-y:auto;'
+                        + 'background:white;border-radius:14px;box-shadow:0 16px 40px rgba(15,23,42,.18);border:1px solid var(--gray-100);'
+                        + 'padding:6px 0;opacity:0;transition:opacity .15s ease;pointer-events:none';
+                    if (!msgs.length) {
+                        p.innerHTML = '<div style="padding:20px 18px;text-align:center;color:var(--gray-400)">'
+                            + '<i class="fas fa-bell-slash" style="font-size:1.4rem;opacity:.3;display:block;margin-bottom:8px"></i>'
+                            + '<div style="font-size:.78rem">暂无学情情报</div></div>';
+                    } else {
+                        var header = '<div style="padding:9px 16px 7px;font-size:.7rem;font-weight:700;color:var(--gray-400);letter-spacing:.04em;border-bottom:1px solid var(--gray-100)">学情情报 · 最近 ' + msgs.length + ' 条</div>';
+                        var items = msgs.map(function(m) {
+                            return '<div style="display:flex;gap:9px;padding:9px 16px;border-bottom:1px solid #f8fafc">'
+                                + '<div style="width:26px;height:26px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;background:' + m.color + '15;color:' + m.color + ';margin-top:1px"><i class="' + m.icon + '"></i></div>'
+                                + '<div style="flex:1;min-width:0">'
+                                + '<div style="font-size:.76rem;font-weight:700;color:var(--gray-800);margin-bottom:1px">' + m.title + '</div>'
+                                + '<div style="font-size:.71rem;color:var(--gray-500);line-height:1.5">' + m.body + '</div>'
+                                + '<div style="font-size:.64rem;color:var(--gray-400);margin-top:3px">' + m.ts + '</div>'
+                                + '</div></div>';
+                        }).join('');
+                        p.innerHTML = header + items;
+                    }
+                    return p;
+                }
+
+                function showPopup() {
+                    if (currentMode !== 'teacher') return;
+                    clearTimeout(hideTimer);
+                    if (popup) popup.remove();
+                    popup = buildPopup();
+                    document.body.appendChild(popup);
+                    var r = link.getBoundingClientRect();
+                    popup.style.left = (r.right + 10) + 'px';
+                    popup.style.top  = Math.max(8, r.top - 4) + 'px';
+                    // 若超出视口右侧，则改为显示在左侧不可能（侧边栏已在最左），改为不超出底部
+                    requestAnimationFrame(function() {
+                        var ph = popup.offsetHeight;
+                        if (r.top - 4 + ph > window.innerHeight - 10) {
+                            popup.style.top = Math.max(8, window.innerHeight - ph - 10) + 'px';
+                        }
+                        popup.style.opacity = '1';
+                    });
+                    popup.addEventListener('mouseenter', function(){ clearTimeout(hideTimer); });
+                    popup.addEventListener('mouseleave', function(){ scheduleHide(); });
+                }
+                function scheduleHide() {
+                    clearTimeout(hideTimer);
+                    hideTimer = setTimeout(function() {
+                        if (popup) { popup.style.opacity = '0'; setTimeout(function(){ popup?.remove(); popup=null; }, 150); }
+                    }, 180);
+                }
+
+                link.addEventListener('mouseenter', showPopup);
+                link.addEventListener('mouseleave', scheduleHide);
             })();
 
         })();
@@ -8722,337 +8824,11 @@ ${text}
                 }, 0);
 
             } else {
-                // ── 学生端：AI学伴对话 ─────────────────────────────────────
-                topbar.querySelector('.sp3-tb-left').innerHTML =
-                    '<span class="sp3-title"><i class="fas fa-comments"></i> AI学伴对话 SmartTalk™</span>';
-                topbar.querySelector('.sp3-tb-right').innerHTML = '';
-
-                body.innerHTML = `
-                    <div class="study-layout">
-                        <div class="study-chat-area">
-                            <div class="study-messages" id="aiChatMessages">
-                                <div class="study-msg study-msg-ai">
-                                    <div class="study-msg-avatar"><i class="fas fa-robot"></i></div>
-                                    <div class="study-msg-bubble">
-                                        <div class="study-msg-text">你好！我是 AI 学伴，可以帮你解答课文、语法、单词等学习问题 📚</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="study-input-row">
-                                <textarea id="aiChatInput" class="study-textarea" placeholder="输入问题，Enter 发送…" rows="2"></textarea>
-                                <button class="study-send-btn" id="aiChatSend"><i class="fas fa-paper-plane"></i></button>
-                            </div>
-                        </div>
-                        <div class="study-tools">
-                            <div class="study-tool-card">
-                                <div class="study-tool-title"><i class="fas fa-lightbulb"></i> 快捷提问</div>
-                                <div class="study-quick-btns">
-                                    <button class="study-quick-btn" data-target="aiChatInput" data-q="帮我解释这个词语的意思">词语解释</button>
-                                    <button class="study-quick-btn" data-target="aiChatInput" data-q="这道题怎么解？">题目解析</button>
-                                    <button class="study-quick-btn" data-target="aiChatInput" data-q="帮我总结一下这篇课文的中心思想">课文总结</button>
-                                    <button class="study-quick-btn" data-target="aiChatInput" data-q="给我出几道相关练习题">出练习题</button>
-                                </div>
-                            </div>
-                            <div class="study-tool-card">
-                                <div class="study-tool-title"><i class="fas fa-history"></i> 对话统计</div>
-                                <div class="study-stat" id="aiChatCount">0 条消息</div>
-                                <button class="study-tool-btn study-tool-btn-ghost" id="aiChatClear" style="margin-top:8px">清空对话</button>
-                            </div>
-                        </div>
-                    </div>`;
-
-                const messages = document.getElementById('aiChatMessages');
-                const input    = document.getElementById('aiChatInput');
-                const sendBtn  = document.getElementById('aiChatSend');
-                const countEl  = document.getElementById('aiChatCount');
-                let msgCount = 0;
-
-                function fmtNow() {
-                    return new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-                }
-                function addMsg(role, text) {
-                    const isAI = role === 'ai';
-                    const div = document.createElement('div');
-                    div.className = 'study-msg ' + (isAI ? 'study-msg-ai' : 'study-msg-user');
-                    const avatarHtml = isAI
-                        ? '<div class="study-msg-avatar"><i class="fas fa-robot"></i></div>'
-                        : '<div class="study-msg-avatar study-msg-avatar-user"><i class="fas fa-user-graduate"></i></div>';
-                    const timeDiv = document.createElement('div');
-                    timeDiv.className = 'study-msg-time';
-                    timeDiv.textContent = fmtNow();
-                    const textDiv = document.createElement('div');
-                    textDiv.className = 'study-msg-text';
-                    const bubble = document.createElement('div');
-                    bubble.className = 'study-msg-bubble';
-                    bubble.appendChild(textDiv);
-                    bubble.appendChild(timeDiv);
-                    if (isAI) div.insertAdjacentHTML('beforeend', avatarHtml);
-                    div.appendChild(bubble);
-                    if (!isAI) div.insertAdjacentHTML('beforeend', avatarHtml);
-                    messages?.appendChild(div);
-                    if (messages) messages.scrollTop = messages.scrollHeight;
-                    if (!isAI) { msgCount++; if (countEl) countEl.textContent = msgCount + ' 条消息'; }
-                    // Typewriter for AI
-                    if (isAI && typeof typewriterAppend === 'function') {
-                        typewriterAppend(textDiv, text);
-                    } else {
-                        textDiv.textContent = text;
-                    }
-                }
-                                function addThinking() {
-                    const div = document.createElement('div');
-                    div.className = 'study-msg study-msg-ai';
-                    div.innerHTML = '<div class="study-msg-avatar"><i class="fas fa-robot"></i></div>' +
-                        '<div class="study-msg-bubble"><div class="study-msg-text study-dots"><span></span><span></span><span></span></div></div>';
-                    messages?.appendChild(div);
-                    if (messages) messages.scrollTop = messages.scrollHeight;
-                    return div;
-                }
-                function send() {
-                    const text = input?.value.trim();
-                    if (!text) return;
-                    input.value = '';
-                    addMsg('user', text);
-                    const thinking = addThinking();
-                    setTimeout(() => {
-                        thinking.remove();
-                        const resp = generateAIResponse(text);
-                        addMsg('ai', resp);
-                        // 保存到记录
-                        const recs = JSON.parse(localStorage.getItem('ai_chat_records') || '[]');
-                        recs.push({ user: text, ai: resp, t: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}), src:'AI学伴对话' });
-                        if (recs.length > 100) recs.shift();
-                        localStorage.setItem('ai_chat_records', JSON.stringify(recs));
-                    }, 800 + Math.random()*500);
-                }
-                sendBtn?.addEventListener('click', send);
-                input?.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
-                document.querySelectorAll('.study-quick-btn[data-target="aiChatInput"]').forEach(btn => {
-                    btn.addEventListener('click', () => { if(input){input.value=btn.dataset.q;input.focus();} });
-                });
-                document.getElementById('aiChatClear')?.addEventListener('click', () => {
-                    if (messages) { messages.innerHTML=''; msgCount=0; if(countEl) countEl.textContent='0 条消息';
-                        addMsg('ai','对话已清空，有什么可以帮你的？'); }
-                });
+                // 学生端：直接跳转 AI自习室
+                loadModule('study');
+                return;
             }
         }
-
-
-
-
-        // ══════════════════════════════════════════════════════════════
-        // ① 错题本
-        // ══════════════════════════════════════════════════════════════
-        function _saveWrongQuestion(q, challenge) {
-            try {
-                var wb = JSON.parse(localStorage.getItem('wrong_book') || '[]');
-                // 去重：同一题目（同id）最多保存一条，更新时间
-                var existing = wb.findIndex(function(w){ return w.qid === q.id; });
-                var entry = {
-                    qid: q.id, type: q.type, stem: q.stem,
-                    options: q.options || [], answer: q.answer,
-                    explanation: q.explanation || '',
-                    subject: challenge ? challenge.subject : '',
-                    testName: challenge ? challenge.name : '',
-                    time: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
-                    wrongCount: 1
-                };
-                if (existing >= 0) {
-                    entry.wrongCount = (wb[existing].wrongCount || 1) + 1;
-                    wb[existing] = entry;
-                } else {
-                    wb.unshift(entry);
-                    if (wb.length > 200) wb.pop();
-                }
-                localStorage.setItem('wrong_book', JSON.stringify(wb));
-            } catch(e){}
-        }
-
-        function initWrongBook() {
-            var body = document.getElementById('wb-body');
-            if (!body) return;
-            var wb = JSON.parse(localStorage.getItem('wrong_book') || '[]');
-            var filter = 'all';
-
-            // Collect subjects
-            var subjects = ['all'];
-            wb.forEach(function(w){ if (w.subject && subjects.indexOf(w.subject) < 0) subjects.push(w.subject); });
-
-            function render() {
-                var filtered = filter === 'all' ? wb : wb.filter(function(w){ return w.subject === filter; });
-                var typeColor = { single:'wb-tag-type-single', fill:'wb-tag-type-fill', judge:'wb-tag-type-judge' };
-                var typeLabel = { single:'选择题', fill:'填空题', judge:'判断题' };
-
-                var filterHtml = subjects.map(function(s) {
-                    return '<button class="wb-filter-btn' + (filter===s?' active':'') + '" data-filter="' + s + '">'
-                        + (s === 'all' ? '全部 (' + wb.length + ')' : s) + '</button>';
-                }).join('');
-
-                var cardsHtml = filtered.length === 0
-                    ? '<div class="wb-empty"><i class="fas fa-check-circle"></i><p>' + (wb.length===0?'暂无错题，继续加油！':'该科目暂无错题') + '</p></div>'
-                    : filtered.map(function(w, i) {
-                        var ansDisplay = '';
-                        if (w.type === 'single' && w.options && w.options.length > 0) {
-                            ansDisplay = '正确答案：' + String.fromCharCode(65 + w.answer) + '. ' + (w.options[w.answer] || '');
-                        } else if (w.type === 'judge') {
-                            ansDisplay = '正确答案：' + (w.answer ? '✓ 正确' : '✗ 错误');
-                        } else {
-                            ansDisplay = '参考答案：' + w.answer;
-                        }
-                        return '<div class="wb-card">'
-                            + '<div class="wb-card-header">'
-                            +   '<div class="wb-card-num">' + (i+1) + '</div>'
-                            +   '<div style="flex:1;font-size:.78rem;color:var(--gray-400)">' + w.testName + (w.wrongCount > 1 ? ' · 答错' + w.wrongCount + '次' : '') + '</div>'
-                            +   '<div class="wb-card-meta">'
-                            +     '<span class="wb-tag ' + (typeColor[w.type]||'') + '">' + (typeLabel[w.type]||w.type) + '</span>'
-                            +     (w.subject ? '<span class="wb-tag" style="background:var(--gray-100);color:var(--gray-600)">' + w.subject + '</span>' : '')
-                            +   '</div>'
-                            + '</div>'
-                            + '<div class="wb-stem">' + w.stem.replace(/\n/g,'<br>') + '</div>'
-                            + (w.type==='single' && w.options.length ? '<div style="display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--gray-600)">' + w.options.map(function(o,oi){ return '<span' + (oi===w.answer?' style="color:#16a34a;font-weight:700"':'') + '>' + String.fromCharCode(65+oi) + '. ' + o + '</span>'; }).join('') + '</div>' : '')
-                            + '<div class="wb-answers"><span class="wb-correct-answer">✓ ' + ansDisplay + '</span></div>'
-                            + (w.explanation ? '<div class="wb-expl">💡 ' + w.explanation + '</div>' : '')
-                            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:2px">'
-                            +   '<span style="font-size:.72rem;color:var(--gray-400)">' + w.time + '</span>'
-                            +   '<button class="wb-retry-btn" data-idx="' + i + '">重新练习</button>'
-                            + '</div>'
-                            + '</div>';
-                    }).join('');
-
-                body.innerHTML = '<div class="wb-page">'
-                    + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'
-                    +   '<div><h2 style="font-size:1.2rem;font-weight:800;color:var(--gray-800);margin-bottom:3px">错题本</h2>'
-                    +   '<p style="font-size:.84rem;color:var(--gray-500)">共 ' + wb.length + ' 道错题 · 答错就收录，点击重练</p></div>'
-                    +   '<button onclick="if(confirm(\'清空全部错题？\')){localStorage.removeItem(\'wrong_book\');initWrongBook();}" style="padding:6px 14px;border:1.5px solid #fca5a5;border-radius:8px;background:white;color:#dc2626;font-size:.78rem;cursor:pointer;font-family:var(--font)">清空错题本</button>'
-                    + '</div>'
-                    + '<div class="wb-filter-row">' + filterHtml + '</div>'
-                    + cardsHtml
-                    + '</div>';
-
-                body.querySelectorAll('.wb-filter-btn').forEach(function(btn) {
-                    btn.addEventListener('click', function() { filter = btn.dataset.filter; render(); });
-                });
-                body.querySelectorAll('.wb-retry-btn').forEach(function(btn) {
-                    btn.addEventListener('click', function() {
-                        showGlobalToast('请前往「游戏化闯关」重新练习该测试', 'info');
-                    });
-                });
-            }
-            render();
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        // ② AI 自动出题（注入到 SmartPath 编辑器顶部面板）
-        // ══════════════════════════════════════════════════════════════
-        function injectAIGenPanel(root, editorQuestionsRef, refreshQListFn) {
-            var body = root.querySelector('#sp3-body');
-            if (!body) return;
-            // Insert AI panel before editor content
-            var panel = document.createElement('div');
-            panel.className = 'ai-gen-panel';
-            panel.id = 'ai-gen-panel';
-            panel.innerHTML = '<div class="ai-gen-header"><i class="fas fa-robot"></i> AI 智能出题</div>'
-                + '<div class="ai-gen-row">'
-                +   '<textarea class="ai-gen-textarea" id="ai-gen-text" placeholder="粘贴课文段落或知识点描述，AI 自动生成题目并写入题库...&#10;&#10;示例：荷塘月色是朱自清1927年创作的一篇散文，描写夏夜荷塘的美丽景色..."></textarea>'
-                + '</div>'
-                + '<div class="ai-gen-controls">'
-                +   '<label style="font-size:.78rem;color:var(--gray-600)">题目数量</label>'
-                +   '<select class="ai-gen-select" id="ai-gen-count"><option value="3">3题</option><option value="5" selected>5题</option><option value="8">8题</option><option value="10">10题</option></select>'
-                +   '<label style="font-size:.78rem;color:var(--gray-600)">题型</label>'
-                +   '<select class="ai-gen-select" id="ai-gen-types"><option value="mixed" selected>混合（选择+判断+填空）</option><option value="single">仅选择题</option><option value="judge">仅判断题</option><option value="fill">仅填空题</option></select>'
-                +   '<button class="ai-gen-btn" id="ai-gen-btn"><i class="fas fa-magic"></i> 智能出题</button>'
-                + '</div>'
-                + '<div id="ai-gen-progress" style="display:none" class="ai-gen-progress">'
-                +   '<div class="ai-gen-spinner"></div><span id="ai-gen-status">正在分析课文内容...</span>'
-                + '</div>';
-
-            // Prepend to editor area
-            var editor = body.querySelector('.sp3-editor');
-            if (editor) editor.parentNode.insertBefore(panel, editor);
-            else body.insertBefore(panel, body.firstChild);
-
-            document.getElementById('ai-gen-btn') && document.getElementById('ai-gen-btn').addEventListener('click', function() {
-                var text = document.getElementById('ai-gen-text').value.trim();
-                if (!text) { showGlobalToast('请先输入课文内容', 'error'); return; }
-                var count = parseInt(document.getElementById('ai-gen-count').value);
-                var types = document.getElementById('ai-gen-types').value;
-                var btn = this;
-                btn.disabled = true;
-                var progress = document.getElementById('ai-gen-progress');
-                var status   = document.getElementById('ai-gen-status');
-                if (progress) progress.style.display = 'flex';
-
-                var steps = ['正在分析课文内容...','提取关键知识点...','生成题干与选项...','校验答案逻辑...','写入题库...'];
-                var si = 0;
-                var stepTimer = setInterval(function() {
-                    si = Math.min(si + 1, steps.length - 1);
-                    if (status) status.textContent = steps[si];
-                }, 600);
-
-                setTimeout(function() {
-                    clearInterval(stepTimer);
-                    var generated = _generateQuestionsFromText(text, count, types);
-                    generated.forEach(function(q) { editorQuestionsRef.push(q); });
-                    refreshQListFn();
-                    if (progress) progress.style.display = 'none';
-                    btn.disabled = false;
-                    showGlobalToast('AI 已生成 ' + generated.length + ' 道题目并写入题库 ✨', 'success');
-                    checkAndGrantBadge('ai_gen');
-                }, 3200);
-            });
-        }
-
-        function _generateQuestionsFromText(text, count, types) {
-            var sentences = text.replace(/[！。？!?]/g, '|').split('|').map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 5; });
-            var keywords = _extractKeywords(text);
-            var questions = [];
-            var uid = Date.now();
-            var typeList = types === 'mixed' ? ['single','judge','fill','single','judge'] :
-                           types === 'single' ? ['single'] :
-                           types === 'judge'  ? ['judge']  : ['fill'];
-
-            for (var i = 0; i < count; i++) {
-                var type = typeList[i % typeList.length];
-                var base = sentences[i % Math.max(sentences.length,1)] || text.slice(0,40);
-                var kw = keywords[i % Math.max(keywords.length,1)] || '相关内容';
-                var q = { id: 'aig_' + (uid + i), type: type, stem: '', options: [], answer: null, explanation: '' };
-
-                if (type === 'single') {
-                    q.stem = '下列关于「' + kw + '」的说法，正确的是？';
-                    q.options = [
-                        kw + '在文中起到了关键的表达作用',
-                        kw + '与文章整体情感基调相矛盾',
-                        kw + '仅是作者的随意描写，无深意',
-                        kw + '在原文中并未出现'
-                    ];
-                    q.answer = 0;
-                    q.explanation = '根据课文内容，' + kw + '是文章重要的组成部分，具有深刻含义。';
-                } else if (type === 'judge') {
-                    var stmtParts = [
-                        { stem: '本文作者通过描写「' + kw + '」表达了深沉的情感。', answer: true,  expl: '文章借助' + kw + '寄托了作者丰富的情感。' },
-                        { stem: '「' + kw + '」在文中仅起到装饰性作用，没有象征意义。', answer: false, expl: '错误。「' + kw + '」在文中具有重要的象征意义，与作者情感密切相关。' },
-                        { stem: '文章运用了多种修辞手法来描写' + kw + '，使文字更加生动。', answer: true,  expl: '正确。作者运用比喻、拟人等修辞，生动刻画了' + kw + '的特点。' },
-                    ];
-                    var stmt = stmtParts[i % stmtParts.length];
-                    q.stem = stmt.stem; q.answer = stmt.answer; q.explanation = stmt.expl;
-                } else {
-                    q.stem = '根据课文，「' + base.slice(0, 20) + '……」这句话中，作者想表达的核心意思是_______。';
-                    q.answer = kw + '所体现的情感与意境';
-                    q.explanation = '结合上下文理解，这句话的核心在于表达' + kw + '带来的深刻感受。';
-                }
-                questions.push(q);
-            }
-            return questions;
-        }
-
-        function _extractKeywords(text) {
-            // Simple keyword extraction: 2-4 char noun phrases
-            var words = text.match(/[\u4e00-\u9fa5]{2,6}/g) || [];
-            var freq = {};
-            words.forEach(function(w){ freq[w] = (freq[w]||0) + 1; });
-            return Object.keys(freq).sort(function(a,b){ return freq[b]-freq[a]; }).slice(0, 12);
-        }
-
         // ══════════════════════════════════════════════════════════════
         // ③ 班级账号管理
         // ══════════════════════════════════════════════════════════════
@@ -9060,10 +8836,15 @@ ${text}
             var stored = localStorage.getItem('zjwj_accounts');
             if (stored) {
                 var parsed = JSON.parse(stored);
-                // 用当前 ACCOUNTS 修正 username 匹配的核心字段，防止旧缓存污染
+                // 仅强制同步 role、avatar（防止旧缓存污染），保留 subject/name 等可编辑字段
                 parsed = parsed.map(function(a) {
                     var fresh = ACCOUNTS.find(function(b){ return b.username === a.username; });
-                    return fresh ? JSON.parse(JSON.stringify(fresh)) : a;
+                    if (fresh) {
+                        a.role   = fresh.role;
+                        a.avatar = a.name ? a.name.slice(0,1) : fresh.avatar;
+                        if (a.subject === undefined) a.subject = fresh.subject || '';
+                    }
+                    return a;
                 });
                 localStorage.setItem('zjwj_accounts', JSON.stringify(parsed));
                 return parsed;
@@ -9104,6 +8885,12 @@ ${text}
 
                 var rows = accounts.map(function(a, i) {
                     var initials = (a.name || a.username).slice(0,1);
+                    var subjectOpts = ['语文','数学','英语','物理','化学','生物','历史','地理','政治','音乐','美术','体育'].map(function(s){
+                        return '<option value="'+s+'"'+(a.subject===s?' selected':'')+'>'+s+'</option>';
+                    }).join('');
+                    var subjectCell = a.role==='teacher'||a.role==='admin'
+                        ? '<select class="cm-subject-sel" data-idx="'+i+'" style="font-size:.78rem;padding:3px 6px;border:1px solid var(--gray-200);border-radius:6px;color:var(--gray-700);background:white"><option value="">未分配</option>'+subjectOpts+'</select>'
+                        : '<span style="font-size:.78rem;color:var(--gray-400)">—</span>';
                     return '<tr>'
                         + '<td><div style="display:flex;align-items:center;gap:10px">'
                         +   '<div class="cm-avatar-sm">' + initials + '</div>'
@@ -9111,6 +8898,7 @@ ${text}
                         +   '<div style="font-size:.75rem;color:var(--gray-400)">' + a.username + '</div></div></div></td>'
                         + '<td><span class="cm-role-badge ' + (a.role==='teacher'?'cm-role-teacher':a.role==='admin'?'cm-role-teacher':'cm-role-student') + '">'
                         +   (a.role==='teacher'?'教师':a.role==='admin'?'管理员':'学生') + '</span></td>'
+                        + '<td>' + subjectCell + '</td>'
                         + '<td><span style="font-size:.82rem;color:var(--gray-600);font-family:monospace">••••••</span></td>'
                         + '<td><div style="display:flex;gap:6px">'
                         +   '<button class="cm-action-btn cm-reset-btn" data-idx="' + i + '" title="重置密码">重置密码</button>'
@@ -9130,14 +8918,17 @@ ${text}
                     + '</div>'
                     + '<div class="cm-table-wrap">'
                     +   '<table class="cm-table">'
-                    +   '<thead><tr><th>用户</th><th>角色</th><th>密码</th><th>操作</th></tr></thead>'
+                    +   '<thead><tr><th>用户</th><th>角色</th><th>学科分配</th><th>密码</th><th>操作</th></tr></thead>'
                     +   '<tbody>' + rows + '</tbody>'
                     +   '</table>'
                     +   '<div class="cm-add-row">'
-                    +     '<input type="text" id="cm-new-name" placeholder="姓名（如：王老师）" style="width:130px">'
-                    +     '<input type="text" id="cm-new-user" placeholder="账号（如：wang1）" style="width:120px">'
-                    +     '<input type="password" id="cm-new-pass" placeholder="密码" style="width:100px">'
-                    +     '<select id="cm-new-role" style="width:80px"><option value="student">学生</option><option value="teacher">教师</option></select>'
+                    +     '<input type="text" id="cm-new-name" placeholder="姓名（如：王老师）" style="width:110px">'
+                    +     '<input type="text" id="cm-new-user" placeholder="账号（如：wang1）" style="width:110px">'
+                    +     '<input type="password" id="cm-new-pass" placeholder="密码" style="width:90px">'
+                    +     '<select id="cm-new-role" style="width:75px"><option value="student">学生</option><option value="teacher">教师</option></select>'
+                    +     '<select id="cm-new-subject" style="width:80px"><option value="">学科</option>'
+                    +     ['语文','数学','英语','物理','化学','生物','历史','地理','政治'].map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('')
+                    +     '</select>'
                     +     '<button class="cm-add-btn" id="cm-add-btn"><i class="fas fa-user-plus"></i> 添加账号</button>'
                     +   '</div>'
                     + '</div></div>';
@@ -9147,13 +8938,24 @@ ${text}
                     var user = body.querySelector('#cm-new-user').value.trim();
                     var pass = body.querySelector('#cm-new-pass').value.trim();
                     var role = body.querySelector('#cm-new-role').value;
+                    var subj = body.querySelector('#cm-new-subject').value;
                     if (!name || !user || !pass) { showGlobalToast('请填写完整信息', 'error'); return; }
                     if (accounts.find(function(a){ return a.username === user; })) { showGlobalToast('账号名已存在', 'error'); return; }
-                    var newAcct = { username: user, password: pass, name: name, role: role, avatar: name.slice(0,1) };
+                    var newAcct = { username: user, password: pass, name: name, role: role, avatar: name.slice(0,1), subject: subj };
                     accounts.push(newAcct);
                     _saveAccountsDB(accounts);
                     showGlobalToast('账号「' + name + '」已创建', 'success');
                     render();
+                });
+
+                // 学科分配 select 实时保存
+                body.querySelectorAll('.cm-subject-sel').forEach(function(sel) {
+                    sel.addEventListener('change', function() {
+                        var idx = parseInt(sel.dataset.idx);
+                        accounts[idx].subject = sel.value;
+                        _saveAccountsDB(accounts);
+                        showGlobalToast(accounts[idx].name + ' 学科已设为「' + (sel.value||'未分配') + '」', 'success');
+                    });
                 });
 
                 body.querySelectorAll('.cm-del-btn').forEach(function(btn) {
@@ -9383,6 +9185,52 @@ ${text}
         }
 
         function initStudyRoom() {
+            // ── 大纲章节选择器 + 进度条 ──────────────────────────────────
+            (function initChapterBar() {
+                var wrap  = document.getElementById('study-chapter-wrap');
+                var sel   = document.getElementById('study-chapter-sel');
+                var pbar  = document.getElementById('study-progress-bar');
+                var ptxt  = document.getElementById('study-progress-text');
+                if (!wrap || !sel) return;
+
+                var leaves = window._getSyllabusLeaves ? window._getSyllabusLeaves() : [];
+                if (!leaves.length) return;  // 没有应用大纲则隐藏
+
+                wrap.style.display = 'flex';
+                sel.innerHTML = '<option value="">选择章节…</option>'
+                    + leaves.map(function(l){ return '<option value="'+l+'">'+l+'</option>'; }).join('');
+
+                // 读取上次选中的章节
+                var savedChapter = localStorage.getItem('zjwj_study_chapter') || '';
+                if (savedChapter) sel.value = savedChapter;
+                window._currentStudyChapter = sel.value;
+
+                // 进度计算：该章节有多少关联测试，完成了多少
+                function updateProgress() {
+                    var chapter = sel.value;
+                    if (!chapter || !pbar || !ptxt) return;
+                    var sp3 = JSON.parse(localStorage.getItem('sp3_data')||'[]');
+                    var linked = [], done = 0;
+                    sp3.forEach(function(f){ (f.tests||[]).forEach(function(t){
+                        if (t.syllabusNode && t.syllabusNode.indexOf(chapter.split(' › ').pop())>=0) linked.push(t);
+                    }); });
+                    linked.forEach(function(t){
+                        var p = JSON.parse(localStorage.getItem('gp_progress_'+t.id)||'{}');
+                        if (p.lastTotal>0 && Math.round(p.lastCorrect/p.lastTotal*100)>=60) done++;
+                    });
+                    var pct = linked.length ? Math.round(done/linked.length*100) : 0;
+                    pbar.style.width = pct+'%';
+                    ptxt.textContent = linked.length ? done+'/'+linked.length+' ('+pct+'%)' : '暂无关联测试';
+                }
+
+                sel.addEventListener('change', function() {
+                    window._currentStudyChapter = this.value;
+                    localStorage.setItem('zjwj_study_chapter', this.value);
+                    updateProgress();
+                });
+                updateProgress();
+            })();
+
             // ── 时钟 ──────────────────────────────────────────────────────
             function fmtTime(d) {
                 return d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
@@ -9617,19 +9465,59 @@ ${text}
                 focusInput.value = '';
                 addMsg('user', text);
                 var thinking = addThinking();
-                setTimeout(function() {
+
+                var dk = getDeepSeekKey();
+                if (!dk) {
                     thinking.remove();
-                    var resp = generateAIResponse(text);
-                    addMsg('ai', resp);
-                    updateContextSummary();
-                    syncFocusContext();
-                    var recs = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
-                    recs.push({ user: text, ai: resp,
-                        t: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
-                        src:'AI自习室' });
-                    if (recs.length > 200) recs.shift();
-                    localStorage.setItem('study_chat_records', JSON.stringify(recs));
-                }, 800 + Math.random() * 500);
+                    addMsg('ai', '请先配置 DeepSeek API Key。');
+                    return;
+                }
+
+                fetch(DEEPSEEK_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + dk },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        max_tokens: 600,
+                        temperature: 0.7,
+                        messages: [
+                            { role: 'system', content: '你是学生专注学习时的AI助手，回答简洁直接，优先引导思考。用【段落分隔符】分隔独立思维单元（每段30字以内，专注模式要更简短）。' },
+                            { role: 'user', content: text }
+                        ]
+                    })
+                })
+                .then(function(r){ return r.json(); })
+                .then(function(data) {
+                    thinking.remove();
+                    var resp = data.choices?.[0]?.message?.content || '抱歉，没有获取到回复。';
+                    var bubbles = resp.split(/【段落分隔符】|\n{2,}/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length>0; });
+                    if (bubbles.length===1 && resp.length>60) {
+                        var parts=[], cur='', sents=resp.split(/(。|！|？|…{1,2})/);
+                        for (var si=0;si<sents.length;si+=2){ cur+=(sents[si]||'')+(sents[si+1]||''); if(cur.length>=35&&si<sents.length-2){parts.push(cur.trim());cur='';} }
+                        if (cur.trim()) parts.push(cur.trim());
+                        if (parts.length>1) bubbles=parts;
+                    }
+                    (function sendB(idx){
+                        if (idx>=bubbles.length) {
+                            updateContextSummary();
+                            syncFocusContext();
+                            var recs = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
+                            recs.push({ user: text, ai: bubbles.join('\n\n'),
+                                t: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+                                src:'AI自习室', syllabusNode: window._currentStudyChapter||'' });
+                            if (recs.length > 200) recs.shift();
+                            localStorage.setItem('study_chat_records', JSON.stringify(recs));
+                            if (window._anaNotifyNewChat) window._anaNotifyNewChat();
+                            return;
+                        }
+                        addMsg('ai', bubbles[idx]);
+                        setTimeout(function(){ sendB(idx+1); }, Math.min(500, 180+bubbles[idx].length*7));
+                    })(0);
+                })
+                .catch(function() {
+                    thinking.remove();
+                    addMsg('ai', '连接失败，请检查网络。');
+                });
             }
             focusSendB && focusSendB.addEventListener('click', focusSend);
             focusInput && focusInput.addEventListener('keydown', function(e) {
@@ -9647,7 +9535,7 @@ ${text}
             var countEl  = document.getElementById('studyMsgCount');
             var msgCount = 0;
 
-            function addMsg(role, text) {
+            function addMsg(role, text, instant) {
                 var isAI = role === 'ai';
                 var div = document.createElement('div');
                 div.className = 'study-msg ' + (isAI ? 'study-msg-ai' : 'study-msg-user');
@@ -9669,7 +9557,7 @@ ${text}
                 messages && messages.appendChild(div);
                 messages && (messages.scrollTop = messages.scrollHeight);
                 if (!isAI) { msgCount++; if (countEl) countEl.textContent = msgCount + ' 条消息'; }
-                if (isAI && typeof typewriterAppend === 'function') {
+                if (isAI && !instant && typeof typewriterAppend === 'function') {
                     typewriterAppend(textDiv, text);
                 } else {
                     textDiv.textContent = text;
@@ -9690,10 +9578,11 @@ ${text}
             var dialogHistory = JSON.parse(localStorage.getItem('study_dialog_history') || '[]');
             var ctxSummary = localStorage.getItem('study_ctx_summary') || '';
 
-            // 还原聊天记录到 DOM
+            // 还原聊天记录到 DOM（拆分多气泡，直接显示不走打字机）
             dialogHistory.forEach(function(d) {
-                addMsg('user', d.q);
-                addMsg('ai', d.a);
+                addMsg('user', d.q, true);
+                var aiParts = d.a.split(/\n\n+/).map(function(s){ return s.trim(); }).filter(Boolean);
+                aiParts.forEach(function(part) { addMsg('ai', part, true); });
             });
             if (messages) messages.scrollTop = messages.scrollHeight;
 
@@ -9751,6 +9640,19 @@ ${text}
                 addMsg('user', text);
                 var thinking = addThinking();
 
+                var _dk = getDeepSeekKey();
+                if (!_dk) {
+                    thinking.remove();
+                    addMsg('ai', '请先点击右上角「🔑」图标配置 DeepSeek API Key，就可以开始对话了。');
+                    showApiSettingsModal();
+                    return;
+                }
+
+                var thinkingRemoved = false;
+                function removeThinking() {
+                    if (!thinkingRemoved) { thinkingRemoved = true; thinking.remove(); }
+                }
+
                 try {
                     // 构建对话历史作为上下文
                     var grade = localStorage.getItem('zjwj_student_grade');
@@ -9758,7 +9660,20 @@ ${text}
                     var messages = [
                         {
                             role: 'system',
-                            content: '你是智境无界AI自习室的学习助手，正在帮助' + gradeDesc + '的小朋友学习。用词简单易懂，句子要短，多用比喻和例子，像一个耐心的老师哥哥/姐姐一样。不要说套话，直接针对问题回答。'
+                            content: `你是一位亲切耐心的小学老师，正在和${gradeDesc}的学生一对一聊天答疑。
+
+【核心原则】
+- 先解释知识点本身的道理，再用生活例子帮助理解，不能用比喻代替解释
+- 讲数学/语文等科目时，要有教学感：说清楚"为什么"和"怎么用"，而不是只打比方
+- 例如讲"为什么要用方程"，要说清楚：直接算有时找不到突破口，方程能把未知数设出来，建立等量关系，一步步解出来——这才是教学，不是"方程像天平"就完了
+- 语气温和自然，用词简单，但内容要实在，不敷衍
+- 如果学生答错或卡住，给方向性提示，不直接说出答案
+- 回答不要太长，说清楚就好
+
+【格式要求】
+用【段落分隔符】分隔每一段（每段50字以内）。解释完后，必须单独一段提一个启发式问题引导思考，问题要开放、贴近生活，不能只答"是/否"。
+
+当前学习章节：${window._currentStudyChapter ? '「' + window._currentStudyChapter + '」' : '未指定'}`
                         }
                     ];
                     // 带入最近5轮对话历史
@@ -9772,7 +9687,7 @@ ${text}
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + getDeepSeekKey()
+                            'Authorization': 'Bearer ' + _dk
                         },
                         body: JSON.stringify({
                             model: 'deepseek-chat',
@@ -9781,34 +9696,106 @@ ${text}
                             messages: messages
                         })
                     });
+
                     const data = await response.json();
+
+                    if (!response.ok) {
+                        var apiErr = (data.error && (data.error.message || data.error.code))
+                            || (data.detail) || ('HTTP ' + response.status);
+                        throw new Error(apiErr);
+                    }
+                    if (!data.choices || !data.choices[0]) {
+                        throw new Error('API 返回格式异常：' + JSON.stringify(data).slice(0, 120));
+                    }
+
                     var resp = data.choices[0].message.content;
+                    removeThinking();
 
-                    thinking.remove();
-                    addMsg('ai', resp);
-                    dialogHistory.push({ q: text, a: resp });
-                    if (dialogHistory.length > 30) dialogHistory.shift();
-                    localStorage.setItem('study_dialog_history', JSON.stringify(dialogHistory));
-                    updateContextSummary();
-                    localStorage.setItem('study_ctx_summary', ctxSummary);
+                    // 多气泡：按【段落分隔符】或双换行切分，逐条延迟发出
+                    var bubbles = resp
+                        .split(/【段落分隔符】|\n{2,}/)
+                        .map(function(s){ return s.trim(); })
+                        .filter(function(s){ return s.length > 0; });
+                    // 若 AI 没有输出分隔符，按长句拆分（句号/感叹/问号后超过25字符才拆）
+                    if (bubbles.length === 1 && resp.length > 60) {
+                        var parts = [], cur = '', sentences = resp.split(/(。|！|？|…{1,2})/);
+                        for (var si = 0; si < sentences.length; si += 2) {
+                            cur += (sentences[si]||'') + (sentences[si+1]||'');
+                            if (cur.length >= 40 && si < sentences.length - 2) {
+                                parts.push(cur.trim()); cur = '';
+                            }
+                        }
+                        if (cur.trim()) parts.push(cur.trim());
+                        if (parts.length > 1) bubbles = parts;
+                    }
 
-                    var recs = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
-                    var entry = { user: text, ai: resp,
-                        t: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
-                        src:'AI自习室', topic: ctxSummary };
-                    recs.push(entry);
-                    if (recs.length > 200) recs.shift();
-                    localStorage.setItem('study_chat_records', JSON.stringify(recs));
-                    // 同步写入 student_study_records 供教师/管理员端查看
-                    var studentRecs = JSON.parse(localStorage.getItem('student_study_records') || '[]');
-                    studentRecs.push(entry);
-                    if (studentRecs.length > 500) studentRecs.shift();
-                    localStorage.setItem('student_study_records', JSON.stringify(studentRecs));
-                    checkAndGrantBadge('chat');
+                    var fullResp = bubbles.join('\n\n');
+
+                    // 禁用输入，防止气泡未发完就再次发送
+                    function setInputLocked(locked) {
+                        if (input) { input.disabled = locked; input.style.opacity = locked ? '0.5' : ''; }
+                        var sb = document.getElementById('studySendBtn');
+                        if (sb) { sb.disabled = locked; sb.style.opacity = locked ? '0.5' : ''; }
+                    }
+                    setInputLocked(true);
+
+                    (function sendBubbles(idx) {
+                        if (idx >= bubbles.length) {
+                            // 全部发完：解禁输入，记录历史
+                            setInputLocked(false);
+                            if (input) input.focus();
+                            dialogHistory.push({ q: text, a: fullResp });
+                            if (dialogHistory.length > 30) dialogHistory.shift();
+                            localStorage.setItem('study_dialog_history', JSON.stringify(dialogHistory));
+                            updateContextSummary();
+                            localStorage.setItem('study_ctx_summary', ctxSummary);
+                            var recs = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
+                            var entry = { user: text, ai: fullResp,
+                                t: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+                                src:'AI自习室', topic: ctxSummary, syllabusNode: window._currentStudyChapter||'' };
+                            recs.push(entry);
+                            if (recs.length > 200) recs.shift();
+                            localStorage.setItem('study_chat_records', JSON.stringify(recs));
+                            if (window._anaNotifyNewChat) window._anaNotifyNewChat();
+                            var studentRecs = JSON.parse(localStorage.getItem('student_study_records') || '[]');
+                            studentRecs.push(entry);
+                            if (studentRecs.length > 500) studentRecs.shift();
+                            localStorage.setItem('student_study_records', JSON.stringify(studentRecs));
+                            checkAndGrantBadge('chat');
+                            return;
+                        }
+                        // 发当前气泡
+                        addMsg('ai', bubbles[idx]);
+                        var hasNext = idx + 1 < bubbles.length;
+                        if (!hasNext) { sendBubbles(idx + 1); return; }
+                        // 还有下一条：先等字数阅读时间，再显示 thinking 动画，再发下一条
+                        var readDelay = Math.min(1200, 400 + bubbles[idx].length * 30);
+                        setTimeout(function() {
+                            var thinkEl = addThinking();
+                            var thinkDelay = Math.min(1000, 500 + bubbles[idx + 1].length * 15);
+                            setTimeout(function() {
+                                thinkEl.remove();
+                                sendBubbles(idx + 1);
+                            }, thinkDelay);
+                        }, readDelay);
+                    })(0);
+
                 } catch(err) {
-                    thinking.remove();
-                    addMsg('ai', '抱歉，AI连接失败，请检查网络后重试。');
-                    console.error('Study AI error:', err);
+                    removeThinking();
+                    // 出错时解禁输入（正常流程由 sendBubbles 完成后自行解禁）
+                    var inputEl = document.getElementById('studyInput');
+                    var sbEl = document.getElementById('studySendBtn');
+                    if (inputEl) { inputEl.disabled = false; inputEl.style.opacity = ''; inputEl.focus(); }
+                    if (sbEl) { sbEl.disabled = false; sbEl.style.opacity = ''; }
+                    var errMsg = (err && err.message) ? err.message : String(err);
+                    console.error('Study AI error:', errMsg, err);
+                    if (errMsg.indexOf('401') >= 0 || errMsg.indexOf('Unauthorized') >= 0 || errMsg.indexOf('invalid') >= 0) {
+                        addMsg('ai', 'API Key 无效或已过期，请点击右上角「🔑」重新配置。');
+                    } else if (errMsg.indexOf('HTTP 4') >= 0 || errMsg.indexOf('HTTP 5') >= 0 || errMsg.indexOf('格式异常') >= 0) {
+                        addMsg('ai', 'API 返回错误：' + errMsg);
+                    } else {
+                        addMsg('ai', '连接失败：' + errMsg.slice(0, 80) + '\n\n请检查网络，或确认 API Key 是否有效。');
+                    }
                 }
             }
 
@@ -10993,6 +10980,263 @@ ${text}
             m.addEventListener('click', function(e){ if (e.target === m) m.remove(); });
         }
 
+        // ══════════════════════════════════════════════════════════════
+        //  教学大纲模块
+        // ══════════════════════════════════════════════════════════════
+        var SYLLABUS_KEY      = 'zjwj_syllabus_db';
+        var SYLLABUS_GRADES   = ['七年级','八年级','九年级','高一','高二','高三'];
+        var SYLLABUS_SUBJECTS = ['语文','数学','英语','物理','化学','生物','历史','地理','政治','音乐','美术','体育'];
+
+        function _getSyllabusDB() {
+            try { return JSON.parse(localStorage.getItem(SYLLABUS_KEY) || '[]'); } catch(e){ return []; }
+        }
+        function _saveSyllabusDB(db) { localStorage.setItem(SYLLABUS_KEY, JSON.stringify(db)); }
+        function _getAppliedSyllabusId() {
+            try { return JSON.parse(localStorage.getItem('zjwj_applied_syllabus') || 'null'); } catch(e){ return null; }
+        }
+        function _setAppliedSyllabusId(id) { localStorage.setItem('zjwj_applied_syllabus', JSON.stringify(id)); }
+
+        function _parseSyllabus(text) {
+            var lines = (text||'').split('\n').map(function(l){ return l.trimEnd(); });
+            var roots = [], curL1 = null, curL2 = null;
+            lines.forEach(function(line) {
+                if (!line.trim()) return;
+                if (line.startsWith('## ')) {
+                    var node = { title: line.slice(3).trim(), level: 3 };
+                    if (curL2) curL2.children.push(node);
+                } else if (line.startsWith('# ')) {
+                    curL2 = { title: line.slice(2).trim(), level: 2, children: [] };
+                    if (curL1) curL1.children.push(curL2);
+                } else {
+                    curL1 = { title: line.trim(), level: 1, children: [] };
+                    curL2 = null;
+                    roots.push(curL1);
+                }
+            });
+            return roots;
+        }
+
+        // 供其他模块调用：获取当前应用的大纲及其叶节点列表
+        window._getActiveSyllabus = function() {
+            var id = _getAppliedSyllabusId();
+            if (!id) return null;
+            return _getSyllabusDB().find(function(s){ return s.id === id; }) || null;
+        };
+        window._getSyllabusLeaves = function() {
+            var s = window._getActiveSyllabus();
+            if (!s) return [];
+            var leaves = [], tree = _parseSyllabus(s.content||'');
+            tree.forEach(function(l1){
+                (l1.children||[]).forEach(function(l2){
+                    if ((l2.children||[]).length) {
+                        l2.children.forEach(function(l3){ leaves.push(l1.title+' › '+l2.title+' › '+l3.title); });
+                    } else { leaves.push(l1.title+' › '+l2.title); }
+                });
+                if (!(l1.children||[]).length) leaves.push(l1.title);
+            });
+            return leaves;
+        };
+
+        function initSyllabus() {
+            var body = document.getElementById('syllabus-body');
+            if (!body) return;
+            var isAdmin   = currentUser && currentUser.role === 'admin';
+            var mySubject = currentUser ? (currentUser.subject || '语文') : '语文';
+            var appliedId = _getAppliedSyllabusId();
+            var selGrade   = SYLLABUS_GRADES[0];
+            var selSubject = mySubject;
+            var selItem    = null;
+
+            function canEdit(item) { return item && (isAdmin || item.subject === mySubject); }
+
+            function renderPreview(text) {
+                var tree = _parseSyllabus(text), el = body.querySelector('#sy-preview'), cnt = body.querySelector('#sy-count');
+                if (!el) return;
+                var nodeCount = 0;
+                el.innerHTML = tree.map(function(l1){
+                    nodeCount++;
+                    return '<div style="font-size:.78rem;font-weight:700;color:var(--gray-800);padding:5px 0 2px;display:flex;align-items:center;gap:5px">'
+                        +'<span style="width:5px;height:5px;border-radius:50%;background:var(--primary);flex-shrink:0;display:inline-block"></span>'+l1.title+'</div>'
+                    +(l1.children||[]).map(function(l2){
+                        nodeCount++;
+                        return '<div style="font-size:.75rem;color:var(--gray-600);padding:2px 0 1px 12px;display:flex;align-items:center;gap:5px">'
+                            +'<span style="width:4px;height:4px;border-radius:50%;background:var(--gray-400);flex-shrink:0;display:inline-block"></span>'+l2.title+'</div>'
+                        +(l2.children||[]).map(function(l3){
+                            return '<div style="font-size:.72rem;color:var(--gray-500);padding:1px 0 1px 22px">— '+l3.title+'</div>';
+                        }).join('');
+                    }).join('');
+                }).join('');
+                if (cnt) cnt.textContent = tree.length+'单元 / '+nodeCount+'节';
+            }
+
+            function renderProgress() {
+                var db2     = _getSyllabusDB();
+                var applied = db2.find(function(s){ return s.id === appliedId; }) || null;
+                var pb = body.querySelector('#sy-progress-bar'), pt = body.querySelector('#sy-progress-text');
+                if (!pb || !pt) return;
+                if (!applied) { pt.textContent = '请先选择并应用大纲'; pb.style.width='0%'; return; }
+                var tree = _parseSyllabus(applied.content||''), total=0, done=0;
+                tree.forEach(function(l1){
+                    (l1.children||[]).forEach(function(l2){
+                        total++;
+                        var sp3 = JSON.parse(localStorage.getItem('sp3_data')||'[]'), linked=[];
+                        sp3.forEach(function(f){ (f.tests||[]).forEach(function(t){ if(t.syllabusNode && t.syllabusNode.indexOf(l2.title)>=0) linked.push(t); }); });
+                        if (linked.length) {
+                            var allDone = linked.every(function(t){
+                                var p = JSON.parse(localStorage.getItem('gp_progress_'+t.id)||'{}');
+                                return p.lastTotal>0 && Math.round(p.lastCorrect/p.lastTotal*100)>=60;
+                            });
+                            if (allDone) done++;
+                        }
+                    });
+                });
+                var pct = total>0 ? Math.round(done/total*100) : 0;
+                pb.style.width = pct+'%';
+                pt.textContent = done+' / '+total+' 节已完成（'+pct+'%）';
+            }
+
+            function render() {
+                var db2      = _getSyllabusDB();
+                var filtered = db2.filter(function(s){ return s.grade===selGrade && s.subject===selSubject; });
+                var isRO     = !isAdmin && selSubject !== mySubject;
+                var applSyl  = db2.find(function(s){ return s.id===appliedId; });
+                var tag      = document.getElementById('syllabus-current-tag');
+                if (tag) tag.textContent = applSyl ? '应用中：'+applSyl.title : '未应用大纲';
+
+                body.innerHTML =
+                  '<div style="display:flex;height:100%;min-height:0">'
+
+                  // 左侧列表
+                  +'<div style="width:220px;flex-shrink:0;border-right:1px solid var(--gray-200);background:var(--gray-50);display:flex;flex-direction:column">'
+                  +'<div style="padding:12px 12px 8px;border-bottom:1px solid var(--gray-100)">'
+                  +'<div style="font-size:.72rem;font-weight:700;color:var(--gray-500);margin-bottom:7px;letter-spacing:.04em">大纲库</div>'
+                  +'<select id="sy-grade" style="width:100%;font-size:.8rem;margin-bottom:5px">'
+                  +SYLLABUS_GRADES.map(function(g){ return '<option'+(g===selGrade?' selected':'')+'>'+g+'</option>'; }).join('')
+                  +'</select>'
+                  +'<select id="sy-subject" style="width:100%;font-size:.8rem">'
+                  +SYLLABUS_SUBJECTS.map(function(s){ return '<option'+(s===selSubject?' selected':'')+'>'+s+'</option>'; }).join('')
+                  +'</select>'
+                  +'</div>'
+                  +'<div style="flex:1;overflow-y:auto;padding:6px">'
+                  +(!filtered.length
+                    ? '<div style="font-size:.75rem;color:var(--gray-400);padding:16px 6px;text-align:center">暂无大纲<br><span style="font-size:.7rem;opacity:.7">点击下方「新建」</span></div>'
+                    : filtered.map(function(item){
+                        var isSel = selItem && selItem.id===item.id, isApp = item.id===appliedId;
+                        return '<div class="sy-list-item'+(isSel?' selected':'')+'" data-id="'+item.id+'">'
+                          +'<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem">'+item.title+'</span>'
+                          +(isApp?'<span style="font-size:.64rem;padding:1px 5px;border-radius:8px;background:var(--blue-50);color:var(--primary);flex-shrink:0">应用中</span>':'')
+                          +'</div>';
+                      }).join(''))
+                  +'</div>'
+                  +'<div style="padding:8px;border-top:1px solid var(--gray-100)">'
+                  +(!isRO
+                    ? '<button id="sy-new-btn" class="btn btn-secondary" style="width:100%;font-size:.78rem;padding:5px"><i class="fas fa-plus"></i> 新建大纲</button>'
+                    : '<div style="font-size:.7rem;color:var(--gray-400);text-align:center;padding:3px">仅可编辑「'+mySubject+'」大纲</div>')
+                  +'</div>'
+                  +'</div>'
+
+                  // 中间编辑器
+                  +'<div style="flex:1;display:flex;flex-direction:column;min-width:0">'
+                  +(selItem
+                    ? '<div style="padding:10px 14px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:8px;flex-shrink:0">'
+                      +'<input id="sy-title-input" value="'+selItem.title+'" '+(canEdit(selItem)?'':'readonly')+' style="font-size:.9rem;font-weight:700;border:none;outline:none;background:transparent;flex:1;color:var(--gray-900)">'
+                      +(canEdit(selItem)
+                        ? '<button id="sy-save-btn" class="btn btn-secondary" style="font-size:.75rem;padding:4px 10px"><i class="fas fa-save"></i> 保存</button>'
+                        +'<button id="sy-apply-btn" class="btn btn-primary" style="font-size:.75rem;padding:4px 10px">'+(selItem.id===appliedId?'✓ 已应用':'⚡ 应用')+'</button>'
+                        +'<button id="sy-del-btn" class="btn btn-secondary" style="font-size:.75rem;padding:4px 8px;color:var(--red-500)"><i class="fas fa-trash"></i></button>'
+                        : '<span style="font-size:.72rem;color:var(--amber-500);padding:3px 8px;border-radius:6px;background:var(--amber-50)"><i class="fas fa-lock"></i> 只读</span>'
+                        +(selItem.id!==appliedId?'<button id="sy-apply-btn" class="btn btn-primary" style="font-size:.75rem;padding:4px 10px">⚡ 应用</button>':''))
+                      +'</div>'
+                      +'<div style="padding:5px 14px;background:var(--gray-50);border-bottom:1px solid var(--gray-100);font-size:.71rem;color:var(--gray-500);flex-shrink:0">'
+                      +'格式：<code style="background:white;border:1px solid var(--gray-200);padding:1px 4px;border-radius:3px;font-size:.71rem">一级标题（单元）</code>'
+                      +' <code style="background:white;border:1px solid var(--gray-200);padding:1px 4px;border-radius:3px;font-size:.71rem"># 二级（课）</code>'
+                      +' <code style="background:white;border:1px solid var(--gray-200);padding:1px 4px;border-radius:3px;font-size:.71rem">## 三级（知识点）</code>'
+                      +'</div>'
+                      +'<textarea id="sy-editor" '+(canEdit(selItem)?'':'readonly')+' style="flex:1;resize:none;border:none;outline:none;padding:14px 18px;font-size:.85rem;font-family:var(--font-mono);line-height:1.9;background:white;color:var(--gray-800)">'+( selItem.content||'')+'</textarea>'
+                    : '<div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--gray-400)">'
+                      +'<i class="fas fa-book-open" style="font-size:2.5rem;opacity:.2"></i>'
+                      +'<div style="font-size:.85rem">从左侧选择一份大纲进行查看或编辑</div>'
+                      +'</div>')
+                  +'</div>'
+
+                  // 右侧预览
+                  +'<div style="width:240px;flex-shrink:0;border-left:1px solid var(--gray-200);background:var(--gray-50);display:flex;flex-direction:column">'
+                  +'<div style="padding:10px 12px 8px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">'
+                  +'<span style="font-size:.8rem;font-weight:700;color:var(--gray-700)">大纲预览</span>'
+                  +'<span id="sy-count" style="font-size:.7rem;color:var(--gray-400)"></span>'
+                  +'</div>'
+                  +'<div id="sy-preview" style="flex:1;overflow-y:auto;padding:8px 10px"></div>'
+                  +'<div style="padding:10px 12px;border-top:1px solid var(--gray-100);flex-shrink:0">'
+                  +'<div style="font-size:.7rem;color:var(--gray-500);margin-bottom:5px">班级整体进度</div>'
+                  +'<div style="height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden;margin-bottom:4px">'
+                  +'<div id="sy-progress-bar" style="height:100%;background:var(--primary);border-radius:3px;transition:width .4s;width:0%"></div>'
+                  +'</div>'
+                  +'<div id="sy-progress-text" style="font-size:.7rem;color:var(--gray-500)">请先选择并应用大纲</div>'
+                  +'</div>'
+                  +'</div>'
+                  +'</div>';
+
+                // 事件绑定
+                var syGrade = body.querySelector('#sy-grade');
+                if (syGrade) syGrade.addEventListener('change', function(){ selGrade=this.value; selItem=null; render(); });
+                var sySub = body.querySelector('#sy-subject');
+                if (sySub) sySub.addEventListener('change', function(){ selSubject=this.value; selItem=null; render(); });
+                body.querySelectorAll('.sy-list-item').forEach(function(el){
+                    el.addEventListener('click', function(){
+                        var db3 = _getSyllabusDB();
+                        selItem = db3.find(function(s){ return s.id===el.dataset.id; })||null;
+                        render();
+                    });
+                });
+                var newBtn = body.querySelector('#sy-new-btn');
+                if (newBtn) newBtn.addEventListener('click', function(){
+                    var db3 = _getSyllabusDB();
+                    var item = {id:'sy_'+Date.now(), title:selGrade+selSubject+'大纲', grade:selGrade, subject:selSubject, content:''};
+                    db3.push(item); _saveSyllabusDB(db3); selItem=item; render();
+                });
+                var editorEl = body.querySelector('#sy-editor');
+                if (editorEl) {
+                    editorEl.addEventListener('input', function(){ if(selItem) selItem.content=this.value; renderPreview(this.value); });
+                    renderPreview(selItem ? selItem.content||'' : '');
+                }
+                var titleEl = body.querySelector('#sy-title-input');
+                if (titleEl) titleEl.addEventListener('input', function(){ if(selItem) selItem.title=this.value; });
+                var saveBtn = body.querySelector('#sy-save-btn');
+                if (saveBtn) saveBtn.addEventListener('click', function(){
+                    if (!selItem) return;
+                    selItem.title   = (titleEl||{}).value || selItem.title;
+                    selItem.content = (editorEl||{}).value || selItem.content;
+                    var db3=_getSyllabusDB(), idx=db3.findIndex(function(s){ return s.id===selItem.id; });
+                    if (idx>=0) db3[idx]=selItem; else db3.push(selItem);
+                    _saveSyllabusDB(db3); showGlobalToast('大纲已保存','success'); render();
+                });
+                var applyBtn = body.querySelector('#sy-apply-btn');
+                if (applyBtn) applyBtn.addEventListener('click', function(){
+                    if (!selItem) return;
+                    if (selItem.id===appliedId){ showGlobalToast('此大纲已在应用中','info'); return; }
+                    appliedId = selItem.id; _setAppliedSyllabusId(appliedId);
+                    showGlobalToast('已应用「'+selItem.title+'」','success'); render();
+                });
+                var delBtn = body.querySelector('#sy-del-btn');
+                if (delBtn) delBtn.addEventListener('click', function(){
+                    if (!selItem||!confirm('确定删除「'+selItem.title+'」？')) return;
+                    var db3=_getSyllabusDB().filter(function(s){ return s.id!==selItem.id; });
+                    _saveSyllabusDB(db3);
+                    if (appliedId===selItem.id){ appliedId=null; _setAppliedSyllabusId(null); }
+                    selItem=null; render();
+                });
+                renderProgress();
+            }
+            render();
+        }
+
+        // ── 大纲 CSS ─────────────────────────────────────────────────
+        (function(){
+            var s = document.createElement('style');
+            s.textContent = '.sy-list-item{display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:8px;cursor:pointer;margin-bottom:2px}.sy-list-item:hover{background:white}.sy-list-item.selected{background:white;font-weight:600;border:1px solid var(--gray-200)}';
+            document.head.appendChild(s);
+        })();
+
         // ── Header 🔑 按钮注入 + 绑定 ──────────────────────────────────────
         (function() {
             var darkBtn = document.getElementById('darkModeBtn');
@@ -11043,7 +11287,7 @@ ${text}
                         <!-- 拍摄后静态帧 -->
                         <canvas id="ps-canvas" style="width:100%;height:100%;object-fit:contain;display:none;position:absolute;inset:0"></canvas>
                         <!-- 框题选区遮罩 -->
-                        <canvas id="ps-crop-canvas" style="position:absolute;inset:0;width:100%;height:100%;display:none;cursor:crosshair"></canvas>
+                        <canvas id="ps-crop-canvas" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;cursor:crosshair"></canvas>
                         <!-- 取景框角线 -->
                         <div id="ps-viewfinder" style="position:absolute;inset:14%;pointer-events:none;display:block">
                             <div style="position:absolute;top:0;left:0;width:22px;height:22px;border-top:2.5px solid rgba(255,255,255,.7);border-left:2.5px solid rgba(255,255,255,.7);border-radius:3px 0 0 0"></div>
@@ -11089,11 +11333,14 @@ ${text}
             var stream      = null;
             var rotation    = 0;      // 0/90/180/270
             var facingMode  = 'environment';
-            var shotDataUrl = null;   // 拍下的完整帧
+            var shotDataUrl = null;   // 拍下的完整帧（=原图）
             var cropDataUrl = null;   // 框题裁剪后的帧
             var cropActive  = false;
             var cropStart   = null;
             var cropRect    = null;
+            var originalCanvasDataUrl = null; // 永久保留的原始拍摄帧，框选永远基于它
+            var originalW   = 0;
+            var originalH   = 0;
 
             var video      = panel.querySelector('#ps-video');
             var canvas     = panel.querySelector('#ps-canvas');
@@ -11147,15 +11394,22 @@ ${text}
                     ctx.drawImage(video, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
                 ctx.restore();
 
-                shotDataUrl = canvas.toDataURL('image/jpeg', .92);
+                // 保存原图（不可变），所有框选都基于这份原图重新计算
+                originalW = canvas.width;
+                originalH = canvas.height;
+                originalCanvasDataUrl = canvas.toDataURL('image/jpeg', .95);
+                shotDataUrl = originalCanvasDataUrl;
                 cropDataUrl = null;
+                cropRect    = null;
 
                 video.style.display  = 'none';
                 canvas.style.display = 'block';
+                canvas.style.objectFit = 'contain';
                 viewfinder.style.display = 'none';
                 barCamera.style.display  = 'none';
-                barShot.style.display    = 'flex';
-                hint.textContent = '可框选题目区域，或直接 AI 解题';
+
+                // 拍完直接唤起框题
+                enterCropMode();
             });
 
             // ── 旋转 ────────────────────────────────────────────────
@@ -11180,62 +11434,96 @@ ${text}
                 barCamera.style.display  = 'flex';
                 barCrop.style.display    = 'none';
                 cropActive = false; cropDataUrl = null; cropRect = null;
+                originalCanvasDataUrl = null;
                 hint.textContent = '对准投影仪上的题目';
             });
 
-            // ── 框题（拖拽选区）───────────────────────────────────
-            panel.querySelector('#ps-crop-toggle').addEventListener('click', function() {
+            // ── 坐标映射：canvas 用 object-fit:contain 显示，
+            //    需要算出实际绘制区域（letterbox 偏移 + 缩放）──────
+            function getCanvasDisplayRect(cv) {
+                var r = cv.getBoundingClientRect();
+                var cw = cv.width, ch = cv.height;
+                var boxW = r.width, boxH = r.height;
+                var scale = Math.min(boxW / cw, boxH / ch);
+                var drawW = cw * scale, drawH = ch * scale;
+                var offsetX = r.left + (boxW - drawW) / 2;
+                var offsetY = r.top  + (boxH - drawH) / 2;
+                return { offsetX, offsetY, drawW, drawH, scale };
+            }
+
+            function getPos(e) {
+                var d = getCanvasDisplayRect(cropCanvas);
+                var src = e.touches ? e.touches[0] : e;
+                var x = (src.clientX - d.offsetX) / d.scale;
+                var y = (src.clientY - d.offsetY) / d.scale;
+                // 限制在画布范围内
+                x = Math.max(0, Math.min(cropCanvas.width,  x));
+                y = Math.max(0, Math.min(cropCanvas.height, y));
+                return { x, y };
+            }
+
+            function drawSelection(s, e2) {
+                var cctx2 = cropCanvas.getContext('2d');
+                cctx2.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+                cctx2.fillStyle = 'rgba(0,0,0,.45)';
+                cctx2.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+                var x=Math.min(s.x,e2.x), y=Math.min(s.y,e2.y), w=Math.abs(e2.x-s.x), h=Math.abs(e2.y-s.y);
+                cctx2.clearRect(x, y, w, h);
+                cctx2.strokeStyle = '#60a5fa';
+                cctx2.lineWidth   = Math.max(2, 2.5 / (cropCanvas.width / cropCanvas.getBoundingClientRect().width || 1));
+                cctx2.strokeRect(x, y, w, h);
+                var cs = 16;
+                cctx2.lineWidth = cctx2.lineWidth + 1;
+                cctx2.strokeStyle = 'white';
+                [[x,y,1,1],[x+w,y,-1,1],[x,y+h,1,-1],[x+w,y+h,-1,-1]].forEach(function(pt) {
+                    cctx2.beginPath();
+                    cctx2.moveTo(pt[0] + cs*pt[2]*-1, pt[1]);
+                    cctx2.lineTo(pt[0], pt[1]);
+                    cctx2.lineTo(pt[0], pt[1] + cs*pt[3]*-1);
+                    cctx2.stroke();
+                });
+                cropRect = {x,y,w,h};
+            }
+
+            // ── 进入框题模式（拍完照自动调用，也可重新进入）────────
+            function enterCropMode() {
                 cropActive = true;
                 cropCanvas.style.display = 'block';
-                cropCanvas.width  = canvas.width;
-                cropCanvas.height = canvas.height;
+                cropCanvas.width  = originalW;
+                cropCanvas.height = originalH;
                 barShot.style.display = 'none';
                 barCrop.style.display = 'flex';
-                hint.textContent = '拖动鼠标/手指框选题目';
+                hint.textContent = '拖动框选题目区域';
 
-                // 清空旧选区
                 var cctx = cropCanvas.getContext('2d');
                 cctx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
                 cropRect = null;
 
-                function getPos(e) {
-                    var r = cropCanvas.getBoundingClientRect();
-                    var scaleX = cropCanvas.width  / r.width;
-                    var scaleY = cropCanvas.height / r.height;
-                    var src = e.touches ? e.touches[0] : e;
-                    return { x: (src.clientX - r.left) * scaleX, y: (src.clientY - r.top) * scaleY };
-                }
-                function drawRect(s, e2) {
-                    var cctx2 = cropCanvas.getContext('2d');
-                    cctx2.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
-                    // 半透明遮罩
-                    cctx2.fillStyle = 'rgba(0,0,0,.45)';
-                    cctx2.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
-                    // 镂空选区
-                    var x=Math.min(s.x,e2.x), y=Math.min(s.y,e2.y), w=Math.abs(e2.x-s.x), h=Math.abs(e2.y-s.y);
-                    cctx2.clearRect(x, y, w, h);
-                    // 选区边框
-                    cctx2.strokeStyle = '#60a5fa';
-                    cctx2.lineWidth   = 2.5;
-                    cctx2.strokeRect(x, y, w, h);
-                    // 四角标记
-                    var cs = 14;
-                    [[ x,y],[x+w,y],[x,y+h],[x+w,y+h]].forEach(function(pt) {
-                        cctx2.strokeStyle = 'white';
-                        cctx2.lineWidth = 3;
-                        cctx2.beginPath(); cctx2.moveTo(pt[0]-cs*(pt[0]===x?-1:1), pt[1]); cctx2.lineTo(pt[0], pt[1]); cctx2.lineTo(pt[0], pt[1]-cs*(pt[1]===y?-1:1)); cctx2.stroke();
-                    });
-                    cropRect = {x,y,w,h};
-                }
-
                 cropCanvas.onmousedown = cropCanvas.ontouchstart = function(ev) {
                     ev.preventDefault();
                     cropStart = getPos(ev);
-                    var mm = function(ev2) { ev2.preventDefault(); drawRect(cropStart, getPos(ev2)); };
-                    var mu = function()    { cropCanvas.onmousemove = cropCanvas.ontouchmove = null; };
+                    var mm = function(ev2) { ev2.preventDefault(); drawSelection(cropStart, getPos(ev2)); };
+                    var mu = function() { cropCanvas.onmousemove = cropCanvas.ontouchmove = null; };
                     cropCanvas.onmousemove = cropCanvas.ontouchmove = mm;
                     cropCanvas.onmouseup = cropCanvas.ontouchend = mu;
                 };
+            }
+
+            panel.querySelector('#ps-crop-toggle').addEventListener('click', function() {
+                // 始终基于原图重新框选（恢复完整画面，可重新选区）
+                canvas.width  = originalW;
+                canvas.height = originalH;
+                canvas.getContext('2d').drawImage(
+                    (function(){ var img = new Image(); img.src = originalCanvasDataUrl; return img; })(),
+                    0, 0
+                );
+                // 用同步方式重绘（避免 Image 异步加载导致空白一帧）
+                var img2 = new Image();
+                img2.onload = function() {
+                    canvas.getContext('2d').drawImage(img2, 0, 0, originalW, originalH);
+                    enterCropMode();
+                };
+                img2.src = originalCanvasDataUrl;
             });
 
             panel.querySelector('#ps-crop-cancel').addEventListener('click', function() {
@@ -11243,28 +11531,35 @@ ${text}
                 cropActive = false; cropRect = null;
                 barCrop.style.display = 'none';
                 barShot.style.display = 'flex';
-                hint.textContent = '可框选题目区域，或直接 AI 解题';
+                hint.textContent = '可重新框选，或直接 AI 解题';
             });
 
             panel.querySelector('#ps-crop-confirm').addEventListener('click', function() {
                 if (!cropRect || cropRect.w < 10 || cropRect.h < 10) {
                     showGlobalToast('请先框选题目区域', 'warning'); return;
                 }
-                // 裁剪到新 canvas
-                var tmp = document.createElement('canvas');
-                tmp.width = cropRect.w; tmp.height = cropRect.h;
-                tmp.getContext('2d').drawImage(canvas,
-                    cropRect.x, cropRect.y, cropRect.w, cropRect.h,
-                    0, 0, cropRect.w, cropRect.h);
-                cropDataUrl = tmp.toDataURL('image/jpeg', .92);
-                // 把裁剪结果显示在主 canvas
-                canvas.width = tmp.width; canvas.height = tmp.height;
-                canvas.getContext('2d').drawImage(tmp, 0, 0);
+                // 始终从原图（originalCanvasDataUrl）裁剪，避免基于已裁剪图再裁导致越裁越小
+                var srcImg = new Image();
+                srcImg.onload = function() {
+                    var tmp = document.createElement('canvas');
+                    tmp.width  = Math.round(cropRect.w);
+                    tmp.height = Math.round(cropRect.h);
+                    tmp.getContext('2d').drawImage(srcImg,
+                        cropRect.x, cropRect.y, cropRect.w, cropRect.h,
+                        0, 0, cropRect.w, cropRect.h);
+                    cropDataUrl = tmp.toDataURL('image/jpeg', .95);
 
-                cropCanvas.style.display = 'none';
-                barCrop.style.display    = 'none';
-                barShot.style.display    = 'flex';
-                hint.textContent = '框选完成，点击 AI 解题';
+                    // 预览区显示裁剪结果（仅展示，canvas 实际尺寸仍可在重新框选时还原原图）
+                    canvas.width  = tmp.width;
+                    canvas.height = tmp.height;
+                    canvas.getContext('2d').drawImage(tmp, 0, 0);
+
+                    cropCanvas.style.display = 'none';
+                    barCrop.style.display    = 'none';
+                    barShot.style.display    = 'flex';
+                    hint.textContent = '已框选 · 可重新框选或直接 AI 解题';
+                };
+                srcImg.src = originalCanvasDataUrl;
             });
 
             // ── AI 解题（MiniMax VL）──────────────────────────────
