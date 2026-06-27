@@ -872,6 +872,16 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 .study-msg-avatar-user { background: var(--green-50); color: var(--green-600); }
 .study-msg-bubble { display: flex; flex-direction: column; gap: 3px; max-width: 100%; }
 .study-msg-text { padding: 10px 14px; border-radius: 13px; font-size: 0.875rem; line-height: 1.65; word-break: break-word; }
+.study-msg-text h1,.study-msg-text h2,.study-msg-text h3,.study-msg-text h4,.study-msg-text h5,.study-msg-text h6 { margin: 6px 0 2px; font-weight: 700; line-height: 1.3; }
+.study-msg-text h1 { font-size: 1.05rem; } .study-msg-text h2 { font-size: 0.97rem; } .study-msg-text h3 { font-size: 0.9rem; }
+.study-msg-text p { margin: 4px 0; }
+.study-msg-text ul,.study-msg-text ol { margin: 4px 0; padding-left: 20px; }
+.study-msg-text li { margin: 2px 0; }
+.study-msg-text pre { background: #f1f5f9; border-radius: 8px; padding: 10px 12px; margin: 6px 0; overflow-x: auto; font-size: 0.8rem; }
+.study-msg-text code { background: #f1f5f9; border-radius: 4px; padding: 1px 5px; font-size: 0.82rem; font-family: monospace; }
+.study-msg-text pre code { background: none; padding: 0; }
+.study-msg-text blockquote { border-left: 3px solid #93c5fd; margin: 4px 0; padding: 2px 10px; color: #475569; }
+.study-msg-text strong { font-weight: 700; } .study-msg-text em { font-style: italic; }
 .study-msg-ai   .study-msg-text { background: white; border: 1.5px solid var(--gray-200); color: var(--gray-800); border-bottom-left-radius: 4px; }
 .study-msg-user .study-msg-text { background: linear-gradient(135deg, var(--primary), var(--blue-700)); color: white; border-bottom-right-radius: 4px; }
 .study-msg-time { font-size: 0.68rem; color: var(--gray-400); padding: 0 4px; }
@@ -4306,6 +4316,35 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             var _lon = 180, _lat = 10, _isDrag = false, _prevMx = 0, _prevMy = 0;
             var _panoW = 0, _panoH = 0; // canvas display size
 
+            // 暴露到 window，供弹窗等外部作用域调用（访问器函数）
+            window._three = {
+                _alive: false, _renderer: null, _camera: null, _scene: null,
+                _lon: 180, _lat: 10, _isDrag: false, _prevMx: 0, _prevMy: 0,
+                _panoW: 0, _panoH: 0,
+                alive:    function(v){ if(v!==undefined) this._alive=v; return this._alive; },
+                renderer: function(v){ if(v!==undefined) this._renderer=v; return this._renderer; },
+                camera:   function(v){ if(v!==undefined) this._camera=v; return this._camera; },
+                scene:    function(v){ if(v!==undefined) this._scene=v; return this._scene; },
+                lon:      function(v){ if(v!==undefined) this._lon=v; return this._lon; },
+                lat:      function(v){ if(v!==undefined) this._lat=v; return this._lat; },
+                isDrag:   function(v){ if(v!==undefined) this._isDrag=v; return this._isDrag; },
+                prevMx:   function(v){ if(v!==undefined) this._prevMx=v; return this._prevMx; },
+                prevMy:   function(v){ if(v!==undefined) this._prevMy=v; return this._prevMy; },
+                panoW:    function(v){ if(v!==undefined) this._panoW=v; return this._panoW; },
+                panoH:    function(v){ if(v!==undefined) this._panoH=v; return this._panoH; },
+                // DOM 引用
+                panoCanvas: null, panoWrap: null, panoEmpty: null,
+                panoHint: null, panoBadge: null, markerLayer: null
+            };
+
+            // 同步 DOM 引用到 window._three（定义之后）
+            window._three.panoCanvas = panoCanvas;
+            window._three.panoWrap   = panoWrap;
+            window._three.panoEmpty  = panoEmpty;
+            window._three.panoHint   = panoHint;
+            window._three.panoBadge  = panoBadge;
+            window._three.markerLayer = markerLayer;
+
             // ── 图片上传 ─────────────────────────────────────────────────────
             uploadBtn.addEventListener('click', function(){ imgInput.click(); });
             uploadZone.addEventListener('click', function(){ imgInput.click(); });
@@ -4509,7 +4548,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             }
 
             // ── 全景 Three.js 渲染 ──────────────────────────────────────────
-            function _startPanorama(dataUrl) {
+            window._startPanorama = function(dataUrl) {
                 // 若已在渲染，先销毁
                 if (_threeAlive) { _threeAlive = false; if (_threeRenderer) _threeRenderer.dispose(); }
                 panoEmpty.style.display = 'none';
@@ -8371,44 +8410,149 @@ ${text}
             ta && ta.addEventListener('focus', function(){ ta.style.borderColor = 'var(--primary)'; });
             ta && ta.addEventListener('blur',  function(){ ta.style.borderColor = 'var(--gray-200)'; });
 
-            // 关闭
-            modal.querySelector('#zjwj-pano-close').addEventListener('click', function(){ modal.remove(); });
-            modal.querySelector('#zjwj-pano-cancel').addEventListener('click', function(){ modal.remove(); });
+            // 关闭（生成中禁止）
+            modal.querySelector('#zjwj-pano-close').addEventListener('click', function(){
+                if (!genState.running) modal.remove();
+            });
+            modal.querySelector('#zjwj-pano-cancel').addEventListener('click', function(){
+                if (!genState.running) modal.remove();
+            });
             modal._mousedownOnBackdrop = false;
             modal.addEventListener('mousedown', function(e){ modal._mousedownOnBackdrop = (e.target === modal); });
-            modal.addEventListener('click', function(e){ if (e.target === modal && modal._mousedownOnBackdrop) modal.remove(); });
+            modal.addEventListener('click', function(e){ if (e.target === modal && modal._mousedownOnBackdrop && !genState.running) modal.remove(); });
 
-            // ── 生成 ──────────────────────────────────────────────
-            modal.querySelector('#zjwj-pano-gen').addEventListener('click', async function() {
-                mmKey = localStorage.getItem('zjwj_minimax_key') || '';
+            // ── 生成状态机 ─────────────────────────────────────────
+            var genState = { running: false, dataUrl: null, status: 'idle' };
+
+            // localStorage key
+            var LS_KEY = 'zjwj_pano_gen';
+
+            // ── 弹窗打开时：恢复上一次生成结果 ──
+            function restoreState() {
+                try {
+                    var saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+                    if (!saved.status || saved.status === 'idle') return;
+                    // 恢复 prompt 和 style
+                    var ta2 = modal.querySelector('#zjwj-pano-prompt');
+                    if (ta2 && saved.prompt) ta2.value = saved.prompt;
+                    var sel2 = modal.querySelector('#zjwj-pano-style');
+                    if (sel2 && saved.style) sel2.value = saved.style;
+
+                    if (saved.status === 'done' && saved.dataUrl) {
+                        // 显示已完成结果
+                        genState.dataUrl = saved.dataUrl;
+                        genState.status = 'done';
+                        statEl.style.display = 'none';
+                        prvEl.style.display = 'block';
+                        modal.querySelector('#zjwj-pano-img').src = saved.dataUrl;
+                        showGlobalToast('已恢复上一次的生成结果', 'info');
+                        genBtn.disabled = false;
+                        genBtn.innerHTML = '<i class="fas fa-redo"></i> 重新生成';
+                        // 重新绑定"确认使用"
+                        modal.querySelector('#zjwj-pano-use').onclick = function() {
+                            _loadPanoFromDataUrl(saved.dataUrl, modal, function(){ modal.remove(); });
+                        };
+                        genBtn.onclick = null;
+                        genBtn.addEventListener('click', function() { if (!genState.running) doGenerate(); });
+                    } else if (saved.status === 'running') {
+                        // 上次正在生成中被中断了，重新触发
+                        saved.status = 'idle';
+                        localStorage.setItem(LS_KEY, JSON.stringify(saved));
+                        doGenerate();
+                    }
+                } catch(e) {}
+            }
+            restoreState();
+
+            function buildFullPrompt(rawPrompt, style) {
+                return rawPrompt
+                    + style
+                    + '. IMPORTANT - This is a cylindrical panorama (equirectangular projection) for 360 VR/spherical viewing:'
+                    + ' (1) The horizon line must be PERFECTLY STRAIGHT and horizontal — NO fisheye curvature, NO wide-angle lens distortion, NO bent horizon.'
+                    + ' (2) Vertical lines (trees, buildings, poles) must stay VERTICAL — do NOT flare outward like fisheye photos.'
+                    + ' (3) The LEFT and RIGHT edges must be IDENTICAL and seamlessly connect at 0/360 degree boundary.'
+                    + ' (4) The TOP is zenith (sky or ceiling, NO gray), the BOTTOM is nadir (ground or floor, NO gray) — both fully detailed.'
+                    + ' (6) The horizon line should be at approximately 2/3 of the image height from the BOTTOM (looking slightly upward into the scene) — not centered, not too high.'
+                    + ' (5) Top and bottom edges also connect seamlessly if tiled vertically.'
+                    + ' Pure seamless full-sphere panoramic view with complete ceiling and floor detail.';
+            }
+
+            async function doGenerate() {
+                var mmKey = localStorage.getItem('zjwj_minimax_key') || '';
                 if (!mmKey) {
                     modal.querySelector('#zjwj-pano-key-row').style.display = '';
                     showGlobalToast('请先配置 MiniMax API Key', 'warning');
                     return;
                 }
-                var prompt = (modal.querySelector('#zjwj-pano-prompt').value || '').trim();
-                if (!prompt) { showGlobalToast('请输入场景描述', 'warning'); return; }
+                var rawPrompt = (modal.querySelector('#zjwj-pano-prompt').value || '').trim();
+                if (!rawPrompt) { showGlobalToast('请输入场景描述', 'warning'); return; }
 
                 var style  = modal.querySelector('#zjwj-pano-style').value;
-                var full   = prompt + style;
                 var genBtn = modal.querySelector('#zjwj-pano-gen');
                 var statEl = modal.querySelector('#zjwj-pano-status');
                 var statTx = modal.querySelector('#zjwj-pano-status-txt');
                 var prvEl  = modal.querySelector('#zjwj-pano-preview');
+                var img    = modal.querySelector('#zjwj-pano-img');
 
+                // 保存当前输入到 localStorage（中断返回时可恢复）
+                try {
+                    localStorage.setItem(LS_KEY, JSON.stringify({ status: 'running', prompt: rawPrompt, style: style, dataUrl: null }));
+                } catch(e) {}
+
+                genState.running = true;
                 genBtn.disabled = true;
                 genBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> 生成中…';
                 statEl.style.display = 'flex';
+                prvEl.style.display = 'none';
+                statTx.textContent = '正在理解课文内容…';
+                statEl.style.display = 'flex';
                 prvEl.style.display  = 'none';
+                statTx.textContent = '正在理解课文内容…';
+
+                // ── 步骤1：DeepSeek 文学描写 → 直白视觉描述 ──
+                var enrichedPrompt = rawPrompt;
+                var dk = localStorage.getItem('zjwj_deepseek_key') || '';
+                if (dk) {
+                    try {
+                        statTx.textContent = '正在理解课文内容…';
+                        var enrichResp = await fetch(DEEPSEEK_API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + dk },
+                            body: JSON.stringify({
+                                model: 'deepseek-chat',
+                                max_tokens: 300,
+                                temperature: 0.3,
+                                messages: [{
+                                    role: 'user',
+                                    content: '你是一个语文教育专家，精通中小学课文。现在要把一段课文中的环境描写转化为360度全景图的绘画提示词。\n'
+                                        + '核心要求：你必须调动自己对这篇课文的完整理解，主动补充原文中没有写明但属于这个场景的典型细节，让画面更完整生动。\n\n'
+                                        + '规则：\n'
+                                        + '1. 把"像/如/仿佛"等比喻转成具体画面（"细雨如牛毛"→"窗外飘着细密的雨丝"）\n'
+                                        + '2. 把拟人/夸张/美化还原为真实场景（"花儿笑"→"盛开的花朵在微风中轻轻摇曳"）\n'
+                                        + '3. 主动补充：你知道这是哪篇课文，根据课文整体情境，补充原描写中没有但属于这个场景的典型元素（如课文写"荷塘"，应补充：碧绿荷叶铺满水面、粉白荷花点点、远处杨柳岸等）\n'
+                                        + '4. 明确：室内/室外、时间（早晨/傍晚/夜晚）、天气、光线氛围（明亮/昏暗/柔和）、主要色调\n'
+                                        + '5. 直接输出一段完整的视觉描述，作为绘画提示词使用。不要前言、不加标题、不加解释，直接写可画的场景描写。\n\n'
+                                        + '课文原文：' + rawPrompt + '\n\n（请根据你对这篇课文的理解，以上述规则转化并补充这段描写，输出一段完整的全景场景描述）'
+                                }]
+                            })
+                        }, 20000);
+                        if (enrichResp.ok) {
+                            var enrichData = await enrichResp.json();
+                            var transformed = enrichData.choices?.[0]?.message?.content?.trim();
+                            if (transformed && transformed.length > 5) enrichedPrompt = transformed;
+                        }
+                    } catch(e) { enrichedPrompt = rawPrompt; }
+                }
+
+                var full = buildFullPrompt(enrichedPrompt, style);
                 statTx.textContent = '正在调用 MiniMax 生成图像，请稍候…';
 
+                // ── 步骤2：MiniMax 生图 ──
+                var dataUrl;
                 try {
-                    var resp = await fetch('https://api.minimaxi.chat/v1/image_generation', {
+                    var resp = await fetch('https://api.minimaxi.com/v1/image_generation', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + mmKey
-                        },
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + mmKey },
                         body: JSON.stringify({
                             model: 'image-01',
                             prompt: full,
@@ -8416,47 +8560,70 @@ ${text}
                             height: 1024,
                             response_format: 'base64',
                             n: 1,
-                            prompt_optimizer: false
+                            prompt_optimizer: true
                         })
-                    });
+                    }, 60000);
                     if (!resp.ok) {
                         var errData = await resp.json().catch(function(){ return {}; });
                         throw new Error((errData.error && errData.error.message) || 'MiniMax API 错误 ' + resp.status);
                     }
                     var data = await resp.json();
-                    // 兼容两种返回格式
-                    var b64List = (data.data && data.data.image_base64)
-                                || (data.data && data.data.image_urls);  // 有时返回url列表
-                    if (!b64List || !b64List.length) throw new Error('未获取到图像数据：' + JSON.stringify(data).slice(0,200));
+                    var b64List = (data.data && data.data.image_base64) || (data.data && data.data.image_urls);
+                    if (!b64List || !b64List.length) throw new Error('未获取到图像数据');
                     var first = b64List[0];
-                    // 判断是base64还是url
-                    var dataUrl = (first.startsWith('http') || first.startsWith('//'))
-                        ? first  // URL格式：直接用（_loadPanoFromDataUrl兼容url）
+                    dataUrl = (first.startsWith('http') || first.startsWith('//'))
+                        ? first
                         : 'data:image/jpeg;base64,' + first;
-
-                    statEl.style.display = 'none';
-                    prvEl.style.display  = 'block';
-                    var img = modal.querySelector('#zjwj-pano-img');
-                    img.src = dataUrl;
-                    showGlobalToast('全景图生成成功！', 'success');
-
-                    modal.querySelector('#zjwj-pano-use').onclick = function() {
-                        _loadPanoFromDataUrl(dataUrl, modal);
-                    };
-
-                } catch (err) {
+                } catch(err) {
                     statEl.style.display = 'none';
                     showGlobalToast('生成失败：' + err.message, 'error');
-                } finally {
                     genBtn.disabled = false;
-                    genBtn.innerHTML = '<i class="fas fa-magic"></i> 重新生成';
+                    genBtn.innerHTML = '<i class="fas fa-magic"></i> 生成';
+                    genState.running = false;
+                    genState.status = 'error';
+                    try {
+                        var cur2 = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+                        cur2.status = 'error';
+                        localStorage.setItem(LS_KEY, JSON.stringify(cur2));
+                    } catch(e2) {}
+                    return;
                 }
-            });
+
+                // ── 成功：显示预览，保留弹窗 ──
+                genState.running = false;
+                genState.dataUrl = dataUrl;
+                genState.status = 'done';
+                statEl.style.display = 'none';
+                prvEl.style.display = 'block';
+                img.src = dataUrl;
+                // 持久化结果
+                try {
+                    var cur = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+                    localStorage.setItem(LS_KEY, JSON.stringify({ status: 'done', prompt: rawPrompt, style: style, dataUrl: dataUrl }));
+                } catch(e) {}
+                showGlobalToast('全景图生成成功！', 'success');
+                genBtn.disabled = false;
+                genBtn.innerHTML = '<i class="fas fa-redo"></i> 重新生成';
+
+                // "确认使用"：加载到 3D 视口，然后关弹窗
+                modal.querySelector('#zjwj-pano-use').onclick = function() {
+                    _loadPanoFromDataUrl(dataUrl, modal, function() { modal.remove(); });
+                };
+            }
+
+            // 按钮点击统一走 doGenerate()
+            modal.querySelector('#zjwj-pano-gen').onclick = function() {
+                if (!genState.running) doGenerate();
+            };
         }
 
-                // ── 将 base64 dataUrl 加载进全景视口（MiniMax 文生图专用）───────────────
+        // ── 全景图后处理（已停用，裁剪会破坏横向连续性）────────────────
+        // 保留函数仅防意外调用，不再有任何图像操作
+        function _fixPanoEdges(dataUrl) { return dataUrl; }
+        function _adjustHorizonTo2_3(dataUrl) { return dataUrl; }
+
         // 加载全景图（兼容 base64 dataUrl 和远程 URL）
-        function _loadPanoFromDataUrl(src, modal) {
+        function _loadPanoFromDataUrl(src, modal, onLoaded) {
             var srcImg     = document.getElementById('s3d-src-img');
             var uploadZone = document.getElementById('s3d-upload-zone');
             var imgArea    = document.getElementById('s3d-img-area');
@@ -8467,21 +8634,126 @@ ${text}
             showGlobalToast('正在加载全景图…', 'info');
 
             function applyImage(finalSrc) {
+                // 不做裁剪类后处理（会破坏横向连续性和垂直比例）
                 window._sceneImageData = finalSrc;
                 srcImg.src = finalSrc;
                 srcImg.style.display = 'block';
                 if (uploadZone) uploadZone.style.display = 'none';
                 if (imgArea)    imgArea.classList.remove('no-image');
-                if (typeof _startPanorama === 'function') _startPanorama(finalSrc);
+
+                // ── 自己启动 Three.js 全景渲染（使用 window._three 共享状态）──
+                var T = window._three;
+                if (!T || !T.panoCanvas) {
+                    showGlobalToast('请先打开「3D 情景」模块', 'warning');
+                    if (onLoaded) onLoaded();
+                    return;
+                }
+
+                var canvas = T.panoCanvas;
+                var wrap   = T.panoWrap;
+                var empty  = T.panoEmpty;
+                var hint   = T.panoHint;
+                var badge  = T.panoBadge;
+
+                // 销毁旧渲染器
+                if (T.alive()) { T.alive(false); if (T.renderer()) T.renderer().dispose(); }
+                empty.style.display = 'none';
+                hint.style.display = 'block';
+
+                function boot() {
+                    var THREE = window.THREE;
+                    T.panoW(T.panoWrap.clientWidth);
+                    T.panoH(T.panoWrap.clientHeight);
+
+                    var rnd = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+                    rnd.setPixelRatio(Math.min(devicePixelRatio, 2));
+                    rnd.setSize(T.panoW(), T.panoH());
+                    T.renderer(rnd);
+
+                    var scene = new THREE.Scene();
+                    T.scene(scene);
+                    var cam = new THREE.PerspectiveCamera(75, T.panoW() / T.panoH(), 0.1, 1000);
+                    cam.position.set(0, 0, 0.01);
+                    T.camera(cam);
+
+                    var geo = new THREE.SphereGeometry(500, 64, 40);
+                    geo.scale(-1, 1, 1);
+                    new THREE.TextureLoader().load(finalSrc, function(tex) {
+                        scene.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex })));
+                        if (badge) {
+                            badge.innerHTML = '<i class="fas fa-panorama"></i> 全景图模式';
+                            badge.style.background = 'rgba(16,185,129,.15)';
+                            badge.style.color = '#34d399';
+                        }
+                    });
+
+                    // 拖拽控制
+                    canvas.addEventListener('mousedown',  function(e){ T.isDrag(true); T.prevMx(e.clientX); T.prevMy(e.clientY); });
+                    canvas.addEventListener('mousemove',  function(e){
+                        if (!T.isDrag()) return;
+                        T.lon(T.lon() - (e.clientX - T.prevMx()) * 0.22);
+                        T.lat(Math.max(-85, Math.min(85, T.lat() + (e.clientY - T.prevMy()) * 0.22)));
+                        T.prevMx(e.clientX); T.prevMy(e.clientY);
+                    });
+                    canvas.addEventListener('mouseup',    function(){ T.isDrag(false); });
+                    canvas.addEventListener('mouseleave', function(){ T.isDrag(false); });
+                    canvas.addEventListener('touchstart', function(e){ T.isDrag(true); T.prevMx(e.touches[0].clientX); T.prevMy(e.touches[0].clientY); }, {passive:true});
+                    canvas.addEventListener('touchmove',  function(e){
+                        if (!T.isDrag()) return;
+                        T.lon(T.lon() - (e.touches[0].clientX - T.prevMx()) * 0.22);
+                        T.lat(Math.max(-85, Math.min(85, T.lat() + (e.touches[0].clientY - T.prevMy()) * 0.22)));
+                        T.prevMx(e.touches[0].clientX); T.prevMy(e.touches[0].clientY);
+                    }, {passive:true});
+                    canvas.addEventListener('touchend',   function(){ T.isDrag(false); });
+                    canvas.addEventListener('wheel', function(e){
+                        cam.fov = Math.max(30, Math.min(100, cam.fov + e.deltaY * 0.05));
+                        cam.updateProjectionMatrix();
+                    }, {passive:true});
+
+                    // ResizeObserver
+                    var ro = new ResizeObserver(function(){
+                        T.panoW(wrap.clientWidth); T.panoH(wrap.clientHeight);
+                        rnd.setSize(T.panoW(), T.panoH());
+                        cam.aspect = T.panoW() / T.panoH();
+                        cam.updateProjectionMatrix();
+                    });
+                    ro.observe(wrap);
+
+                    T.alive(true);
+
+                    (function loop() {
+                        if (!T.alive()) { ro.disconnect(); return; }
+                        requestAnimationFrame(loop);
+                        var phi   = THREE.MathUtils.degToRad(90 - T.lat());
+                        var theta = THREE.MathUtils.degToRad(T.lon());
+                        cam.lookAt(Math.sin(phi)*Math.cos(theta), Math.cos(phi), Math.sin(phi)*Math.sin(theta));
+                        _3d_kps.forEach(function(kp){
+                            if (kp.x == null) return;
+                            var el = document.getElementById('pano-mwrap-' + kp.id);
+                            if (!el) return;
+                            var pos = _kpToScreen(kp);
+                            if (!pos) { el.style.display = 'none'; }
+                            else { el.style.display = ''; el.style.left = pos.x+'px'; el.style.top = pos.y+'px'; el.style.pointerEvents = 'all'; }
+                        });
+                        rnd.render(scene, cam);
+                    })();
+                }
+
+                if (window.THREE) { boot(); }
+                else {
+                    var s = document.createElement('script');
+                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+                    s.onload = boot;
+                    document.head.appendChild(s);
+                }
+
                 showGlobalToast('全景图已加载，可拖拽浏览 360°', 'success');
-                if (modal) modal.remove();
+                if (onLoaded) onLoaded();
             }
 
             if (src.startsWith('data:')) {
-                // 已是 base64 dataUrl，直接用
                 applyImage(src);
             } else {
-                // 远程 URL：fetch → blob → dataUrl（绕 CORS）
                 fetch(src)
                     .then(function(r){ return r.blob(); })
                     .then(function(blob){
@@ -8489,10 +8761,7 @@ ${text}
                         reader.onload = function(e){ applyImage(e.target.result); };
                         reader.readAsDataURL(blob);
                     })
-                    .catch(function(){
-                        // fetch 失败直接传 URL 给 Three.js
-                        applyImage(src);
-                    });
+                    .catch(function(){ applyImage(src); });
             }
         }
 
@@ -9611,6 +9880,28 @@ ${text}
                 var aiParts = d.a.split(/\n\n+/).map(function(s){ return s.trim(); }).filter(Boolean);
                 aiParts.forEach(function(part) { addMsg('ai', part, true); });
             });
+
+            // 还原拍照解题历史
+            try {
+                var photoHist = JSON.parse(localStorage.getItem('study_photo_history') || '[]');
+                photoHist.forEach(function(d) {
+                    if (!d.img || !d.ans) return;
+                    var uDiv = document.createElement('div');
+                    uDiv.className = 'study-msg study-msg-user';
+                    uDiv.innerHTML = '<div class="study-msg-bubble">'
+                        + '<img src="'+d.img+'" style="max-width:220px;border-radius:8px;display:block;margin-bottom:6px">'
+                        + '<div class="study-msg-text">📷 拍照解题</div>'
+                        + '<div class="study-msg-time">'+d.t+'</div></div>';
+                    messages && messages.appendChild(uDiv);
+                    var aDiv = document.createElement('div');
+                    aDiv.className = 'study-msg study-msg-ai';
+                    aDiv.innerHTML = '<div class="study-msg-avatar"><i class="fas fa-robot"></i></div>'
+                        + '<div class="study-msg-bubble"><div class="study-msg-text">'+parseMarkdown(d.ans)+'</div>'
+                        + '<div class="study-msg-time">'+d.t+'</div></div>';
+                    messages && messages.appendChild(aDiv);
+                });
+            } catch(e) {}
+
             if (messages) messages.scrollTop = messages.scrollHeight;
 
             function updateContextSummary() {
@@ -9700,7 +9991,7 @@ ${text}
 【格式要求】
 用【段落分隔符】分隔每一段（每段50字以内）。解释完后，必须单独一段提一个启发式问题引导思考，问题要开放、贴近生活，不能只答"是/否"。
 
-当前学习章节：${window._currentStudyChapter ? '「' + window._currentStudyChapter + '」' : '未指定'}`
+当前学习章节：${window._currentStudyChapter ? '「' + window._currentStudyChapter + '」' : '未指定'}` + '\n\n' + _sm.getContext()
                         }
                     ];
                     // 带入最近5轮对话历史
@@ -9776,6 +10067,11 @@ ${text}
                             localStorage.setItem('study_dialog_history', JSON.stringify(dialogHistory));
                             updateContextSummary();
                             localStorage.setItem('study_ctx_summary', ctxSummary);
+                            // 更新双 AI 共享记忆（提取主题关键词）
+                            var topics = text.match(/[一-龥]{2,8}/g) || [];
+                            topics = topics.filter(function(t){ return t.length >= 2; });
+                            if (topics.length > 0) _sm.push(topics[0], '学生问到：' + text.slice(0,30) + '；AI答：' + fullResp.slice(0,30));
+                            else _sm.push('', '学生问到：' + text.slice(0,30) + '；AI答：' + fullResp.slice(0,30));
                             var recs = JSON.parse(localStorage.getItem('study_chat_records') || '[]');
                             var entry = { user: text, ai: fullResp,
                                 t: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
@@ -9854,6 +10150,8 @@ ${text}
                 ctxSummary = '';
                 localStorage.removeItem('study_dialog_history');
                 localStorage.removeItem('study_ctx_summary');
+                localStorage.removeItem('study_photo_history');
+                _sm.clear();
                 if (countEl) countEl.textContent = '0 条消息';
                 addMsg('ai', '对话已清空，有什么可以帮你的？');
             });
@@ -11275,6 +11573,118 @@ ${text}
         })();
 
         // ══════════════════════════════════════════════════════════
+        //  轻量 Markdown → HTML 解析器（支持 # ## ### ** * ` 代码块 列表）
+        // ══════════════════════════════════════════════════════════
+        function parseMarkdown(text) {
+            if (!text) return '';
+            var lines = text.split('\n');
+            var inCode = false, codeLines = [];
+            var out = [];
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+
+                // 代码块
+                if (line.trim().startsWith('```')) {
+                    if (!inCode) {
+                        inCode = true; codeLines = [];
+                    } else {
+                        out.push('<pre><code>' + escHtml(codeLines.join('\n')) + '</code></pre>');
+                        inCode = false; codeLines = [];
+                    }
+                    continue;
+                }
+                if (inCode) { codeLines.push(line); continue; }
+
+                // 列表项
+                if (/^[-*+]\s/.test(line.trim())) {
+                    out.push('<li>' + parseInline(line.replace(/^[-*+]\s/, '')) + '</li>');
+                    continue;
+                }
+                if (/^\d+\.\s/.test(line.trim())) {
+                    out.push('<li>' + parseInline(line.replace(/^\d+\.\s/, '')) + '</li>');
+                    continue;
+                }
+
+                // 标题（遇空行重置）
+                var h = line.match(/^(#{1,6})\s+(.+)$/);
+                if (h) {
+                    out.push('<h' + h[1].length + '>' + parseInline(h[2]) + '</h' + h[1].length + '>');
+                    continue;
+                }
+
+                // 空白行
+                if (line.trim() === '') { out.push(''); continue; }
+
+                // 普通段落
+                out.push('<p>' + parseInline(line) + '</p>');
+            }
+
+            var html = out.join('\n');
+
+            // 合并连续的 <li> 为 <ul>
+            html = html.replace(/(<li>.*<\/li>\n?)+/g, function(match) {
+                return '<ul>' + match + '</ul>';
+            });
+
+            // 移除连续空 <p></p>
+            html = html.replace(/(<p><\/p>)+/g, '');
+            return html;
+        }
+
+        function parseInline(text) {
+            if (!text) return '';
+            return text
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+                .replace(/^(&gt;)\s(.+)$/gm, '<blockquote>$2</blockquote>');
+        }
+
+        function escHtml(str) {
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  双 AI 共享记忆管理器（DeepSeek + MiniMax 共用）
+        // ══════════════════════════════════════════════════════════
+        var _sm = {
+            save: function(data) {
+                try { localStorage.setItem('study_shared_memory', JSON.stringify(data)); } catch(e){}
+            },
+            load: function() {
+                try { return JSON.parse(localStorage.getItem('study_shared_memory') || '{"topics":[],"facts":[],"summary":""}'); }
+                catch(e) { return { topics:[], facts:[], summary:'' }; }
+            },
+            // 追加内容后自动提炼摘要
+            push: function(topic, fact) {
+                var d = _sm.load();
+                if (topic) {
+                    var tops = d.topics.filter(function(t){ return t !== topic; });
+                    tops.unshift(topic);
+                    d.topics = tops.slice(0, 8); // 保留最近8个主题
+                }
+                if (fact) {
+                    d.facts.unshift(fact);
+                    d.facts = d.facts.slice(0, 20); // 保留最近20条
+                }
+                // 提炼一句话摘要（取最新的前3条 fact 拼接）
+                var recent = d.facts.slice(0, 3).join('；');
+                d.summary = '最近学习主题：' + (d.topics.slice(0,3).join('、')) + '。' + recent;
+                _sm.save(d);
+            },
+            // 获取注入到 prompt 的上下文
+            getContext: function() {
+                var d = _sm.load();
+                if (!d.summary) return '';
+                return '\n\n【学习背景（供参考）】：' + d.summary;
+            },
+            clear: function() {
+                _sm.save({ topics:[], facts:[], summary:'' });
+            }
+        };
+
+        // ══════════════════════════════════════════════════════════
         //  拍照解题系统（MiniMax 视觉识图）
         // ══════════════════════════════════════════════════════════
         document.addEventListener('click', function(e) {
@@ -11322,6 +11732,10 @@ ${text}
                         <div id="ps-analyzing" style="display:none;position:absolute;inset:0;background:rgba(10,15,30,.75);align-items:center;justify-content:center;flex-direction:column;gap:12px;color:white">
                             <i class="fas fa-circle-notch fa-spin" style="font-size:2rem;color:#60a5fa"></i>
                             <div style="font-size:.88rem;font-weight:600">AI 正在识别题目…</div>
+                        </div>
+                        <!-- 补充说明输入框 -->
+                        <div id="ps-extra-note-wrap" style="display:none;position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:rgba(0,0,0,.65);backdrop-filter:blur(4px)">
+                            <input id="ps-extra-note" type="text" placeholder="可补充说明，如：用第一题的方法教我做第二题" style="width:100%;padding:8px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:white;font-size:.82rem;outline:none;box-sizing:border-box">
                         </div>
                     </div>
 
@@ -11374,6 +11788,8 @@ ${text}
             var barCamera  = panel.querySelector('#ps-bar-camera');
             var barShot    = panel.querySelector('#ps-bar-shot');
             var barCrop    = panel.querySelector('#ps-bar-crop');
+            var noteInput  = panel.querySelector('#ps-extra-note');
+            var noteWrap   = panel.querySelector('#ps-extra-note-wrap');
 
             // ── 启动相机 ────────────────────────────────────────────
             async function startCamera() {
@@ -11456,6 +11872,8 @@ ${text}
                 barShot.style.display    = 'none';
                 barCamera.style.display  = 'flex';
                 barCrop.style.display    = 'none';
+                noteWrap.style.display  = 'none';
+                noteInput.value = '';
                 cropActive = false; cropDataUrl = null; cropRect = null;
                 originalCanvasDataUrl = null;
                 hint.textContent = '对准投影仪上的题目';
@@ -11554,6 +11972,7 @@ ${text}
                 cropActive = false; cropRect = null;
                 barCrop.style.display = 'none';
                 barShot.style.display = 'flex';
+                noteWrap.style.display = 'block';
                 hint.textContent = '可重新框选，或直接 AI 解题';
             });
 
@@ -11580,6 +11999,7 @@ ${text}
                     cropCanvas.style.display = 'none';
                     barCrop.style.display    = 'none';
                     barShot.style.display    = 'flex';
+                    noteWrap.style.display  = 'block';
                     hint.textContent = '已框选 · 可重新框选或直接 AI 解题';
                 };
                 srcImg.src = originalCanvasDataUrl;
@@ -11594,33 +12014,44 @@ ${text}
                     showApiSettingsModal();
                     return;
                 }
-                var imgData = cropDataUrl || shotDataUrl;
+                var imgData  = cropDataUrl || shotDataUrl;
                 if (!imgData) { showGlobalToast('请先拍照', 'warning'); return; }
 
                 analyzing.style.display = 'flex';
                 panel.querySelector('#ps-solve').disabled = true;
 
                 try {
-                    // MiniMax abab6.5s-chat 视觉模型
-                    var b64 = imgData.split(',')[1];
-                    var resp = await fetch('https://api.minimaxi.chat/v1/text/chatcompletion_v2', {
+                    // MiniMax MiniMax-M3 视觉模型（支持 image_url 内容块）
+                    var b64       = imgData.split(',')[1];
+                    var extraNote = (noteInput.value || '').trim();
+                    var basePrompt = '你是一位温柔耐心的数学辅导老师，正在面对面教一位小学生/初中生解题。请按以下方式回答：\n'
+                        + '1. 先给予鼓励，比如说"没关系，我们一起来看看这道题"\n'
+                        + '2. 用通俗易懂的语言逐步讲解，每一步都要说清楚"为什么这样做"\n'
+                        + '3. 如果是数学题，把计算过程展示清楚；如果是问答题，用清晰的条理回答\n'
+                        + '4. 讲解完毕后，用轻松的语气问一个引导性问题，比如"你能试着总结一下今天学的方法吗？"或者"下遇到类似的题，你觉得可以从哪里入手？"\n'
+                        + '5. 始终保持耐心、鼓励的语气，像一位身边的大朋友在陪伴学习\n'
+                        + '注意：如果题目部分不清晰，请说明"这一块有点看不清，你能描述一下吗？"，而不要直接放弃。';
+                    var fullPrompt = basePrompt
+                        + (extraNote ? '\n\n另外，用户补充说明：' + extraNote : '')
+                        + _sm.getContext();
+                    var resp = await fetch('https://api.minimaxi.com/v1/text/chatcompletion_v2', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': 'Bearer ' + mmKey
                         },
                         body: JSON.stringify({
-                            model: 'abab6.5s-chat',
+                            model: 'MiniMax-M3',
                             messages: [{
                                 role: 'user',
                                 content: [
                                     { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + b64 } },
-                                    { type: 'text', text: '这是一道题目的照片，请仔细识别图中的文字和内容，然后给出完整的解题过程和答案。请用清晰的步骤说明，适合中学生理解。如果题目不清晰，请说明哪些部分看不清。' }
+                                    { type: 'text', text: fullPrompt }
                                 ]
                             }],
-                            max_tokens: 1000
+                            max_tokens: 2000
                         })
-                    });
+                    }, 30000); // 30s 超时
 
                     if (!resp.ok) {
                         var errJson = await resp.json().catch(() => ({}));
@@ -11632,6 +12063,15 @@ ${text}
                     // 关闭面板，把结果发送到自习室对话
                     panel.remove();
                     stopCamera();
+
+                    // 保存到拍照解题历史（最多存3条，覆盖最旧的）
+                    try {
+                        var photoHist = JSON.parse(localStorage.getItem('study_photo_history') || '[]');
+                        photoHist.push({ img: cropDataUrl || shotDataUrl, ans: answer,
+                            t: new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) });
+                        if (photoHist.length > 3) photoHist.shift();
+                        localStorage.setItem('study_photo_history', JSON.stringify(photoHist));
+                    } catch(e) { /* localStorage 满了则跳过 */ }
 
                     // 在对话区插入题目图片 + AI解析
                     var msgs  = document.getElementById('studyMessages');
@@ -11648,13 +12088,15 @@ ${text}
                         // AI 回答
                         var aDiv = document.createElement('div');
                         aDiv.className = 'study-msg study-msg-ai';
-                        var formatted = answer.replace(/\n/g, '<br>');
+                        var formatted = parseMarkdown(answer);
                         aDiv.innerHTML = '<div class="study-msg-avatar"><i class="fas fa-robot"></i></div>'
                             + '<div class="study-msg-bubble"><div class="study-msg-text">'+formatted+'</div>'
                             + '<div class="study-msg-time">'+now+'</div></div>';
                         msgs.appendChild(aDiv);
                         msgs.scrollTop = msgs.scrollHeight;
                     }
+                    // 更新双 AI 共享记忆
+                    _sm.push('拍照解题', '拍照解题：' + answer.slice(0, 40));
                     showGlobalToast('解题完成，结果已发送到对话', 'success');
 
                 } catch(err) {
