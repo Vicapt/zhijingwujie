@@ -4320,7 +4320,7 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             window._three = {
                 _alive: false, _renderer: null, _camera: null, _scene: null,
                 _lon: 180, _lat: 10, _isDrag: false, _prevMx: 0, _prevMy: 0,
-                _panoW: 0, _panoH: 0,
+                _panoW: 0, _panoH: 0, currentMesh: null,
                 alive:    function(v){ if(v!==undefined) this._alive=v; return this._alive; },
                 renderer: function(v){ if(v!==undefined) this._renderer=v; return this._renderer; },
                 camera:   function(v){ if(v!==undefined) this._camera=v; return this._camera; },
@@ -4634,6 +4634,20 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
                             if (!pos) { el.style.display = 'none'; }
                             else { el.style.display = ''; el.style.left = pos.x + 'px'; el.style.top = pos.y + 'px'; el.style.pointerEvents = 'all'; }
                         });
+                        // popup 跟随当前标注点实时移动
+                        if (window._activePanoPopup && window._activePopupKpId) {
+                            var pel = document.getElementById('pano-mwrap-' + window._activePopupKpId);
+                            if (pel && pel.style.left) {
+                                var px = parseFloat(pel.style.left) + 24;
+                                var py = parseFloat(pel.style.top)  + 24;
+                                var cw = (document.getElementById('s3d-canvas')||{}).clientWidth || 800;
+                                var ch = (document.getElementById('s3d-canvas')||{}).clientHeight || 500;
+                                if (px + 310 > cw) px = Math.max(8, px - 334);
+                                if (py + 100 > ch) py = Math.max(8, py - 180);
+                                window._activePanoPopup.style.left = px + 'px';
+                                window._activePanoPopup.style.top  = py + 'px';
+                            }
+                        }
                         _threeRenderer.render(_threeScene, _threeCamera);
                     })();
                 }
@@ -5734,7 +5748,8 @@ ${text}
 .pano-marker-ring2{animation-delay:.7s}
 .pano-marker-btn{position:relative;pointer-events:all;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);border:2.5px solid rgba(255,255,255,.9);color:white;font-size:.72rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;animation:pano-pulse 2.5s ease infinite;transition:transform .18s,filter .18s;box-shadow:0 2px 12px rgba(59,130,246,.5)}
 .pano-marker-btn:hover{transform:scale(1.2);filter:brightness(1.1)}
-.pano-popup{position:absolute;z-index:30;width:300px;background:rgba(15,23,42,.88);backdrop-filter:blur(18px);border:1px solid rgba(99,179,237,.25);border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05);overflow:hidden;animation:popSlide .22s ease}
+.pano-popup{position:absolute;z-index:30;width:300px;background:rgba(15,23,42,.88);backdrop-filter:blur(18px);border:1px solid rgba(99,179,237,.25);border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05);overflow:hidden;animation:popSlide .22s ease;pointer-events:none}
+.pano-popup button{pointer-events:all}
 .pano-popup-close{position:absolute;top:8px;right:10px;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:.15s}
 .pano-popup-close:hover{background:rgba(255,255,255,.2);color:white}
 .pano-section-label{display:flex;align-items:center;gap:6px;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
@@ -6011,6 +6026,21 @@ ${text}
                             }
                         });
 
+                        // popup 跟随当前标注点实时移动
+                        if (window._activePanoPopup && window._activePopupKpId) {
+                            var pel = document.getElementById('pano-mwrap-' + window._activePopupKpId);
+                            if (pel && pel.style.left) {
+                                var px = parseFloat(pel.style.left) + 24;
+                                var py = parseFloat(pel.style.top)  + 24;
+                                var cw = (document.getElementById('s3d-canvas')||{}).clientWidth || 800;
+                                var ch = (document.getElementById('s3d-canvas')||{}).clientHeight || 500;
+                                if (px + 310 > cw) px = Math.max(8, px - 334);
+                                if (py + 100 > ch) py = Math.max(8, py - 180);
+                                window._activePanoPopup.style.left = px + 'px';
+                                window._activePanoPopup.style.top  = py + 'px';
+                            }
+                        }
+
                         renderer.render(panoScene, camera);
                     }
                     animate();
@@ -6027,6 +6057,8 @@ ${text}
                     // 离开时清理
                     document.getElementById('s3d-back').addEventListener('click', function(){
                         alive = false; renderer.dispose(); resizeObs.disconnect();
+                        window._activePanoPopup = null;
+                        window._activePopupKpId = null;
                         viewState='list'; render();
                     });
                     document.getElementById('s3d-fs').addEventListener('click', function(){
@@ -6077,21 +6109,31 @@ ${text}
 
                 var popup = document.createElement('div');
                 popup.className = 'pano-popup';
-                // 定位：锚点按钮附近，右下方偏移
-                var markerWrap = document.getElementById('pano-mwrap-' + kp.id);
-                var px = 100, py = 100;
-                if (markerWrap && markerWrap.style.left) {
-                    px = parseFloat(markerWrap.style.left) + 24;
-                    py = parseFloat(markerWrap.style.top)  + 24;
-                }
-                // 防止超出右边界
-                var canvasW = (document.getElementById('s3d-canvas')||{}).clientWidth || 800;
-                if (px + 310 > canvasW) px = px - 330;
-                if (px < 8) px = 8;
 
-                popup.style.left    = px + 'px';
-                popup.style.top     = py + 'px';
-                popup.style.pointerEvents = 'all';
+                // 初始定位：跟随标注点
+                window._activePopupKpId = kp.id;
+                window._activePanoPopup = popup;
+
+                var canvasW = (document.getElementById('s3d-canvas')||{}).clientWidth || 800;
+                var canvasH = (document.getElementById('s3d-canvas')||{}).clientHeight || 500;
+                var POPUP_W = 310;
+
+                function positionPopup() {
+                    var markerWrap = document.getElementById('pano-mwrap-' + _activePopupKpId);
+                    var px = 100, py = 100;
+                    if (markerWrap && markerWrap.style.left) {
+                        px = parseFloat(markerWrap.style.left) + 24;
+                        py = parseFloat(markerWrap.style.top)  + 24;
+                    }
+                    // 防止超出右边界和下边界
+                    if (px + POPUP_W > canvasW) px = Math.max(8, px - POPUP_W - 24);
+                    if (py + 100 > canvasH) py = Math.max(8, py - 180);
+                    popup.style.left = px + 'px';
+                    popup.style.top  = py + 'px';
+                }
+
+                popup.style.pointerEvents = 'none';
+                positionPopup();
 
                 // 课文摘抄：取 detail 的第一句作为"课文原文"，其余为解析
                 var parts    = kp.detail.split(/[。！？\n]/).filter(Boolean);
@@ -6150,6 +6192,16 @@ ${text}
                 var aiBox = document.getElementById('pano-ai-content');
                 if (!aiBox) return;
 
+                // 先查缓存，有则直接用
+                var cacheKey = 'pano_ai_' + kp.id;
+                var cached = localStorage.getItem(cacheKey);
+                if (cached) {
+                    aiBox.className = 'pano-ai-text';
+                    aiBox.style.animation = 'fadeIn .3s ease';
+                    aiBox.textContent = cached;
+                    return;
+                }
+
                 var prompt = '你是一位语文/人文学科AI导师，请对以下内容进行深度文学赏析（不超过80字，语言生动，适合中学生理解）：\n'
                            + '知识点：' + kp.label + '\n'
                            + '原文：' + quote + '\n'
@@ -6172,6 +6224,7 @@ ${text}
                     aiBox2.className = 'pano-ai-text';
                     aiBox2.style.animation = 'fadeIn .3s ease';
                     aiBox2.textContent = text;
+                    localStorage.setItem(cacheKey, text);
                 })
                 .catch(function() {
                     var aiBox2 = document.getElementById('pano-ai-content');
@@ -7496,6 +7549,136 @@ ${text}
             });
         }
 
+        // ── 错题本 ──────────────────────────────────────────────────────
+        var WB_KEY = 'zjwj_wrongbook';
+
+        function _getWrongBook() {
+            try { return JSON.parse(localStorage.getItem(WB_KEY) || '[]'); } catch(e) { return []; }
+        }
+        function _saveWrongBook(wb) { localStorage.setItem(WB_KEY, JSON.stringify(wb)); }
+
+        function _saveWrongQuestion(q, challenge) {
+            var wb = _getWrongBook();
+            // 避免重复收录同一题（同题ID + 同闯关ID）
+            if (wb.some(function(w){ return w.qId === q.id && w.challengeId === challenge.id; })) return;
+            var entry = {
+                id: 'wb_' + Date.now(),
+                qId: q.id,
+                challengeId: challenge.id,
+                challengeName: challenge.name || '',
+                subject: challenge.subject || '',
+                type: q.type === 'single' ? '选择题' : q.type === 'truefalse' ? '判断题' : '填空题',
+                stem: q.stem || '',
+                myAnswer: '',
+                correctAnswer: q.type === 'single' ? q.options[q.answer] : q.type === 'truefalse' ? (q.answer ? '正确' : '错误') : q.answer,
+                explanation: q.explanation || '',
+                savedAt: new Date().toLocaleString('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' })
+            };
+            wb.unshift(entry); // 最新错题放前面
+            _saveWrongBook(wb);
+            _updateWrongbookBadge();
+        }
+
+        function _updateWrongbookBadge() {
+            var wb = _getWrongBook();
+            var badge = document.querySelector('.menu-item[data-module="wrongbook"] .menu-badge');
+            if (badge) {
+                if (wb.length > 0) {
+                    badge.textContent = wb.length;
+                    badge.style.display = '';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+
+        function _removeWrongQuestion(id) {
+            var wb = _getWrongBook().filter(function(w){ return w.id !== id; });
+            _saveWrongBook(wb);
+            _updateWrongbookBadge();
+        }
+
+        function initWrongBook() {
+            var body = document.getElementById('wb-body');
+            if (!body) return;
+            var wb = _getWrongBook();
+            var filterType = '全部';
+            var filterSubject = '全部';
+
+            function render() {
+                var filtered = wb.filter(function(w){
+                    return (filterType === '全部' || w.type === filterType)
+                        && (filterSubject === '全部' || w.subject === filterSubject);
+                });
+                var subjects = ['全部'];
+                wb.forEach(function(w){ if (w.subject && !subjects.includes(w.subject)) subjects.push(w.subject); });
+
+                body.innerHTML =
+                    '<div class="wb-page">'
+                    + '<div class="wb-filter-row">'
+                    + '<button class="wb-filter-btn' + (filterType==='全部'?' active':'') + '" data-type="全部">全部</button>'
+                    + '<button class="wb-filter-btn' + (filterType==='选择题'?' active':'') + '" data-type="选择题">选择题</button>'
+                    + '<button class="wb-filter-btn' + (filterType==='判断题'?' active':'') + '" data-type="判断题">判断题</button>'
+                    + '<button class="wb-filter-btn' + (filterType==='填空题'?' active':'') + '" data-type="填空题">填空题</button>'
+                    + '<select class="wb-filter-btn" id="wb-subject-sel" style="margin-left:auto">'
+                    + subjects.map(function(s){ return '<option' + (s===filterSubject?' selected':'') + '>' + s + '</option>'; }).join('')
+                    + '</select>'
+                    + '</div>'
+                    + (filtered.length === 0
+                        ? '<div class="wb-empty"><i class="fas fa-check-circle"></i> 暂无错题记录，答错的题目会自动收录到这里</div>'
+                        : filtered.map(function(w, i){
+                            var typeCls = w.type==='选择题' ? 'wb-tag-type-single' : w.type==='判断题' ? 'wb-tag-type-judge' : 'wb-tag-type-fill';
+                            return '<div class="wb-card" data-id="' + w.id + '">'
+                                + '<div class="wb-card-header">'
+                                + '<div class="wb-card-num">' + (i+1) + '</div>'
+                                + '<span style="font-size:.82rem;font-weight:700;color:var(--gray-700)">' + (w.challengeName||'未知闯关') + '</span>'
+                                + '<div class="wb-card-meta">'
+                                + '<span class="wb-tag ' + typeCls + '">' + w.type + '</span>'
+                                + (w.subject ? '<span class="wb-tag" style="background:var(--gray-100);color:var(--gray-500)">' + w.subject + '</span>' : '')
+                                + '</div>'
+                                + '</div>'
+                                + '<div class="wb-stem">' + (w.stem||'（题目已丢失）') + '</div>'
+                                + '<div class="wb-answers">'
+                                + '<span class="wb-my-answer"><i class="fas fa-times-circle"></i> 你的答案：—</span>'
+                                + '<span class="wb-correct-answer"><i class="fas fa-check-circle"></i> 正确答案：' + (w.correctAnswer||'—') + '</span>'
+                                + '</div>'
+                                + (w.explanation ? '<div class="wb-expl"><i class="fas fa-lightbulb" style="color:#2563eb;margin-right:5px"></i>' + w.explanation + '</div>' : '')
+                                + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">'
+                                + '<span style="font-size:.7rem;color:var(--gray-400)"><i class="far fa-clock"></i> ' + w.savedAt + '</span>'
+                                + '<button class="wb-retry-btn" data-id="' + w.id + '"><i class="fas fa-redo"></i> 重新挑战</button>'
+                                + '</div>'
+                                + '</div>';
+                        }).join(''))
+                    + '</div>';
+
+                // 事件绑定
+                body.querySelectorAll('.wb-filter-btn[data-type]').forEach(function(btn){
+                    btn.addEventListener('click', function(){
+                        filterType = this.dataset.type;
+                        render();
+                    });
+                });
+                var subSel = body.querySelector('#wb-subject-sel');
+                if (subSel) subSel.addEventListener('change', function(){ filterSubject = this.value; render(); });
+                body.querySelectorAll('.wb-retry-btn').forEach(function(btn){
+                    btn.addEventListener('click', function(){
+                        var id = this.dataset.id;
+                        var entry = wb.find(function(w){ return w.id === id; });
+                        if (!entry) return;
+                        // 跳转到闯关页面并定位到对应关卡
+                        switchModule('challenge');
+                        setTimeout(function(){
+                            var startBtn = document.querySelector('.gp-start-btn[data-id="' + entry.challengeId + '"]');
+                            if (startBtn) startBtn.click();
+                        }, 100);
+                    });
+                });
+            }
+
+            render();
+            _updateWrongbookBadge();
+        }
+
         // ── 学生AI自习室 ────────────────────────────────────────────────
         // ── 学情分析中心 ──────────────────────────────────────────────────
         function initAnalytics(weekOffset) {
@@ -8473,6 +8656,7 @@ ${text}
                     + ' (3) The LEFT and RIGHT edges must be IDENTICAL and seamlessly connect at 0/360 degree boundary.'
                     + ' (4) The TOP is zenith (sky or ceiling, NO gray), the BOTTOM is nadir (ground or floor, NO gray) — both fully detailed.'
                     + ' (6) The horizon line should be at approximately 2/3 of the image height from the BOTTOM (looking slightly upward into the scene) — not centered, not too high.'
+                    + ' (7) Think of this as a 360 VR spherical panorama — viewer is standing inside the scene, can look up/down/left/right. The image must be a seamless equirectangular projection.'
                     + ' (5) Top and bottom edges also connect seamlessly if tiled vertically.'
                     + ' Pure seamless full-sphere panoramic view with complete ceiling and floor detail.';
             }
@@ -8679,7 +8863,16 @@ ${text}
                     var geo = new THREE.SphereGeometry(500, 64, 40);
                     geo.scale(-1, 1, 1);
                     new THREE.TextureLoader().load(finalSrc, function(tex) {
-                        scene.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex })));
+                        // 移除旧球体，避免重叠渲染
+                        if (window._three.currentMesh) {
+                            scene.remove(window._three.currentMesh);
+                            window._three.currentMesh.geometry.dispose();
+                            window._three.currentMesh.material.map.dispose();
+                            window._three.currentMesh.material.dispose();
+                        }
+                        var mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex }));
+                        scene.add(mesh);
+                        window._three.currentMesh = mesh;
                         if (badge) {
                             badge.innerHTML = '<i class="fas fa-panorama"></i> 全景图模式';
                             badge.style.background = 'rgba(16,185,129,.15)';
