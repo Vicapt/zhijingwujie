@@ -8759,12 +8759,10 @@ ${text}
                         throw new Error((errData.error && errData.error.message) || 'MiniMax API 错误 ' + resp.status);
                     }
                     var data = await resp.json();
-                    console.log('[MiniMax 全景生成] 完整响应:', JSON.stringify(data));
-                    // MiniMax image-01: data.data 是对象数组 [{image_base64, image_url}]
-                    // response_format=base64 时取 image_base64，否则取 image_url
-                    var resultObj = data.data && data.data[0];
-                    if (!resultObj) throw new Error('未获取到图像数据');
-                    var first = resultObj.image_base64 || resultObj.image_url || '';
+                    // MiniMax image-01: data.data = {image_base64: [base64Str], image_url: [...]}
+                    // image_base64 / image_url 本身是数组，取 [0]
+                    var imgArr = data.data && (data.data.image_base64 || data.data.image_url);
+                    var first = (imgArr && imgArr[0]) || '';
                     if (!first) throw new Error('未获取到图像数据');
                     dataUrl = (first.startsWith('http') || first.startsWith('//'))
                         ? first
