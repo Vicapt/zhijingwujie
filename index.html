@@ -8566,7 +8566,7 @@ ${text}
                 + '</div>'
                 + '<div style="margin-bottom:14px"><label style="display:block;font-size:.78rem;font-weight:600;color:var(--gray-600);margin-bottom:6px">风格</label>'
                 + '<select id="zjwj-pano-style" style="width:100%;padding:8px 10px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.82rem;outline:none;color:var(--gray-700);background:white">'
-                + '<option value="">无</option><option value=", photorealistic, 8k">写实摄影</option>'
+                + '<option value="">无</option><option value=", photorealistic, 8k" selected>写实摄影</option>'
                 + '<option value=", watercolor painting">水彩插画</option><option value=", anime style, Studio Ghibli">吉卜力动漫</option>'
                 + '<option value=", oil painting, impressionist">油画印象派</option><option value=", low-poly 3D art">低多边形 3D</option>'
                 + '<option value=", ancient Chinese ink painting">中国水墨画</option></select></div>'
@@ -8648,17 +8648,19 @@ ${text}
             restoreState();
 
             function buildFullPrompt(rawPrompt, style) {
-                return rawPrompt
-                    + style
-                    + '. IMPORTANT - This is a cylindrical panorama (equirectangular projection) for 360 VR/spherical viewing:'
-                    + ' (1) The horizon line must be PERFECTLY STRAIGHT and horizontal — NO fisheye curvature, NO wide-angle lens distortion, NO bent horizon.'
-                    + ' (2) Vertical lines (trees, buildings, poles) must stay VERTICAL — do NOT flare outward like fisheye photos.'
-                    + ' (3) The LEFT and RIGHT edges must be IDENTICAL and seamlessly connect at 0/360 degree boundary.'
-                    + ' (4) The TOP is zenith (sky or ceiling, NO gray), the BOTTOM is nadir (ground or floor, NO gray) — both fully detailed.'
-                    + ' (6) The horizon line should be at approximately 2/3 of the image height from the BOTTOM (looking slightly upward into the scene) — not centered, not too high.'
-                    + ' (7) Think of this as a 360 VR spherical panorama — viewer is standing inside the scene, can look up/down/left/right. The image must be a seamless equirectangular projection.'
-                    + ' (5) Top and bottom edges also connect seamlessly if tiled vertically.'
-                    + ' Pure seamless full-sphere panoramic view with complete ceiling and floor detail.';
+                // ── 柱状全景透视规则（等距圆柱 / equirectangular, 2:1 投影）────────────
+                // 核心：无消失点、水平线恒平、竖线恒直、左右边缘无缝相接
+                var rules = ''
+                    + 'CRITICAL: This is a cylindrical equirectangular panorama (2:1, 360° VR). '
+                    + '(1) Horizon must be PERFECTLY STRAIGHT — no curve, no fisheye bend. '
+                    + '(2) All vertical lines (trees, poles, pillars) must stay PARALLEL — never tilt inward or outward, no vanishing point. '
+                    + '(3) Far-left and far-right edges must match perfectly (0°/360° seam). '
+                    + '(4) Top = zenith sky (fully detailed, no gray), Bottom = nadir ground (fully detailed, no gray). '
+                    + '(5) NOT a wide-angle or perspective photo — center does NOT bulge, edges do NOT compress. '
+                    + '(6) Imagine standing inside a cylinder looking out — horizontal/vertical angles map linearly, NO central vanishing point. '
+                    + '(7) Horizon at ~60% from bottom (slight upward gaze). '
+                    + 'Seamless full-sphere panorama, pure equirectangular projection.';
+                return rawPrompt + style + '. ' + rules;
             }
 
             async function doGenerate() {
@@ -8711,7 +8713,9 @@ ${text}
                                     content: '你是一个语文教育专家，精通中小学课文。现在要把一段课文中的环境描写转化为360度全景图的绘画提示词。\n'
                                         + '核心要求：你必须调动自己对这篇课文的完整理解，主动补充原文中没有写明但属于这个场景的典型细节，让画面更完整生动。\n\n'
                                         + '规则：\n'
-                                        + '1. 把"像/如/仿佛"等比喻转成具体画面（"细雨如牛毛"→"窗外飘着细密的雨丝"）\n'
+                                        + '1. 【排除比喻的喻体】"像/如/仿佛/如同一般"等比喻的喻体（"如银的月光""她的脸像红苹果""绿油油的麦浪像海洋"）绝对不能出现在画面中——画面只需呈现真实的视觉元素（银色的月光洒在湖面、红润的脸颊随微风轻颤、风吹麦田翻起金色波浪）。\n'
+                                        + '   正确例子："月光如水银泻地"→"皎洁的月光洒满大地"（不提水/银）\n'
+                                        + '   正确例子："她的脸像红苹果"→"红润的脸庞在阳光下微微泛着红晕"（不画苹果）\n'
                                         + '2. 把拟人/夸张/美化还原为真实场景（"花儿笑"→"盛开的花朵在微风中轻轻摇曳"）\n'
                                         + '3. 主动补充：你知道这是哪篇课文，根据课文整体情境，补充原描写中没有但属于这个场景的典型元素（如课文写"荷塘"，应补充：碧绿荷叶铺满水面、粉白荷花点点、远处杨柳岸等）\n'
                                         + '4. 明确：室内/室外、时间（早晨/傍晚/夜晚）、天气、光线氛围（明亮/昏暗/柔和）、主要色调\n'
@@ -8748,13 +8752,20 @@ ${text}
                         })
                     }, 60000);
                     if (!resp.ok) {
-                        var errData = await resp.json().catch(function(){ return {}; });
+                        var errText = await resp.text().catch(function(){ return ''; });
+                        console.log('[MiniMax 全景生成] HTTP错误:', resp.status, errText);
+                        var errData = {};
+                        try { errData = JSON.parse(errText); } catch(e) {}
                         throw new Error((errData.error && errData.error.message) || 'MiniMax API 错误 ' + resp.status);
                     }
                     var data = await resp.json();
-                    var b64List = (data.data && data.data.image_base64) || (data.data && data.data.image_urls);
-                    if (!b64List || !b64List.length) throw new Error('未获取到图像数据');
-                    var first = b64List[0];
+                    console.log('[MiniMax 全景生成] 完整响应:', JSON.stringify(data));
+                    // MiniMax image-01: data.data 是对象数组 [{image_base64, image_url}]
+                    // response_format=base64 时取 image_base64，否则取 image_url
+                    var resultObj = data.data && data.data[0];
+                    if (!resultObj) throw new Error('未获取到图像数据');
+                    var first = resultObj.image_base64 || resultObj.image_url || '';
+                    if (!first) throw new Error('未获取到图像数据');
                     dataUrl = (first.startsWith('http') || first.startsWith('//'))
                         ? first
                         : 'data:image/jpeg;base64,' + first;
