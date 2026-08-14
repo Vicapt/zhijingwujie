@@ -4709,30 +4709,38 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
 
             // ── 保存草稿 / 发布 ──────────────────────────────────────────────
             document.getElementById('saveSceneBtn').addEventListener('click', function() {
-                var sceneData = _buildSceneData(false);
+                var sceneId = 'scene_' + Date.now();
+                var sceneData = _buildSceneDataDraft(sceneId);
                 if (!sceneData) return;
+                _saveSceneBg(sceneId, window._sceneImageData || null);
                 var lib = JSON.parse(localStorage.getItem('scenes_library') || '[]');
-                var existIdx = lib.findIndex(function(s){ return s.id === sceneData.id; });
+                var existIdx = lib.findIndex(function(s){ return s.id === sceneId; });
                 if (existIdx >= 0) lib[existIdx] = sceneData; else lib.unshift(sceneData);
                 localStorage.setItem('scenes_library', JSON.stringify(lib));
                 showGlobalToast('草稿已保存', 'info');
                 updateStorageUsage();
             });
 
-            document.getElementById('publishSceneBtn').addEventListener('click', function() {
-                var sceneData = _buildSceneData(true);
+            document.getElementById('publishSceneBtn').addEventListener('click', async function() {
+                var sceneId = 'scene_' + Date.now();
+                var sceneData = await _buildSceneDataPublished(sceneId);
                 if (!sceneData) return;
+                // bgImage 单独存储，不进 scenes_library
+                _saveSceneBg(sceneId, window._sceneImageData || null);
                 var lib = JSON.parse(localStorage.getItem('scenes_library') || '[]');
-                var existIdx = lib.findIndex(function(s){ return s.id === sceneData.id; });
+                var existIdx = lib.findIndex(function(s){ return s.id === sceneId; });
                 if (existIdx >= 0) lib[existIdx] = sceneData; else lib.unshift(sceneData);
                 localStorage.setItem('scenes_library', JSON.stringify(lib));
-                localStorage.setItem('scene_saved_' + sceneData.id, sceneData.desc || sceneData.name);
+                localStorage.setItem('scene_saved_' + sceneId, sceneData.desc || sceneData.name);
                 showGlobalToast('已发布！学生端可看到「' + sceneData.name + '」', 'success');
                 updateStorageUsage();
                 this.innerHTML = '<i class="fas fa-check"></i> 已发布';
                 this.style.background = 'var(--green-600)';
                 var self = this;
-                setTimeout(function(){ self.innerHTML = '<i class="fas fa-paper-plane"></i> 发布给学生'; self.style.background = ''; }, 3000);
+                setTimeout(function(){
+                    self.innerHTML = '<i class="fas fa-paper-plane"></i> 发布给学生';
+                    self.style.background = '';
+                }, 3000);
             });
 
             // ── 重置 ─────────────────────────────────────────────────────────
@@ -4768,6 +4776,20 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
             function getFolders() { return JSON.parse(localStorage.getItem('s3d_folders') || '[]'); }
             function saveLib(lib) { localStorage.setItem('scenes_library', JSON.stringify(lib)); updateStorageUsage(); }
             function saveFolders(f) { localStorage.setItem('s3d_folders', JSON.stringify(f)); }
+
+            // 一次性迁移：把旧数据中嵌入的 bgImage 迁到独立 key，减小 scenes_library 体积
+            (function _migrateBgImages() {
+                var lib = getLib();
+                var changed = false;
+                lib.forEach(function(sc) {
+                    if (sc.bgImage && !localStorage.getItem('scene_bg_' + sc.id)) {
+                        _saveSceneBg(sc.id, sc.bgImage);
+                        delete sc.bgImage;
+                        changed = true;
+                    }
+                });
+                if (changed) saveLib(lib);
+            })();
 
             var currentFolderId = null; // null = 根目录
 
@@ -4981,27 +5003,121 @@ label { font-size: 0.84rem; font-weight: 600; color: var(--gray-700); }
         }
 
         // ── 构建场景数据（供保存/发布用）────────────────────────────────────
-        function _buildSceneData(published) {
-            var name    = document.getElementById('sceneName')?.value.trim();
+        // bgImage 单独存储，不塞进 scenes_library（避免 localStorage 5MB 配额撑爆）
+        function _saveSceneBg(sceneId, dataUrl) {
+            if (!dataUrl) return;
+            try { localStorage.setItem('scene_bg_' + sceneId, dataUrl); } catch(e) {}
+        }
+        function _loadSceneBg(sceneId) {
+            return localStorage.getItem('scene_bg_' + sceneId) || null;
+        }
+        function _deleteSceneBg(sceneId) {
+            try { localStorage.removeItem('scene_bg_' + sceneId); } catch(e) {}
+        }
+
+        // AI 预生成提示词（提取课文原文的通用逻辑）
+        function _buildKPPrompt(kp) {
+            var parts    = (kp.detail || '').split(/[。！？\n]/).filter(Boolean);
+            var quote    = parts[0] || kp.detail || '';
+            var analysis = parts.slice(1).join('。') || kp.detail || '';
+            return {
+                prompt: '你是一位语文/人文学科AI导师，请对以下内容进行深度文学赏析（不超过80字，语言生动，适合中学生理解）：\n'
+                       + '知识点：' + (kp.label || '') + '\n'
+                       + '原文：' + quote + '\n'
+                       + '请重点分析修辞手法、字词之美或思想情感，直接输出赏析文字，不要开头的"好的"等套话。',
+                fallback: analysis || '暂无详细解析'
+            };
+        }
+
+        // 单个 kp 的 AI 预生成（同步返回缓存，异步写入）
+        function _generateKPAI(kp) {
+            return new Promise(function(resolve) {
+                var cacheKey = 'kp_ai_' + kp.id;
+                var cached = localStorage.getItem(cacheKey);
+                if (cached) { resolve(cached); return; }
+
+                var info = _buildKPPrompt(kp);
+                var dk = localStorage.getItem('zjwj_deepseek_key') || '';
+                if (!dk) { resolve(info.fallback); return; }
+
+                // 超时控制：15 秒内没返回则用兜底文本
+                var timeoutId = setTimeout(function() {
+                    resolve(info.fallback);
+                }, 15000);
+
+                fetch(DEEPSEEK_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + dk },
+                    body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 200, messages: [{ role: 'user', content: info.prompt }] })
+                })
+                .then(function(r){ return r.json(); })
+                .then(function(data) {
+                    clearTimeout(timeoutId);
+                    var text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || info.fallback;
+                    try { localStorage.setItem(cacheKey, text); } catch(e){}
+                    resolve(text);
+                })
+                .catch(function() {
+                    clearTimeout(timeoutId);
+                    resolve(info.fallback);
+                });
+            });
+        }
+
+        // 保存草稿（同步，不生成 AI）
+        function _buildSceneDataDraft(sceneId) {
+            var name    = (document.getElementById('sceneName')?.value.trim()) || '未命名情景';
             var subject = document.getElementById('sceneSubject')?.value || '语文';
             var grade   = document.getElementById('sceneGrade')?.value   || '初中';
-            if (!name) { showGlobalToast('请填写场景名称', 'error'); return null; }
-            var sceneObj = {
-                id:        'scene_' + Date.now(),
+            if (!name || name === '未命名情景') { showGlobalToast('请填写场景名称', 'error'); return null; }
+            return {
+                id:        sceneId,
                 name:      name,
                 subject:   subject,
                 grade:     grade,
                 desc:      name,
                 emoji:     _subjectEmoji(subject),
                 kps:       JSON.parse(JSON.stringify(_3d_kps)),
-                published: published,
+                published: false,
                 createdAt: new Date().toLocaleDateString('zh-CN'),
                 viewCount: 0
             };
-            if (window._sceneImageData) {
-                sceneObj.bgImage = window._sceneImageData;
+        }
+
+        // 发布（异步预生成 AI 解析）
+        async function _buildSceneDataPublished(sceneId) {
+            var name    = (document.getElementById('sceneName')?.value.trim()) || '未命名情景';
+            var subject = document.getElementById('sceneSubject')?.value || '语文';
+            var grade   = document.getElementById('sceneGrade')?.value   || '初中';
+            if (!name || name === '未命名情景') { showGlobalToast('请填写场景名称', 'error'); return null; }
+
+            var kpsWithAI = JSON.parse(JSON.stringify(_3d_kps));
+            var total = kpsWithAI.length;
+            if (total > 0) {
+                showGlobalToast('正在预生成 ' + total + ' 个知识点的 AI 解析…', 'info');
+                for (var i = 0; i < kpsWithAI.length; i++) {
+                    var kp = kpsWithAI[i];
+                    kpsWithAI[i].aiAnalysis = await _generateKPAI(kp);
+                    var badge = document.getElementById('publishSceneBtn');
+                    if (badge) {
+                        badge.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> 生成解析 '
+                            + (i + 1) + '/' + total;
+                    }
+                }
             }
-            return sceneObj;
+
+            return {
+                id:        sceneId,
+                name:      name,
+                subject:   subject,
+                grade:     grade,
+                desc:      name,
+                emoji:     _subjectEmoji(subject),
+                kps:       kpsWithAI,
+                published: true,
+                createdAt: new Date().toLocaleDateString('zh-CN'),
+                viewCount: 0
+            };
         }
 
         function _subjectEmoji(subject) {
@@ -5640,6 +5756,7 @@ ${text}
 
             var viewState = 'list';
             var currentScene = null;
+            var _aiParseEnabled = localStorage.getItem('s3d_ai_parse') !== 'off';
 
             function render() {
                 if (viewState === 'list') renderList();
@@ -5787,8 +5904,16 @@ ${text}
     <!-- 右侧知识面板 -->
     <div style="width:272px;flex-shrink:0;display:flex;flex-direction:column;background:white;border-left:1px solid var(--gray-200);overflow-y:auto">
       <div style="padding:14px;border-bottom:1px solid var(--gray-100)">
-        <div style="font-weight:700;font-size:.84rem;color:var(--gray-800);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <div style="font-weight:700;font-size:.84rem;color:var(--gray-800);margin-bottom:8px;display:flex;align-items:center;gap:6px">
           <i class="fas fa-book-open" style="color:var(--primary)"></i> 知识解析
+          <div style="margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0">
+            <span id="s3d-ai-toggle-label" style="font-size:.72rem;font-weight:600;color:var(--gray-500)">AI 解析</span>
+            <label id="s3d-ai-toggle" style="position:relative;display:inline-block;width:36px;height:20px;cursor:pointer;flex-shrink:0">
+              <input type="checkbox" id="s3d-ai-toggle-cb" checked style="opacity:0;width:0;height:0;position:absolute">
+              <span id="s3d-ai-toggle-track" style="position:absolute;inset:0;border-radius:10px;background:var(--primary);transition:.2s"></span>
+              <span id="s3d-ai-toggle-thumb" style="position:absolute;top:3px;left:18px;width:14px;height:14px;border-radius:50%;background:white;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:.2s"></span>
+            </label>
+          </div>
         </div>
         <div id="s3d-kp-panel">
           <div style="text-align:center;padding:24px 12px;color:var(--gray-400)">
@@ -5823,6 +5948,40 @@ ${text}
                 }
 
                 loadThree(function() {
+                    // ── AI 解析开关初始化 ─────────────────────────────────
+                    var aiToggleCb   = document.getElementById('s3d-ai-toggle-cb');
+                    var aiToggleTrack = document.getElementById('s3d-ai-toggle-track');
+                    var aiToggleThumb = document.getElementById('s3d-ai-toggle-thumb');
+                    var aiToggleLabel = document.getElementById('s3d-ai-toggle-label');
+                    var AI_PARSE_KEY  = 's3d_ai_parse';
+
+                    _aiParseEnabled = localStorage.getItem(AI_PARSE_KEY) !== 'off';
+
+                    function _syncAiToggle() {
+                        if (_aiParseEnabled) {
+                            aiToggleTrack.style.background = 'var(--primary)';
+                            aiToggleThumb.style.left = '18px';
+                            aiToggleLabel.textContent = 'AI 解析';
+                            aiToggleLabel.style.color = 'var(--gray-500)';
+                        } else {
+                            aiToggleTrack.style.background = 'var(--gray-300)';
+                            aiToggleThumb.style.left = '4px';
+                            aiToggleLabel.textContent = 'AI 解析';
+                            aiToggleLabel.style.color = 'var(--gray-400)';
+                        }
+                        if (aiToggleCb) aiToggleCb.checked = _aiParseEnabled;
+                    }
+                    _syncAiToggle();
+
+                    // 拦截 label 的原生行为，纯 JS 手动切换
+                    document.getElementById('s3d-ai-toggle').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        _aiParseEnabled = !_aiParseEnabled;
+                        localStorage.setItem(AI_PARSE_KEY, _aiParseEnabled ? 'on' : 'off');
+                        _syncAiToggle();
+                        showGlobalToast(_aiParseEnabled ? 'AI 解析已开启' : 'AI 解析已关闭', _aiParseEnabled ? 'success' : 'info');
+                    });
+
                     var THREE = window.THREE;
                     var W = sceneEl.clientWidth, H = sceneEl.clientHeight;
                     canvas.width = W; canvas.height = H;
@@ -5839,7 +5998,10 @@ ${text}
                     var geo = new THREE.SphereGeometry(500, 60, 40);
                     geo.scale(-1, 1, 1);
 
-                    // 选择全景图：优先 bgImage，否则用内置渐变 Canvas
+                    // 从独立存储读取全景图（不在 scenes_library 里，避免撑爆配额）
+                    var bgImageData = _loadSceneBg(sc.id);
+
+                    // 选择全景图：优先 bgImageData，否则用内置渐变 Canvas
                     function buildFallbackTexture() {
                         var fc = document.createElement('canvas');
                         fc.width = 2048; fc.height = 1024;
@@ -5905,17 +6067,17 @@ ${text}
                         // 更新模式标签
                         var badge = document.getElementById('pano-mode-indicator');
                         if (badge) {
-                            badge.innerHTML = sc.bgImage
+                            badge.innerHTML = bgImageData
                                 ? '<i class="fas fa-panorama"></i> 全景图模式'
                                 : '<i class="fas fa-magic"></i> 3D 渲染模式';
-                            badge.style.background = sc.bgImage ? '#d1fae5' : '#ede9fe';
-                            badge.style.color = sc.bgImage ? '#065f46' : '#6b21a8';
+                            badge.style.background = bgImageData ? '#d1fae5' : '#ede9fe';
+                            badge.style.color = bgImageData ? '#065f46' : '#6b21a8';
                         }
                     }
 
-                    if (sc.bgImage) {
+                    if (bgImageData) {
                         var loader = new THREE.TextureLoader();
-                        loader.load(sc.bgImage, applyTexture, undefined, function() {
+                        loader.load(bgImageData, applyTexture, undefined, function() {
                             applyTexture(buildFallbackTexture());
                         });
                     } else {
@@ -6183,8 +6345,35 @@ ${text}
                     _saveNote(kp.id, kp.label);
                 });
 
-                // ── 调用 Claude API 做 AI 深度解析 ──────────────────────────
-                _fetchPanoAI(kp, quote, analysis);
+                // ── 显示 AI 解析（直接读预存结果，不调 API）──────────────────
+                (function(kp, quote) {
+                    var aiBox = document.getElementById('pano-ai-content');
+                    if (!aiBox) return;
+
+                    if (!_aiParseEnabled) {
+                        aiBox.className = 'pano-ai-text';
+                        aiBox.textContent = '（AI 解析已关闭，如需开启请在右上角切换）';
+                        return;
+                    }
+
+                    var cached = kp.aiAnalysis || null;
+                    if (cached) {
+                        aiBox.className = 'pano-ai-text';
+                        aiBox.style.animation = 'fadeIn .3s ease';
+                        aiBox.textContent = cached;
+                    } else {
+                        // 兜底：尝试读旧版 localStorage 缓存
+                        var oldCache = localStorage.getItem('pano_ai_' + kp.id);
+                        if (oldCache) {
+                            aiBox.className = 'pano-ai-text';
+                            aiBox.style.animation = 'fadeIn .3s ease';
+                            aiBox.textContent = oldCache;
+                        } else {
+                            aiBox.className = 'pano-ai-text';
+                            aiBox.textContent = analysis || '（暂无解析）';
+                        }
+                    }
+                })(kp, quote);
             }
 
             // ── DeepSeek Chat 解析调用 ──────────────────────────────────────
